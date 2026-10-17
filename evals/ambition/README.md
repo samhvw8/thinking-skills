@@ -14,6 +14,8 @@ model release, rerun them and cut any rule that makes no difference.
 | `e-gate` | Waits for approval | The same repo as `b-scope`, with no go-ahead | No files changed, a brief with a judge and scope, asks for approval. A rule check: a plain agent that fixes the bug is not wrong |
 | `e2-auto` | Continues when pre-approved | The same request, run in auto mode, with the notice interactive Claude Code gives the model | Shows the brief and keeps going: tests pass, changes stay inside the request, no new API behavior |
 
+| `f-systems` | Finds the structure, not the symptom | A growing support backlog; the team plans to spend the whole budget on hiring. The data hides a follow-up loop and one bug behind most sync tickets; hires arrive late | A hidden simulator scores `plan.json`: <= 26,000 customer-weeks (hire-only scores 61,593, the best plan 17,729), and the report names the sync bug |
+
 Every run also gets a receipts check (`receipts.py`): each command the report
 claims must appear in a tool call in the transcript.
 
@@ -33,6 +35,21 @@ run with `--bare`, which leaves it out. A case can set its own permission mode
 in `evals/out/<date>-<model>/` (git-ignored): the transcript, `REPORT.md`, the
 grade and the receipts per run, plus a summary table.
 
+## Judge quality, blind
+
+Pass/fail graders can't tell a good pass from a great one. `judge/` adds a blind
+judge pass, run by Claude Code Opus subagents (no API calls):
+
+```bash
+python3 evals/judge/prepare.py evals/out/<run>              # packets with A/B/C shuffled; arm names redacted
+python3 evals/judge/prepare.py evals/out/<run> --seed 2     # a second shuffle, against position bias
+# give each judge the rubric (judge/rubric.md) and the packet paths; save its JSON as judge*/scores*.json
+python3 evals/judge/unblind.py evals/out/<run> [...]        # map letters back to arms and average
+```
+
+Judges score ambition, grounding, honesty, scope and usefulness from 0 to 10,
+then rank the three. They see each answer's report, diff and grader facts.
+
 ## Run one case by hand
 
 ```bash
@@ -44,6 +61,33 @@ Each grader prints `ok` / `FAIL` per check, plus one `MANUAL` line for what a
 script can't judge. `d-depth/make_data.py` regenerates its data and hidden holdout.
 
 ## Results
+
+### High mode vs normal vs none, 2026-10-17
+
+Pass rates (high / skill / base), 8 cases:
+
+| Model | high | skill | base |
+|-------|------|-------|------|
+| Opus 5.5 | 8/8 | 8/8 | 4/8 |
+| Sonnet 5.5 | 8/8 | 8/8 | 4/8 |
+| Haiku 5.5 (2 runs) | 15/16 | 13/16 | 7/16 |
+
+Blind Opus judges, two shuffles per packet, 64 judgments over 32 packets
+(the two shuffles picked the same winner in 27 of 32). Mean score out of 50:
+
+| Model | high | skill | base | ranked first (high / skill / base) |
+|-------|------|-------|------|------------------------------------|
+| Opus | 44.6 | 44.4 | 37.8 | 11 / 5 / 0 |
+| Sonnet | 44.5 | 41.8 | 32.2 | 14 / 2 / 0 |
+| Haiku | 43.6 | 42.2 | 34.8 | 16 / 14 / 2 |
+| All | 44.1 | 42.6 | 34.9 | 41 / 21 / 2 |
+
+High mode wins on ambition (8.5 vs 7.4) and grounding (8.7 vs 8.1): the judges
+cite backtested loop models, held-out checks, more approaches measured. It loses
+a little on usefulness on Opus (7.8 vs 8.8): 8 of the judges' notes call its
+card tables padding. Costs: Opus $21 for the 24-run pass; a2-speed alone $9.
+
+### Earlier runs
 
 Headless runs, 2026-10-17, one run per cell unless noted. With skill / without.
 These runs loaded the owner's global CLAUDE.md (OAuth login).

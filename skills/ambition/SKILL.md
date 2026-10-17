@@ -1,6 +1,7 @@
 ---
 name: ambition
-description: "Do a task, or rewrite a prompt, at a higher level of ambition: Altitude (the goal behind the goal), Depth (an expert's raw data, real instruments and an outside judge) and Range (methods from other fields). Use when the user says be ambitious, think bigger, aim higher, go deeper, 10x this, what would the best in the field do, or asks to make a prompt more ambitious. Not for quick one-liners or mechanical changes."
+description: "Do a task, or rewrite a prompt, at a higher level of ambition: Altitude (the goal behind the goal), Depth (an expert's raw data, real instruments and an outside judge) and Range (methods from other fields). Use when the user says be ambitious, think bigger, aim higher, go deeper, 10x this, what would the best in the field do, or asks to make a prompt more ambitious. Say 'ambition high' for the deep mode (classify, mental models, three approaches, leverage). Not for quick one-liners or mechanical changes."
+argument-hint: "[high | rewrite] <task or prompt>"
 ---
 
 # Ambition
@@ -9,6 +10,16 @@ Based on Felix Rieseberg, [*How to be more ambitious: a tutorial for humans with
 models*](https://felixrieseberg.com/how-to-be-more-ambitious-a-tutorial-for-humans-with-models/) (2026-10).
 Models can do more than people ask of them. This skill asks for more, and it keeps
 the result honest. Hard goals without a fixed judge make agents fake success.
+
+## Modes
+
+Read the mode from the first word of the arguments, or from the user's words:
+
+| Invocation | Mode |
+|------------|------|
+| `/ambition <task>` | Normal: the process below |
+| `/ambition high <task>`, "ambition high", "go all out" | High: normal plus the steps in "Mode: high" |
+| `/ambition rewrite <prompt>`, "make this prompt more ambitious" | Rewrite: see "Mode: rewrite a prompt" |
 
 ## The three axes
 
@@ -105,6 +116,24 @@ Code example: "fix this crash", then "keep the app crash-free". The top rung is 
 - To find the fields, ask: "If this had to be extraordinary, who would humanity bring in?" For a QBR, that is an analyst, a journalist, an editor, a motion designer, and a red team (a short seller and a forensic accountant).
 - Use what each field *does*: an editor's cut, a forensic accountant's Benford test, a journalist's second source.
 - To run the fields as parallel agents, use a multi-agent skill if one is installed, or else plain subagents. Do this when 3 or more fields each need real work, or when the user asks for several views.
+
+## Mode: high
+
+Use when the user says "ambition high", "/ambition high", "go all out" or "max
+ambition". It goes harder on the same task, not a bigger task: the contract,
+honesty rules and scope stay as above. It costs more tokens, so don't pick it
+yourself for routine work.
+
+Run the normal process, with these additions:
+
+1. **Classify first (Cynefin).** Name the domain and the evidence for it. Clear: apply the known fix. Complicated: analyse to the root cause. Complex: run small safe probes, then amplify what works. Chaotic: stabilise first, then analyse.
+2. **Deal the cards.** Run `python3 <this skill's folder>/scripts/deal.py patterns`. Pick the one or two patterns that fit the task, then run `python3 <this skill's folder>/scripts/deal.py deal "<task in one line>" --patterns <id>,<id>`. You get three mental models and three Range lenses. If you can't run Python, read `references/deck.json` and pick the same way.
+3. **Use each card as an instrument.** Apply each model's move and leave its receipt, an artifact or a number, as a row in the report. A card that doesn't fit gets "struck: `<why>`". Never write a receipt for work you didn't do.
+4. **Three approaches before choosing.** Write the obvious approach, the unreasonable-on-purpose approach, and the one that dissolves the problem (invert it, or move up the abstraction ladder until the problem disappears). Score all three against the judge, then pick one and say why.
+5. **Climb the leverage ladder.** Name the Meadows level of the chosen change: parameters < buffers < structure < delays < feedback loops < information flows < rules < goals. Try one level higher. If that level is outside Scope, it goes to "Next rung".
+6. **Second order.** Trace the chosen change two steps ahead ("and then what?"). Name one unintended effect and the check that would catch it.
+
+The report adds an **Approaches** table (approach, judge result or estimate, why picked or dropped) and one row per dealt card.
 
 ## Mode: rewrite a prompt
 
