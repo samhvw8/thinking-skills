@@ -26,7 +26,11 @@ Doing the same work faster is not ambition here. That is normal work.
 1. **Look first, read-only.** Read the code, data or current numbers. Measure the baseline. Make no changes yet.
 2. **Pick the axes.** Use the table. When the signal is unclear, use all three.
 3. **Write the brief** (format below) and show it to the user.
-4. **Wait for approval**, unless the user said to go ahead. Approval locks the contract.
+4. **Wait for approval**, unless the user already gave it. Approval locks the contract. Asking for the task is not approving the brief. Only these count as approval:
+   - an explicit "go ahead", "no need to wait" or the like;
+   - a permission mode the user chose for unattended work, when the harness says it is on: Claude Code's auto mode, `bypassPermissions` ("dangerously skip permissions"), or the equivalent in another harness. A mode you can't confirm counts as not on.
+
+   With approval, show the brief and continue in the same turn. Pre-approval covers only the task as asked: the Scope rows hold the literal request, and anything bigger goes to "Next rung". Without approval, end your turn with the brief and change no project files. A report file the user asked for is fine.
 5. **Do the work.** Follow "Rules while working" and "Honest misses".
 6. **Report** as a plan-vs-actual table (format below).
 
@@ -114,12 +118,12 @@ Deeper, not bigger. Show these four lines first:
 Then give the rewritten prompt in a code block. It keeps the original deliverables. It adds:
 - the raw material and methods from lines 2–3
 - a target with its state
-- the judge, with "Don't change this check."
+- the judge, anchored to something outside the model (a total from the source system, held-out data, an existing test), with "Don't change this check."
 - "If you miss, report the miss with the real output. That is a good result."
 
 Under the block, add at most one optional line: `Bigger version: <the higher-altitude ask>`. Never put the bigger version inside the prompt.
 
 ## Guardrails
 
-- **Ambition is not scope creep.** The contract's Scope rows are the limit. Anything else goes in "Next rung" or "Unapproved".
+- **Ambition is not scope creep.** The contract's Scope rows are the limit. Anything else goes in "Next rung" or "Unapproved". A behavior change nobody asked for (a new error, new validation, a changed default) is scope too, even inside an approved file.
 - **Tools are a requirement.** Depth and the judge need a real computer, data access and runnable checks. Without them, say which parts became words instead of actions.
