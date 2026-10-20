@@ -1,0 +1,10 @@
+{
+  "name": "thinking-skills",
+  "description": "Thinking skills for agents: creative (past the typical answer), heavy-think (parallel perspectives), council (ideas that build on each other) and debate (live pressure-testing).",
+  "author": { "name": "samhvw8", "url": "https://github.com/samhvw8" },
+  "homepage": "https://github.com/samhvw8/thinking-skills",
+  "repository": "https://github.com/samhvw8/thinking-skills",
+  "version": "0.1.0",
+  "license": "MIT",
+  "keywords": ["thinking", "brainstorm", "creativity", "multi-agent", "claude-code", "skills"]
+}

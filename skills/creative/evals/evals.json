@@ -1,0 +1,118 @@
+{
+  "skill_name": "creative",
+  "note": "Judge with a blind LLM judge on the strongest model available, comparing against a no-skill baseline. The judge writes the obvious pool first, then scores novelty, value, diversity, specificity and honesty (spot-checking 2+ prior-art or collision claims with web search). Show each pair to the judge in both orders and count a verdict only when both agree; use 3+ samples per arm before calling a close result.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "names-bubble-tea",
+      "prompt": "need name ideas for a bubble-tea delivery app launching in Ho Chi Minh City. young crowd, mostly Vietnamese speakers, but the name should work in English too.",
+      "expected_output": "A shortlist of names far from the obvious pool (boba/tea/sip puns), each with pronunciation in both languages, a collision check and risks.",
+      "assertions": [
+        "[judge] Names the obvious answers it is beating",
+        "[judge] Top picks sit outside the judge's obvious pool and differ from each other",
+        "[judge] Each pick works when said in Vietnamese and in English",
+        "[judge] Collision claims (an existing shop, app or trademark) are real when spot-checked"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "campaign-recon-saas",
+      "prompt": "give me launch campaign ideas for our invoice reconciliation SaaS for mid-size accounting firms. everything we come up with sounds like every other fintech ad.",
+      "expected_output": "Campaign ideas outside the obvious B2B pool (ROI calculator, save hours, month-end pain) that skeptical accountants would trust and a small team could run.",
+      "assertions": [
+        "[judge] Names the obvious answers it is beating",
+        "[judge] Top picks are outside the judge's obvious pool",
+        "[judge] Each pick has concrete mechanics, a first step and a risk",
+        "[judge] Prior-art and statistic claims are real when spot-checked"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "story-lighthouse",
+      "prompt": "story premise ideas for a short story about a lighthouse keeper. I want something that doesn't feel like every other lighthouse story.",
+      "expected_output": "Premises outside the obvious pool (ghost, isolation madness, last keeper before automation, storm night) with a story engine and a first scene.",
+      "assertions": [
+        "[judge] Names the obvious answers it is beating",
+        "[judge] Premises are outside the judge's obvious pool and still read as lighthouse-keeper stories",
+        "[judge] Each premise has conflict, stakes and an ending in view",
+        "[judge] Named prior works are real when spot-checked"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "need a name for my little CLI that keeps dotfiles in sync across my laptops. be creative, I don't want another dotsync/dotman/homesync thing",
+      "expected_output": "Names the obvious names first and keeps them out of the final list. Gives a short list built from several different generators (not ten variations of one pun), each with the one-line reason it is not the obvious one. Checks the shortlist for collisions with a real search (gh search repos, a package registry) and reports what it found. Short: 3-5 names, not 30.",
+      "assertions": [
+        {
+          "text": "None of the fenced obvious names appear in the final shortlist",
+          "check": "script: grep the final list for each fenced name"
+        },
+        {
+          "text": "The fence of obvious answers is shown in one line",
+          "check": "script: grep for the fence line"
+        },
+        {
+          "text": "Shortlist items come from at least 3 different generators",
+          "check": "script: count distinct generator labels on the shortlist"
+        },
+        {
+          "text": "A collision check ran outside the model and its result is reported",
+          "check": "transcript: a gh/npm/registry call exists"
+        },
+        {
+          "text": "No self-praise adjectives (innovative, unique, creative, bold) describing its own ideas",
+          "check": "script: grep"
+        }
+      ],
+      "name": "v4-cli-name"
+    },
+    {
+      "id": 5,
+      "prompt": "write me a 200 word story opening about a lighthouse keeper. surprise me, every AI gives me the same storm + loneliness + ghost thing",
+      "expected_output": "Delivers one finished opening of about 200 words, not a menu. Avoids the fenced tropes the user named and the other obvious ones (shipwreck, last keeper before automation, letters from a lost love). Concrete nouns and specific detail over adjectives. None of the common model tells (delve, tapestry, testament, whispering, a symphony of). One closing line names two other directions it considered.",
+      "assertions": [
+        {
+          "text": "Story is 150-250 words",
+          "check": "script: wc -w"
+        },
+        {
+          "text": "No storm, ghost or loneliness as the premise",
+          "check": "blind judge"
+        },
+        {
+          "text": "No words from the writing-tells list",
+          "check": "script: grep against references/generators.md tells line"
+        },
+        {
+          "text": "One piece delivered, with at most one line of alternatives",
+          "check": "script: count story blocks"
+        }
+      ],
+      "name": "v4-lighthouse-story"
+    },
+    {
+      "id": 6,
+      "prompt": "our habit tracker app launches in 3 weeks, $2k budget, 2 people. last time you gave me 'run a 30 day challenge' and 'partner with influencers' which was super boring. give me better campaign ideas",
+      "expected_output": "Treats the rejected ideas as the fence and says why they were the mode. Generates from distant fields (what other fields do with the same verbs), from the product's real quirks, and from constraint or inversion moves. Scores the shortlist with the creative rubric, keeps every idea inside 3 weeks, $2k and 2 people, and gives each a concrete first move this week.",
+      "assertions": [
+        {
+          "text": "30-day challenge and influencer partnerships are absent from the shortlist",
+          "check": "script: grep"
+        },
+        {
+          "text": "Each shortlist idea names a first move doable this week",
+          "check": "blind judge"
+        },
+        {
+          "text": "No idea breaks the $2k / 2 people / 3 weeks constraint",
+          "check": "blind judge"
+        },
+        {
+          "text": "Rubric scores (novelty, value, feasibility) are shown for the shortlist",
+          "check": "script: grep for score columns"
+        }
+      ],
+      "name": "v4-launch-campaign"
+    }
+  ]
+}

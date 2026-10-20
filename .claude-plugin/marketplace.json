@@ -1,0 +1,12 @@
+{
+  "name": "thinking-skills",
+  "owner": { "name": "samhvw8", "url": "https://github.com/samhvw8" },
+  "description": "thinking-skills: creative, heavy-think, council and debate.",
+  "plugins": [
+    {
+      "name": "thinking-skills",
+      "source": "./",
+      "description": "Get past the first typical answer, run several perspectives in parallel, build ideas on each other, and pressure-test decisions."
+    }
+  ]
+}
