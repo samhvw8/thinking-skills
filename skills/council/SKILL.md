@@ -38,8 +38,8 @@ answering without the council.
 
 ## The deck
 
-The deck lives in the heavy-think skill: `../heavy-think/references/perspectives.json`, dealt by
-`../heavy-think/deck.py`. A member's card is one **lens** (who is looking, from six families:
+Council carries its own copy of the shared deck: `deck/references/perspectives.json`, dealt by
+`deck/deck.py` (built from the thinking-skills repo's `decks/`; edit there, not here). A member's card is one **lens** (who is looking, from six families:
 challenger, stakeholder, temporal, systems, craft, wildcard; with the instruments that lens works
 with) plus one **technique** (how they generate: SCAMPER, reverse brainstorm, forced mashup, TRIZ
 principles and more). **Provocations** are the facilitator's sparks. **Presets** are lens sets for
@@ -57,7 +57,7 @@ asks`, for example `--lenses "operator; EU regulator: Would this pass a GDPR rev
 
 **Pick the rubric.** `creative` for ideation; `decision` for anything that ships and has to be run
 (it weighs running cost). Presets set it; `--rubric` overrides. Weights and anchors:
-`../heavy-think/references/rubric.md`. For decision-shaped questions, consider `--no-technique` too:
+`deck/references/rubric.md`. For decision-shaped questions, consider `--no-technique` too:
 forced techniques can make technical answers gimmicky.
 
 ```bash
@@ -133,7 +133,7 @@ COUNCIL init --brief-file .council/brief.md --model <model> [--members N | --qui
 
 It checks the deck has every card field the prompts use, fits the deck to the brief, deals the
 cards, seats members in a ring where neighbours come from different families, and writes
-`council.json`. The fit is heavy-think's `deck.py`, which picks the scorer and falls back on its own.
+`council.json`. The fit is `deck/deck.py`, which picks the scorer and falls back on its own.
 It prints what it used and kept (and a `deck warn:` line when a scorer failed: pass that on to the
 user), and the scores stay in `relevance.json`. `--relevance off` skips it.
 

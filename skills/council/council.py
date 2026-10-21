@@ -60,14 +60,12 @@ RESEARCH_PHASES = ("develop", "stress")  # what the orchestrator writes into a j
 # ---------------------------------------------------------------- the deck
 
 def _find_deck():
-    """deck.py lives in the heavy-think skill next door. Try it beside this file first
-    (the linked skills folder), then beside the real file (the dotfiles copy)."""
-    for base in (HERE, os.path.dirname(os.path.realpath(__file__))):
-        cand = os.path.join(os.path.dirname(base), "heavy-think")
-        if os.path.isfile(os.path.join(cand, "deck.py")):
-            return cand
-    raise SystemExit("council: needs the heavy-think skill (deck.py and references/perspectives.json) "
-                     "beside it. Link heavy-think into this profile.")
+    """council carries its own copy of the shared deck in deck/ (built from the repo's decks/ by
+    tools/build_decks.py), so it runs without any other skill installed."""
+    cand = os.path.join(HERE, "deck")
+    if os.path.isfile(os.path.join(cand, "deck.py")):
+        return cand
+    raise SystemExit("council: deck/deck.py is missing from %s. Reinstall the council skill." % HERE)
 
 
 sys.path.insert(0, _find_deck())
@@ -870,7 +868,7 @@ def cmd_prompts(args):
           % (len(left), "" if len(left) == 1 else "s", args.phase, state["parallel"]))
     print("Each: one general sub-agent, model %s, description 'council <job>', "
           "prompt 'Read <prompt file>: it is your whole brief.' (Tool and tier names per harness: %s)"
-          % (phase_model(state, args.phase), os.path.join(_find_deck(), "references", "harness.md")))
+          % (phase_model(state, args.phase), os.path.join(os.path.dirname(HERE), "heavy-think", "references", "harness.md")))
     for j in left:
         print("  %-18s %s" % (j["id"], j["prompt"]))
 
