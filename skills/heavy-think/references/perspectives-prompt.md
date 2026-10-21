@@ -4,9 +4,18 @@ Prompts for heavy-think Perspectives mode: several lenses look at one subject, a
 general prompt comes first. The review variant (severity, a reviewer prompt, a verifier, a verdict) is
 below it, for when the ASK is review.
 
+## Contents
+- Perspective prompt
+- Synthesis
+- Review variant: Severity, Reviewer prompt, Verifier prompt, Synthesis (review), Re-review
+
+Every lens prompt carries the lens's `instruments` from the deal (or, for a custom lens, the default
+`deck.py` prints) and the tools paragraph below. The instruments are what make a lens change the work
+and not only the vocabulary, so pass them verbatim.
+
 ## Perspective prompt
 
-One per lens, all in one message. Drop the provocation the deck prints: it is for ideation.
+One per lens, all in one message.
 
 ```
 You are looking at a subject through one lens, alongside other people who each hold a different one.
@@ -18,13 +27,22 @@ CONTEXT: {who it's for, what's at stake, what's fixed}
 
 YOUR LENS: {lens_name}: {lens_asks}
 YOU SEE: {lens_sees}
-YOU MUST DELIVER: {lens_delivers}
+DELIVER: {lens_delivers}
+HOW YOUR LENS WORKS: {lens_instruments}
 
-Read or think through the whole subject before you write. Point at it when you make a claim (a quote,
-a line, a number, a moment in the situation); if you can't point at anything, say it's a hunch.
-Mark each outside fact (a price, a setting or API name, a date, a statistic) with its source, or
-"(from memory)". When you recommend a step, give it in a form the user can act on: the command, the
-setting, the first concrete move.
+Read the whole subject before you write, then do what your lens's method says with the real material:
+the files, the data, the pages, the people's own words. Use your tools for it: read files and run
+read-only commands in the shell (experiments go in a scratch copy, never against the user's live
+files or accounts), search the web and social sites, read code with codegraph or grep, and hand a
+text to a fresh subagent when your method calls for a cold reader and you can spawn one. Spend calls
+on what your answer leans on, not on a survey.
+
+Point at the subject when you make a claim (a quote, a line, a number, a moment in the situation); if
+you can't point at anything, say it's a hunch. A fact from outside the material you were given (a
+price, a date, a statistic, a setting or API name, what a product can do) is either checked, with
+its source, command or file:line, or marked "(unchecked)". The lead checks or cuts the unchecked ones.
+When you recommend a step, give it in a form the user can act on: the command, the setting, the
+first concrete move.
 
 Output:
 
@@ -98,7 +116,6 @@ Severity is measured against the BAR in the frame, not against perfection.
 
 One per seat, all in one message. Give the artifact by path, command or URL when the reviewer can read
 it, so you do not paste the same large text into every prompt; paste it when it is short or not on disk.
-Drop the provocation the deck prints: it is for ideation.
 
 ```
 You are reviewing an existing artifact through one lens. You find problems; you do not rewrite it.
@@ -110,15 +127,23 @@ OUT OF SCOPE: {what not to review, e.g. pre-existing code the change does not to
 
 YOUR LENS: {lens_name}: {lens_asks}
 YOU SEE: {lens_sees}
-YOU MUST DELIVER: {lens_delivers}
+DELIVER: {lens_delivers}
+HOW YOUR LENS WORKS: {lens_instruments}
 
 Read the whole artifact before writing anything, and enough of its surroundings to judge it (the
 callers of changed code, the doc's audience, the plan's dependencies). Then review through your lens
-ONLY. Other reviewers cover the other lenses; a finding outside yours is noise here.
+alone: other reviewers cover the other lenses, so a finding outside yours is noise here.
+
+Run your lens's method on the real artifact with your tools: read the files, run the tests or a
+reproduction in a scratch copy (never against the user's live files or accounts), search for the
+docs or sources a claim depends on, and hand the text to a fresh subagent when your method calls for
+a cold reader and you can spawn one.
 
 Rules:
 - Evidence or no finding. Quote the line, cite file:line, or name the input that triggers it. A
   finding you cannot point at is a hunch: put it under Suspicions, not Findings.
+- A fact from outside the artifact (what an API, flag or product does, a version, a price) is
+  checked, with its source, or marked "(unchecked)".
 - Judge against the BAR, not against how you would have written it. Taste is not a finding.
 - Empty is a valid answer. Do not pad to look thorough.
 - Say what is good when it is good through your lens; the author keeps what is not named.
@@ -173,7 +198,10 @@ REASON: {the evidence that decided it, with file:line or quote}
 Refuted findings are dropped and named once in the report, so the author knows they were checked.
 Uncertain ones stay, marked unverified, and cannot block the verdict alone.
 
-### Synthesis (you, never delegated)
+### Synthesis (review)
+
+You do this yourself: the value of the panel is in the merge, and an agent handed the outputs would
+only add one more opinion.
 
 1. **Merge.** Two lenses reporting one root cause are one finding. Keep the strongest evidence, list
    both lenses, and raise the confidence: independent agreement is signal.

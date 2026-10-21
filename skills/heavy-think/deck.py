@@ -21,9 +21,11 @@ free daily allocation) asks them when the `cf` CLI is logged in, or CLOUDFLARE_A
 CLOUDFLARE_ACCOUNT_ID are set. If Clef is unavailable or fails, Jev (TypeSafe) asks them when
 TYPESAFE_API_KEY is set. Otherwise BM25 ranks entries by the words they share with the question.
 A scorer that fails prints a "deck warn:" line on stderr. A pool with too few fitting entries
-is used in full, at random. --relevance off skips it. The fit never drops a preset's or --lenses'
-lenses. When seating: --lenses are never swapped; a preset alone gives up a seat to a missing
-required family where it doubled one up (see deal_lenses).
+is used in full. --relevance off skips it. The fit never drops a preset's or --lenses' lenses.
+Its scores also rank the lenses when seating (see deal_lenses), and when Clef or Jev finds no
+wildcard lens that fits, no wildcard is seated. When seating: --lenses are never swapped; a preset
+alone gives up a seat to a missing required family where it doubled one up, and fills that seat
+from its own deep adds first.
 
 A lens id from the deck, or a custom lens written as "Name: the question it asks". Separate
 entries with ";" when a custom question contains commas.
@@ -49,6 +51,9 @@ RUBRIC_PATH = os.path.join(HERE, "references", "rubric.md")
 REQUIRED_FAMILIES = ("challenger", "stakeholder", "temporal")
 NO_TECHNIQUE = {"id": "none", "name": "None",
                 "how": "No set technique: generate however your lens works best."}
+CUSTOM_INSTRUMENTS = ("Work from the subject itself and the material that person would really use: quote it, "
+                      "read or run what you can, look up what you cannot see, and point at the line, number "
+                      "or source behind each claim.")
 
 
 JEV_URL = "https://api.typesafe.ai/v1/systemone"
@@ -60,6 +65,7 @@ CF_CONFIG = os.path.expanduser("~/.config/cloudflare/config/default.json")
 RELEVANCE_MIN = 0.6    # Jev: probability it fits (it rates most lenses 0.5+). BM25: share of the best score
 CLEF_MIN = 0.5         # Clef spreads its scores wider (0.03 to 0.85 on the lenses), so its bar is lower
 RELEVANCE_FLOOR = 4    # a pool with fewer fitting entries than this (or than the members) is used in full
+CLASH_BONUS = 0.1      # when seating by fit: what each clash with a seated lens adds (two at most)
 
 
 class DeckError(Exception):
@@ -85,6 +91,9 @@ def load_deck(path=DECK_PATH):
     for l in deck["lenses"]:
         if not l.get("delivers"):
             raise DeckError("lens '%s' needs 'delivers': the output it must produce" % l["id"])
+        if not isinstance(l.get("instruments"), str) or not l["instruments"].strip():
+            raise DeckError("lens '%s' needs 'instruments': what it actually does, with what material "
+                            "and tools" % l["id"])
         if l["family"] not in families:
             raise DeckError("lens '%s' has unknown family '%s'" % (l["id"], l["family"]))
         for c in l.get("clashes", []):
@@ -140,6 +149,7 @@ def parse_lens_spec(spec, deck):
                         "sees": "What only someone asking that question would notice.",
                         "misses": "Everything outside that question; the other members cover it.",
                         "delivers": "A direct answer to that question, with the evidence for it.",
+                        "instruments": CUSTOM_INSTRUMENTS,
                         "clashes": []})
         elif raw in lenses:
             out.append(dict(lenses[raw]))
@@ -151,9 +161,14 @@ def parse_lens_spec(spec, deck):
 def deal_lenses(n, rng, deck, preset=None, explicit=None):
     """n distinct lenses. Explicit lenses or a preset go first and are kept as chosen.
     A random deal seats every required family (and a wildcard from 4 up), then fills
-    the least-represented families, preferring lenses that clash with someone already
-    seated. A preset gives up a seat to a missing family only where it doubled one up."""
+    the least-represented families. Within a family the preset's own deep adds come first,
+    then the lenses that fit the question best (deck["_fit"], set by fit_deck), with a bonus
+    for clashing with someone already seated. A preset gives up a seat to a missing family
+    only where it doubled one up. No wildcard is seated for a review panel ("wildcard": false)
+    or when the fit found that no wildcard lens fits."""
     lenses = _by_id(deck["lenses"])
+    fit = deck.get("_fit") or {}
+    fit_scores = fit.get("lenses") or {}
     if n < 1:
         raise DeckError("deal at least 1 lens")
     chosen = []
@@ -181,16 +196,24 @@ def deal_lenses(n, rng, deck, preset=None, explicit=None):
         theirs = sum(1 for c in chosen if lid in c.get("clashes", []))
         return len(mine & set(ids())) + theirs
 
+    def rank(lid):
+        # Fit first when the deck was fitted (a clash is worth a small bonus), else clashes alone.
+        return fit_scores.get(lid, 0.0) + CLASH_BONUS * min(clash_score(lid), 2)
+
     def pick_from(family):
         pool = [lid for lid in lenses if lenses[lid]["family"] == family and lid not in ids()]
         if not pool:
             return None
+        listed = [x for x in (p or {}).get("deep_add", []) if x in pool]
+        if listed:
+            return dict(lenses[listed[0]])
         rng.shuffle(pool)
-        pool.sort(key=lambda lid: -clash_score(lid))
+        pool.sort(key=lambda lid: -rank(lid))
         return dict(lenses[pool[0]])
 
-    # A preset with "wildcard": false (the review panels) never seats one: a moonshot finds no defects.
-    wild = not (p and p.get("wildcard") is False)
+    # A preset with "wildcard": false (the review panels) never seats one: a moonshot finds no
+    # defects. Nor does a deal whose fit found no wildcard lens that fits the question.
+    wild = not (p and p.get("wildcard") is False) and "wildcard" not in fit.get("unfit", ())
     required = list(REQUIRED_FAMILIES) + (["wildcard"] if n >= 4 and wild else [])
     for fam in required:
         if any(c["family"] == fam for c in chosen):
@@ -208,9 +231,13 @@ def deal_lenses(n, rng, deck, preset=None, explicit=None):
             if dup:
                 chosen[chosen.index(dup)] = lens
     families = [f for f in deck["families"] if wild or f != "wildcard"]
+
+    def best_in(fam):
+        return max([rank(lid) for lid in lenses if lenses[lid]["family"] == fam and lid not in ids()] or [0.0])
+
     while len(chosen) < n:
         counts = {f: sum(1 for c in chosen if c["family"] == f) for f in families}
-        for fam in sorted(families, key=lambda f: (counts[f], rng.random())):
+        for fam in sorted(families, key=lambda f: (counts[f], -best_in(f), rng.random())):
             lens = pick_from(fam)
             if lens:
                 chosen.append(lens)
@@ -240,7 +267,8 @@ def deal_cards(n, seed, deck, preset=None, explicit=None, techniques=True):
 
 def _entry_text(pool, it):
     if pool == "lenses":
-        return {"kind": "perspective (lens)", "name": it["name"], "asks": it["asks"], "delivers": it["delivers"]}
+        return {"kind": "perspective (lens)", "name": it["name"], "asks": it["asks"], "delivers": it["delivers"],
+                "instruments": it.get("instruments", "")}
     if pool == "provocations":
         return {"kind": "provocation", "text": it["text"]}
     kind = {"techniques": "idea-generation technique", "reframes": "reframing strategy",
@@ -448,10 +476,12 @@ def fit_deck(deck, question, n, mode="auto", minimum=None, techniques=True, pres
     """A copy of the deck whose lenses, techniques and provocations fit the question.
 
     Lenses: fewer than max(n, floor) fit means every lens. Otherwise the fitting ones, plus,
-    for each family the deal must seat, that whole family when none of it fits, plus a
-    preset's lenses, which are always kept. Techniques and provocations: the fitting ones,
-    or all of them when fewer than max(n, floor) fit. minimum None means the scorer's own bar.
-    Returns (deck, report or None)."""
+    for each required family (challenger, stakeholder, temporal) that whole family when none
+    of it fits, plus a preset's lenses, which are always kept. The wildcard family is not
+    required: when Clef or Jev finds none of it fits, the deal seats no wildcard. The lens
+    scores go into the copy as deck["_fit"], so deal_lenses ranks by them. Techniques and
+    provocations: the fitting ones, or all of them when fewer than max(n, floor) fit.
+    minimum None means the scorer's own bar. Returns (deck, report or None)."""
     pools = {"lenses": deck["lenses"], "provocations": deck["provocations"]}
     if techniques:
         pools["techniques"] = deck["techniques"]
@@ -464,21 +494,26 @@ def fit_deck(deck, question, n, mode="auto", minimum=None, techniques=True, pres
     notes, kept = [], {}
 
     fits = _fitting(deck["lenses"], scores["lenses"], minimum)
+    p = _by_id(deck["presets"]).get(preset) if preset else None
+    unfit = []
+    wants_wild = n >= 4 and not (p and p.get("wildcard") is False)
+    if wants_wild and report["method"] in ("clef", "jev") and not any(l["family"] == "wildcard" for l in fits):
+        unfit.append("wildcard")
+        notes.append("no wildcard lens fits, so no wildcard seat")
     if len(fits) < floor:
         kept["lenses"] = None
-        notes.append("fewer than %d lenses fit, dealt from all of them" % floor)
+        notes.append("fewer than %d lenses fit, dealt from all of them, best fit first" % floor)
     else:
         ids = set(l["id"] for l in fits)
-        required = list(REQUIRED_FAMILIES) + (["wildcard"] if n >= 4 else [])
-        for fam in required:
+        for fam in REQUIRED_FAMILIES:
             if not any(l["family"] == fam for l in fits):
                 ids |= set(l["id"] for l in deck["lenses"] if l["family"] == fam)
-                notes.append("no %s lens fits, any %s lens may be dealt" % (fam, fam))
-        p = _by_id(deck["presets"]).get(preset) if preset else None
+                notes.append("no %s lens fits, the best-scoring %s lens may be dealt" % (fam, fam))
         if p:
             ids |= set(p["lenses"] + p.get("deep_add", []))
         out["lenses"] = [l for l in deck["lenses"] if l["id"] in ids]
         kept["lenses"] = [l["id"] for l in fits]
+    out["_fit"] = {"lenses": dict(scores["lenses"]), "unfit": unfit}
 
     for pool in ("techniques", "provocations"):
         if pool not in scores:
@@ -555,10 +590,13 @@ def cmd_deal(args):
         l = c["lens"]
         print("\n%d. %s [%s]: %s" % (i, l["name"], l["family"], l["asks"]))
         print("   sees: %s" % l["sees"])
+        print("   misses: %s" % l["misses"])
         print("   must deliver: %s" % l["delivers"])
+        print("   instruments: %s" % l["instruments"])
         if not args.no_technique:
             print("   technique: %s. %s" % (c["technique"]["name"], c["technique"]["how"]))
-        print("   provocation for later: %s" % c["provocation"]["text"])
+            # Provocations spark ideation; a lenses-only (judging) deal has no use for them.
+            print("   provocation for later: %s" % c["provocation"]["text"])
 
 
 def _list_with_sets(items, sets, field, chosen, args=None):
@@ -576,8 +614,10 @@ def _list_with_sets(items, sets, field, chosen, args=None):
             if not s:
                 raise DeckError("no set '%s' (one of: %s)" % (chosen, ", ".join(x["id"] for x in sets)))
             print("%s: %s" % (s["id"], s["when"]))
-            for x in s[field] + s.get("deep_add", []):
+            for x in s[field]:
                 print("  %.2f  %s. %s" % (sc[x], by[x]["name"], by[x]["how"]))
+            for x in s.get("deep_add", []):
+                print("  %.2f  (deep) %s. %s" % (sc[x], by[x]["name"], by[x]["how"]))
         else:
             fits = _fitting(items, sc, minimum)
             floor = min(3, len(items))

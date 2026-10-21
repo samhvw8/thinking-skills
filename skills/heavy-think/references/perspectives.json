@@ -1,6 +1,6 @@
 {
-  "version": 3,
-  "about": "The perspective deck shared by heavy-think (Brainstorm, Perspectives, Unstick, Decompose), the heavy-thinker agent and /council. A card is one lens (who is looking) plus, optionally, one technique (how they generate). Provocations are the facilitator's sparks. Presets are starting lens sets for common question shapes; the *-review presets seat a review panel when the Perspectives ask is review. Reframes feed Unstick mode, decompositions feed Decompose mode, and debates and debate_rules feed /debate, rubrics hold the scoring weights (criteria anchors live in rubric.md). deck.py deals from this file: add an entry and it is picked up. Ids must be unique within a list, and every id a lens, preset or set refers to must exist. Entries added from research carry a 'source'.",
+  "version": 4,
+  "about": "The perspective deck shared by heavy-think (Brainstorm, Perspectives, Unstick, Decompose), the heavy-thinker agent, /council, /debate and /ambition. A card is one lens (who is looking) plus, optionally, one technique (how they generate). Every lens has 'asks' (its question), 'sees', 'misses', 'clashes', 'delivers' (the output it must produce) and 'instruments' (what it actually does: its raw material, the tools it uses, and the check it runs, plus what to do when that material is out of reach), so a lens changes the work, not only the words. Provocations are the facilitator's sparks. Presets are starting lens sets for common question shapes, each naming its rubric; the *-review presets seat a review panel when the Perspectives ask is review and never seat a wildcard. Reframes feed Unstick mode, decompositions feed Decompose mode, debates and debate_rules feed /debate, rubrics hold the scoring weights (criteria anchors live in rubric.md). deck.py deals from this file and lists it: add an entry and it is picked up, and never copy counts or lists from here into the docs. Ids must be unique within a list, and every id a lens, preset or set refers to must exist. Entries added from research carry a 'source'.",
   "families": {
     "challenger": "Attacks the framing itself. Every set needs one.",
     "stakeholder": "Speaks for someone with skin in it: user, operator, payer.",
@@ -21,7 +21,8 @@
         "historian",
         "incumbent"
       ],
-      "delivers": "The two or three facts nobody can argue with, and the answer rebuilt from them alone."
+      "delivers": "The two or three facts nobody can argue with, and the answer rebuilt from them alone.",
+      "instruments": "Tag every requirement and constraint in the subject: law of nature or law, stated by the user, or habit nobody can source. For a habit, look for its origin (git log -S or blame, the docs, the commit or meeting that set it). Rebuild the answer from the facts that survive, and do any arithmetic it rests on in the shell rather than in your head."
     },
     {
       "id": "contrarian",
@@ -34,7 +35,8 @@
         "user-advocate",
         "pragmatist"
       ],
-      "delivers": "The obvious answer, and the strongest case that it is wrong."
+      "delivers": "The obvious answer, and the strongest case that it is wrong.",
+      "instruments": "Write the consensus answer as most people would give it, then check how crowded it is: web and social search for who already does it and what they report, or the repo's own conventions. Build the strongest case against it from evidence: a failure case, a counter-example, an audience nobody serves. Where no evidence turned up, label the case as argued, not shown."
     },
     {
       "id": "minimalist",
@@ -47,7 +49,8 @@
         "moonshot",
         "completionist"
       ],
-      "delivers": "What to delete, and the smallest version that still does the job."
+      "delivers": "What to delete, and the smallest version that still does the job.",
+      "instruments": "List every part (features, steps, files, settings, sections, products) with the value it delivers and what it costs to keep, one line each. For code, count it: wc -l, call sites with grep or codegraph, config keys. Strike each part whose removal no stated goal would notice, and write the smallest version as the list of what stays."
     },
     {
       "id": "skeptic",
@@ -58,9 +61,11 @@
       "misses": "Ideas whose evidence can only exist after they are built.",
       "clashes": [
         "visionary",
-        "storyteller"
+        "storyteller",
+        "user-advocate"
       ],
-      "delivers": "The cheapest observation or test that would settle the key claim."
+      "delivers": "The cheapest observation or test that would settle the key claim.",
+      "instruments": "Rewrite each key claim as a prediction: if true, we will see X by Y. For each, give the evidence that exists now (data, a quote, a measurement) or 'none'. Design the cheapest test that would settle the top one: who, how many, how long, and what result counts as a pass."
     },
     {
       "id": "user-advocate",
@@ -73,7 +78,8 @@
         "contrarian",
         "operator"
       ],
-      "delivers": "The user's actual pain in their own words, and the moment it happens."
+      "delivers": "The user's actual pain in their own words, and the moment it happens.",
+      "instruments": "Work from the user's own words: support tickets, reviews, forum threads, interview notes, issue comments. Quote them. Walk through one real task the user does, step by step, and mark the moment of friction: what they see, and what they do next. Find them by web and social search when they are public; when there are none, say so and write the three questions to ask five real users."
     },
     {
       "id": "newcomer",
@@ -85,7 +91,8 @@
       "clashes": [
         "power-user"
       ],
-      "delivers": "The first wall a new person hits, step by step."
+      "delivers": "The first wall a new person hits, step by step.",
+      "instruments": "Give the subject cold to a fresh subagent that has none of this conversation, with only what a real newcomer would have (the README, the page, the menu, the first screen as text) and one task, and note where it stalls or guesses. Without a subagent, read in order and list each term, step or prerequisite used before it is explained. Quote the first wall."
     },
     {
       "id": "power-user",
@@ -98,7 +105,8 @@
         "newcomer",
         "minimalist"
       ],
-      "delivers": "The ceiling of the current design, and the shortcut that removes it."
+      "delivers": "The ceiling of the current design, and the shortcut that removes it.",
+      "instruments": "Walk the most frequent task ten times in a row and count steps, keystrokes, waits and context switches per run. Read --help, the settings, the API or the keyboard map for the shortcuts that already exist, and search forums and issue trackers for what heavy users ask for. Name the limit hit every day and the change that removes it."
     },
     {
       "id": "operator",
@@ -111,7 +119,8 @@
         "moonshot",
         "user-advocate"
       ],
-      "delivers": "What breaks first at 10x, and what someone must watch forever."
+      "delivers": "What breaks first at 10x, and what someone must watch forever.",
+      "instruments": "Walk one request or task from trigger to result and list every component, credential, cron, queue and quota it touches. For each, say what alerts when it fails, who gets paged, and what it costs per month at today's load and at 10x. Read the real config, alerts, logs or runbook when they exist; label every number you estimate."
     },
     {
       "id": "economist",
@@ -124,7 +133,8 @@
         "craftsperson",
         "storyteller"
       ],
-      "delivers": "Who pays, who benefits, and the incentive that pushes the wrong way."
+      "delivers": "Who pays, who benefits, and the incentive that pushes the wrong way.",
+      "instruments": "Build a one-screen table: price, variable cost per unit, fixed cost per month, volume, margin, payback, from the stated figures or labelled estimates. Then map each party (who pays, who gains, who loses) and find the incentive that pushes the wrong way. Look up the prices, fees and commissions the table depends on (supplier prices, platform commission, payment fees) and give the source."
     },
     {
       "id": "adversary",
@@ -137,7 +147,8 @@
         "user-advocate",
         "community"
       ],
-      "delivers": "The top abuse or exploit path, and what it costs the attacker."
+      "delivers": "The top abuse or exploit path, and what it costs the attacker.",
+      "instruments": "State the attacker's goal, access and budget. Write two or three attack paths as steps (input, what it reaches, what it gains). Check them against STRIDE, the OWASP Top 10, or the domain's known abuse (fake accounts, refund abuse, scraping, review fraud). Price each path for the attacker."
     },
     {
       "id": "community",
@@ -150,7 +161,8 @@
         "adversary",
         "economist"
       ],
-      "delivers": "The effect between users: who influences whom, and what spreads."
+      "delivers": "The effect between users: who influences whom, and what spreads.",
+      "instruments": "Map who talks to whom: the places users meet (groups, forums, reviews, referrals, shared files), found by social and web search or in the subject's own data. Trace one idea or complaint as it spreads: who starts it, who repeats it, what makes it travel. Name the person or group whose behaviour others copy, with the post or thread that shows it."
     },
     {
       "id": "historian",
@@ -163,7 +175,8 @@
         "first-principles",
         "futurist"
       ],
-      "delivers": "The closest precedent, why it lived or died, and what is different now."
+      "delivers": "The closest precedent, why it lived or died, and what is different now.",
+      "instruments": "Find the two or three closest precedents: named products, projects, papers, or earlier attempts in this repo's git log or this team's docs. For each: what it tried, when, and what kept or killed it, with a source or '(from memory)'. Then list what has changed since: cost, technology, rules, audience."
     },
     {
       "id": "futurist",
@@ -176,7 +189,8 @@
         "historian",
         "pragmatist"
       ],
-      "delivers": "One shift likely within three years, and what it makes possible here."
+      "delivers": "One shift likely within three years, and what it makes possible here.",
+      "instruments": "Find two or three trend lines with numbers (cost curves, adoption rates, rules being drafted, product roadmaps) by web search, each with its source and date. Extend each three years under a stated assumption. Say which of them changes this decision, and the signal that would show the trend is on or off track."
     },
     {
       "id": "incumbent",
@@ -189,7 +203,8 @@
         "first-principles",
         "contrarian"
       ],
-      "delivers": "What the current way quietly gets right that a new idea would throw away."
+      "delivers": "What the current way quietly gets right that a new idea would throw away.",
+      "instruments": "List what the current way does, including the jobs nobody wrote down: read the existing code paths, configs, scripts and runbooks, or the steps people actually take. For each job, say whether the new idea keeps it, replaces it or silently drops it. Price the switch: migration work, retraining, lost data, the first month's dip."
     },
     {
       "id": "pre-mortem",
@@ -202,7 +217,8 @@
         "visionary",
         "moonshot"
       ],
-      "delivers": "The most probable quiet failure, written as what happened."
+      "delivers": "The most probable quiet failure, written as what happened.",
+      "instruments": "Write the failure a year out as a short incident report, in the past tense. List 5-10 causes and mark each likely or unlikely from how similar efforts usually fail. For the top two, name the earliest signal you could observe and the check that would catch it. Search for post-mortems of similar efforts and use the causes they report."
     },
     {
       "id": "systems-thinker",
@@ -215,7 +231,8 @@
         "minimalist",
         "pragmatist"
       ],
-      "delivers": "The main feedback loop, and one second-order effect."
+      "delivers": "The main feedback loop, and one second-order effect.",
+      "instruments": "Write the causal links as A -> B (+ or -), close them into loops, and mark each loop reinforcing or balancing, with its delay. Follow the proposed change two steps: what it changes, then what responds to that change. Check the result against one systems archetype (fixes that fail, shifting the burden, limits to growth)."
     },
     {
       "id": "ecologist",
@@ -228,7 +245,8 @@
         "moonshot",
         "contrarian"
       ],
-      "delivers": "Who else lives in this environment, and who gets displaced."
+      "delivers": "Who else lives in this environment, and who gets displaced.",
+      "instruments": "Draw the environment: suppliers, platforms, partners, neighbours, competitors, regulators, and in a repo the dependencies (lockfiles, APIs, vendors). For each, say what this idea changes for them and how they are likely to respond. Where it matters, check platform terms and dependency health (last release, open issues) at the source."
     },
     {
       "id": "completionist",
@@ -241,7 +259,8 @@
         "minimalist",
         "speedrunner"
       ],
-      "delivers": "The unhappy path or edge state nobody designed."
+      "delivers": "The unhappy path or edge state nobody designed.",
+      "instruments": "Enumerate states, not only paths: empty, one, many, too many, invalid, partial, concurrent, offline, interrupted, undone, and the person who is not the target user. For code, grep for the branches and error handling that exist and mark each state nothing handles. For a plan or service, walk the unhappy path end to end."
     },
     {
       "id": "pragmatist",
@@ -254,7 +273,8 @@
         "futurist",
         "visionary"
       ],
-      "delivers": "What a small team could ship by Friday, and what it would teach."
+      "delivers": "What a small team could ship by Friday, and what it would teach.",
+      "instruments": "Plan the Friday version as a dated list: what gets made, from what already exists (libraries, tools, staff, equipment), who does each task and in how many hours. Check that each piece exists (package registry, the tool's docs, a supplier's page). Say what result on Friday decides the next step."
     },
     {
       "id": "craftsperson",
@@ -267,7 +287,8 @@
         "speedrunner",
         "economist"
       ],
-      "delivers": "The one detail that would make this loved rather than tolerated."
+      "delivers": "The one detail that would make this loved rather than tolerated.",
+      "instruments": "Use or read the thing at the grain a user touches it: run the CLI, open the page, read the copy, follow the product as described. Compare one detail with the best example in its class (found by search or named from the field) and describe the gap concretely: timing, wording, texture, order. Propose the one detail to change and how to tell it worked."
     },
     {
       "id": "speedrunner",
@@ -280,7 +301,8 @@
         "craftsperson",
         "completionist"
       ],
-      "delivers": "The steps to skip, merge or run in parallel."
+      "delivers": "The steps to skip, merge or run in parallel.",
+      "instruments": "Lay out the steps in order with the time and wait of each (measured with time, read from logs, or estimated and labelled). Mark which steps depend on which; the rest can run in parallel. Find the handoffs and waits, and draw the shortest route with the time it saves."
     },
     {
       "id": "storyteller",
@@ -293,7 +315,8 @@
         "skeptic",
         "economist"
       ],
-      "delivers": "The one-sentence story someone retells to a friend."
+      "delivers": "The one-sentence story someone retells to a friend.",
+      "instruments": "Write the one-sentence story three ways. Give each to a fresh subagent with no context, ask it to retell the idea to a friend, and keep the version that comes back intact. Borrow the audience's own words for the problem from reviews, forums and social search rather than ours."
     },
     {
       "id": "visionary",
@@ -306,7 +329,8 @@
         "skeptic",
         "pragmatist"
       ],
-      "delivers": "The ideal end state, and the part of it reachable now."
+      "delivers": "The ideal end state, and the part of it reachable now.",
+      "instruments": "Describe the ideal end state as a concrete scene: who does what, with what, and what is no longer needed. Work back from it: list its pieces, mark which exist today (search for products, tools or precedents that already do each), and name the part that can be built now."
     },
     {
       "id": "moonshot",
@@ -319,7 +343,8 @@
         "operator",
         "minimalist"
       ],
-      "delivers": "The 10x version that makes the problem disappear."
+      "delivers": "The 10x version that makes the problem disappear.",
+      "instruments": "Name the variable that would have to change tenfold (cost, speed, scale, reach) for the problem to disappear. Search for anyone who reached that tenfold change in a similar setting, and how. Do the arithmetic for the 10x version in the shell, and name the first experiment that would show whether it is within reach."
     },
     {
       "id": "outsider",
@@ -332,7 +357,8 @@
         "incumbent",
         "historian"
       ],
-      "delivers": "A named field that solved the same shape of problem, and its mechanism."
+      "delivers": "A named field that solved the same shape of problem, and its mechanism.",
+      "instruments": "Restate the problem as its abstract shape (a queue, a two-sided market, perishable stock, a trust problem). Find two fields that solved that shape, by web or paper search, and describe each mechanism precisely enough to copy. Map each part of the mechanism onto this problem, and mark what does not transfer."
     },
     {
       "id": "child",
@@ -345,7 +371,8 @@
         "incumbent",
         "operator"
       ],
-      "delivers": "The naive 'why not just...?' question, answered honestly."
+      "delivers": "The naive 'why not just...?' question, answered honestly.",
+      "instruments": "Ask why about each step or rule the subject takes for granted, several levels down, and answer each from the record (the docs, a code comment, the commit that added it, the regulation), not from habit. Where the honest answer is 'no reason', write the 'why not just...' alternative and what it would take to try it."
     },
     {
       "id": "trickster",
@@ -358,7 +385,8 @@
         "skeptic",
         "operator"
       ],
-      "delivers": "The strangest version, and the serious idea hiding in it."
+      "delivers": "The strangest version, and the serious idea hiding in it.",
+      "instruments": "Write the most absurd, rule-breaking version on purpose, then list the assumptions it breaks. For each, check whether it is a real constraint (law, physics, cost: look it up) or a habit. Keep the serious idea that survives, stated as something someone could try this week."
     },
     {
       "id": "ethicist",
@@ -371,7 +399,8 @@
         "economist",
         "moonshot"
       ],
-      "delivers": "Who could be harmed or left without a choice, even if metrics go up."
+      "delivers": "Who could be harmed or left without a choice, even if metrics go up.",
+      "instruments": "List everyone affected, including people who never chose to use this. For each, walk through how they could be harmed, deceived or locked in: consent, defaults, dark patterns (check against a known catalogue such as deceptive.design), data use, who carries the cost when it fails. Where a law or code of conduct applies, look it up and quote it."
     },
     {
       "id": "regulator",
@@ -384,7 +413,8 @@
         "speedrunner",
         "trickster"
       ],
-      "delivers": "The question an auditor or lawyer would ask first, and the answer."
+      "delivers": "The question an auditor or lawyer would ask first, and the answer.",
+      "instruments": "Name the jurisdiction and the rules that apply (privacy, consumer, food safety, licensing, sector rules) and look them up by web search, quoting the clause and its source. Walk the subject against each: the record, consent, licence or audit trail it would have to show. Mark any rule whose text you could not find as unchecked, and say who would know."
     },
     {
       "id": "accessibility",
@@ -397,7 +427,8 @@
         "power-user",
         "craftsperson"
       ],
-      "delivers": "Who is shut out, and the change that lets them in."
+      "delivers": "Who is shut out, and the change that lets them in.",
+      "instruments": "For anything on a screen, check it against WCAG 2.2: run an automated checker such as axe or Lighthouse when the page is reachable, and read the markup for labels, contrast and focus order. For everything else, test it against low literacy, another language, an old phone and a slow connection. List who is shut out at each step, and the specific change that lets them in."
     },
     {
       "id": "support-desk",
@@ -410,7 +441,8 @@
         "visionary",
         "minimalist"
       ],
-      "delivers": "The question support will get a hundred times, and how to remove it."
+      "delivers": "The question support will get a hundred times, and how to remove it.",
+      "instruments": "Read the real complaints: the issue tracker (gh issue list), tickets, reviews, forum threads and error logs, found by search when they are public. Group them by cause and count each group. For something new, walk each unclear state and write the message a confused user would send. Name the top question and the change that stops it being asked."
     },
     {
       "id": "competitor",
@@ -423,7 +455,8 @@
         "user-advocate",
         "craftsperson"
       ],
-      "delivers": "The rival's best response, and what is easy for them to copy."
+      "delivers": "The rival's best response, and what is easy for them to copy.",
+      "instruments": "Name the strongest rival and look at what they actually ship: their site, pricing page, changelog, job ads and app reviews, found by web search. Write their most likely response to this move, and list what they could copy within a month. Say what would be hard for them to copy, and why."
     },
     {
       "id": "maintainer",
@@ -436,7 +469,8 @@
         "speedrunner",
         "moonshot"
       ],
-      "delivers": "What the person inheriting this in two years will curse."
+      "delivers": "What the person inheriting this in two years will curse.",
+      "instruments": "Read it as a stranger would. List every name, magic value, implicit order, external dependency and undocumented step a newcomer must learn. Count the places one change must be repeated (copies, knobs, sync steps). Point at file and line."
     },
     {
       "id": "data-steward",
@@ -449,7 +483,8 @@
         "speedrunner",
         "trickster"
       ],
-      "delivers": "The source of truth, and what happens when its data is wrong, late or leaked."
+      "delivers": "The source of truth, and what happens when its data is wrong, late or leaked.",
+      "instruments": "Trace each piece of data from where it is created to where it is read: schema, files, sync steps, backups (read the code, configs and migrations). For each, name the source of truth and what happens when it is wrong, late, duplicated, lost or leaked. Check the retention and privacy rules that apply to it."
     },
     {
       "id": "anthropologist",
@@ -462,7 +497,8 @@
         "first-principles",
         "economist"
       ],
-      "delivers": "The unwritten rule or status game that explains real behaviour."
+      "delivers": "The unwritten rule or status game that explains real behaviour.",
+      "instruments": "Watch behaviour, not statements: read what people actually do in public traces (forum threads, reviews, social posts, photos, usage logs), found by social and web search, and quote them. Name the ritual, status signal or unwritten rule that explains the behaviour, and the gap between what people say and what they do."
     },
     {
       "id": "bottleneck",
@@ -476,7 +512,8 @@
         "visionary"
       ],
       "delivers": "The constraint, how to exploit it with what exists, and what moves once it is fixed.",
-      "source": "Goldratt, Theory of Constraints (five focusing steps)"
+      "source": "Goldratt, Theory of Constraints (five focusing steps)",
+      "instruments": "List the steps from input to result, each with its capacity or wait time, measured or estimated. Name the slowest step and the queue in front of it. Apply the five focusing steps: identify it, exploit it with what exists, subordinate the rest to it, elevate it, and say where the constraint moves next."
     },
     {
       "id": "correctness",
@@ -489,7 +526,8 @@
         "visionary",
         "pragmatist"
       ],
-      "delivers": "Each defect as its location, the input or state that triggers it, and the wrong result it produces."
+      "delivers": "Each defect as its location, the input or state that triggers it, and the wrong result it produces.",
+      "instruments": "Read the code path by path against what the spec, docstring or caller expects. For each suspected defect, build the input that triggers it and run it in a scratch copy (a test, a REPL, a shell one-liner); when it cannot run, trace it line by line and say so. Report the input, the line and the wrong result."
     },
     {
       "id": "fact-checker",
@@ -502,7 +540,8 @@
         "storyteller",
         "visionary"
       ],
-      "delivers": "Each claim that fails, quoted, with what the evidence actually shows, or that there is none."
+      "delivers": "Each claim that fails, quoted, with what the evidence actually shows, or that there is none.",
+      "instruments": "List each factual claim (numbers, dates, names, quotes, what a product does). Check each against its cited source by opening it (fetch the page, read the paper or the file), or against a primary source found by search. Mark each one supported, contradicted (with what the source says), or no source found."
     },
     {
       "id": "literalist",
@@ -515,7 +554,8 @@
         "storyteller",
         "child"
       ],
-      "delivers": "Each passage a literal reader would follow somewhere the author did not mean, with the wrong action it leads to."
+      "delivers": "Each passage a literal reader would follow somewhere the author did not mean, with the wrong action it leads to.",
+      "instruments": "Give the text to a fresh subagent with no context and a concrete task, told to follow it exactly and fill in nothing, and note every place it does what the author did not mean. Without a subagent, read it yourself as a literal executor, sentence by sentence, and list ambiguous words, conflicting instructions and undefined terms."
     },
     {
       "id": "scope-keeper",
@@ -528,7 +568,8 @@
         "moonshot",
         "first-principles"
       ],
-      "delivers": "A requirement-by-requirement trace (met, partly met, missing), plus everything added that was not asked for."
+      "delivers": "A requirement-by-requirement trace (met, partly met, missing), plus everything added that was not asked for.",
+      "instruments": "Find the original request in its own words (the issue, ticket, brief or message). Split it into numbered requirements and trace each to where the subject meets it (file:line, section, step), marked met, partly met or missing. Then list everything in the subject that no requirement asked for."
     },
     {
       "id": "cost-tracer",
@@ -541,7 +582,170 @@
         "craftsperson",
         "visionary"
       ],
-      "delivers": "Each cost hotspot with the input size where it starts to hurt and what it costs there."
+      "delivers": "Each cost hotspot with the input size where it starts to hurt and what it costs there.",
+      "instruments": "Find the loops, calls and queries that run once per input item (read the code; use codegraph or grep for calls inside loops). Give each its growth (linear, quadratic, one paid API call per request) and compute its cost at today's input size and at 10x and 100x, using the provider's current pricing page. Benchmark it when the code can run."
+    },
+    {
+      "id": "analyst",
+      "family": "craft",
+      "name": "Analyst",
+      "asks": "What number would move if this worked, what is it today, and how would we read it next week?",
+      "sees": "Missing baselines, metrics that cannot be read, success defined only in words, vanity numbers.",
+      "misses": "Value that does not show up in any number we can collect.",
+      "clashes": [
+        "storyteller",
+        "visionary"
+      ],
+      "delivers": "The one metric, its current baseline, where it is read from, and the value that would change the decision.",
+      "instruments": "Name the metric as a formula (numerator, denominator, window). Find its current value in the real source (a dashboard, a query, a spreadsheet, a till roll, a count you can make by hand this week), or say it does not exist yet and how to start recording it. Set the threshold before the result is known. When you cannot reach the data, say where the user reads it, and give a published benchmark for the range, with its source."
+    },
+    {
+      "id": "tester",
+      "family": "craft",
+      "name": "Tester",
+      "asks": "How would we know this works before the people relying on it find out it does not?",
+      "sees": "Behaviour nobody has exercised, checks that cannot fail, no way to reproduce a problem.",
+      "misses": "Whether the thing being tested is worth building.",
+      "clashes": [
+        "speedrunner",
+        "visionary"
+      ],
+      "delivers": "The smallest check that would fail if the core claim were false, written so someone can run it today.",
+      "instruments": "Write concrete cases as input, action, expected result: the happy path, one boundary, one bad input, one 'it was already in that state'. For code, give the test or command and run what you can; for a plan or service, give the dry run or pilot with who, how many and what counts as a pass."
+    },
+    {
+      "id": "quartermaster",
+      "family": "craft",
+      "name": "Quartermaster",
+      "asks": "What materials, tools, hours and hands does this actually consume, and where does each come from?",
+      "sees": "Hidden inputs, lead times, storage and shelf life, the one supplier or person everything waits on.",
+      "misses": "Ideas whose value is not limited by supply.",
+      "clashes": [
+        "visionary",
+        "moonshot"
+      ],
+      "delivers": "A bill of materials and hours per unit or per week, with the input that runs out first.",
+      "instruments": "List every input per unit of output (ingredients, parts, licences, machine time, person-hours), with quantity, cost, lead time and where it is bought or who supplies it. Lay one real day or week out hour by hour against the people and equipment available. Mark the first thing that runs out. Look up current prices, pack sizes and suppliers by web search and give the source; label anything estimated."
+    },
+    {
+      "id": "closer",
+      "family": "craft",
+      "name": "Closer",
+      "asks": "What does the buyer say no to in the first two minutes, and what gets them to yes?",
+      "sees": "Objections, the moment of commitment, price anchors, who actually signs.",
+      "misses": "Customers who buy without ever being sold to.",
+      "clashes": [
+        "craftsperson",
+        "first-principles"
+      ],
+      "delivers": "The objection that ends the first conversation, and the line, offer or proof that answers it.",
+      "instruments": "Script the first conversation with a named kind of buyer, line by line, until they say no. List the top three objections in the buyer's own words: from sales notes the user gave, or from public reviews, forum threads and competitors' FAQ pages found by search (quote them), or, failing those, as the question to ask five buyers. Write the answer to each as a sentence a salesperson could say, and the offer or proof that backs it."
+    },
+    {
+      "id": "editor",
+      "family": "craft",
+      "name": "Editor",
+      "asks": "What is the one point, does the reader get it in the first lines, and which sentences carry nothing?",
+      "sees": "Buried leads, sentences that do no work, terms used two ways, structure that hides the answer.",
+      "misses": "Whether the point itself is right.",
+      "clashes": [
+        "completionist",
+        "storyteller"
+      ],
+      "delivers": "The point in one sentence, where it should sit, and the passages to cut or move, quoted.",
+      "instruments": "Write the reader's question and the text's answer in one line each; if you cannot, that is the finding. Go paragraph by paragraph and give each a job in five words, or mark it 'no job'. Quote each cut. Check every key term is used one way throughout."
+    },
+    {
+      "id": "what-changed",
+      "family": "temporal",
+      "name": "What Changed",
+      "asks": "What changed just before this started: code, config, data, traffic, suppliers, people, season?",
+      "sees": "The recent change everyone forgot, correlation in time, the thing that was fine last month.",
+      "misses": "Problems that were always there and only now got noticed.",
+      "clashes": [
+        "first-principles",
+        "operator",
+        "systems-thinker"
+      ],
+      "delivers": "A dated timeline of changes around the onset, and the one that best explains it, with how to confirm it.",
+      "instruments": "Build a timeline from the record, not memory: git log and deploy history, config diffs, release notes of dependencies, data volume over time, staff or supplier changes, calendar and weather. Put the first sighting of the problem on it. For the best candidate, name the revert or comparison that would confirm it."
+    },
+    {
+      "id": "one-way-door",
+      "family": "temporal",
+      "name": "One-Way Door",
+      "asks": "Which parts of this can we undo next month, which can we never undo, and what would undoing cost?",
+      "sees": "Commitments disguised as experiments, contracts, deleted data, public promises, lock-in.",
+      "misses": "That being too careful with a two-way door is its own cost.",
+      "clashes": [
+        "speedrunner",
+        "moonshot",
+        "skeptic"
+      ],
+      "delivers": "Each decision tagged one-way or two-way, the cost of undoing each one-way decision, and how to make one of them reversible.",
+      "instruments": "List every commitment the plan makes (money spent, contracts, data deleted or migrated, announcements, hires, defaults users will build on). For each, write the undo step and its cost in time and money. Move fast on the two-way ones; for each one-way door, find the staging, trial period or exit clause that turns it two-way.",
+      "source": "Bezos, 2015 shareholder letter (Type 1 / Type 2 decisions)"
+    },
+    {
+      "id": "rhythm",
+      "family": "temporal",
+      "name": "Rhythm Keeper",
+      "asks": "What changes by hour, weekday, season or cycle, and does the plan hold at both the peak and the trough?",
+      "sees": "Daily and seasonal demand curves, release and budget cycles, holidays, the quiet hour and the rush.",
+      "misses": "Shifts that are permanent, not cyclical.",
+      "clashes": [
+        "futurist",
+        "minimalist",
+        "user-advocate"
+      ],
+      "delivers": "The cycle that drives the problem, its peak and trough, and how the plan fits each.",
+      "instruments": "Plot the activity over the cycles that matter (hour of day, day of week, month, fiscal or release cycle, holidays) from real records: sales by hour, traffic, tickets, calendar. Mark the peak and the trough with numbers. Test the plan against both ends and against the next known event on the calendar. Without the user's records, use public proxies (search-interest trends, the local holiday and school calendar, weather, opening hours of nearby places) and label them as proxies."
+    },
+    {
+      "id": "kill-criteria",
+      "family": "temporal",
+      "name": "Kill Criteria",
+      "asks": "What result, by what date, would make us stop, and who decides?",
+      "sees": "Experiments with no end, sunk cost, goals that move to fit the result.",
+      "misses": "Bets whose payoff arrives later than any sensible deadline.",
+      "clashes": [
+        "visionary",
+        "incumbent",
+        "user-advocate"
+      ],
+      "delivers": "The stop rule: the metric, the threshold, the date, and the person who calls it.",
+      "instruments": "Write the stop rule before starting: metric, threshold, date, decider. Add the budget cap in money and hours. Write what happens on stop (what is kept, what is shut down, who is told). Check it against the sunk cost already spent: would you start this today from where you stand?",
+      "source": "Annie Duke, Quit (kill criteria)"
+    },
+    {
+      "id": "reference-class",
+      "family": "temporal",
+      "name": "Reference Class",
+      "asks": "How long, how much and how often does this usually go for things like it?",
+      "sees": "Inside-view optimism, plans that assume this time is the exception, missing base rates.",
+      "misses": "Cases that are truly unlike their class.",
+      "clashes": [
+        "first-principles",
+        "economist",
+        "visionary"
+      ],
+      "delivers": "The reference class, its base rate or typical range, and how far this plan's estimate sits from it.",
+      "instruments": "Name the class of similar cases (similar projects, launches, small businesses, migrations). Search for its distribution first (published base rates, surveys, industry reports): typical duration, cost overrun, success rate, each with a source or '(from memory)'. Place this plan's estimate on it and say what would justify the gap.",
+      "source": "Kahneman and Lovallo; Flyvbjerg, reference class forecasting"
+    },
+    {
+      "id": "day-100",
+      "family": "temporal",
+      "name": "Day 100",
+      "asks": "What is this like on the hundredth use, after the novelty is gone?",
+      "sees": "Habit, fatigue, repeat cost, what people stop doing after week two.",
+      "misses": "The first impression that decides whether there is a hundredth use.",
+      "clashes": [
+        "newcomer",
+        "storyteller"
+      ],
+      "delivers": "What the hundredth use feels like, and the one thing that makes people stop coming back.",
+      "instruments": "Walk through a normal day-100 use, not the first: the repeated steps, the waiting, what is boring now. Use retention or repeat-purchase data when it exists (cohort curves, repeat customers per week); otherwise name the signal to record. Compare with a habit the user already keeps."
     }
   ],
   "techniques": [
@@ -927,7 +1131,8 @@
       ],
       "deep_add": [
         "competitor",
-        "outsider"
+        "outsider",
+        "reference-class"
       ],
       "rubric": "creative"
     },
@@ -984,7 +1189,9 @@
       "deep_add": [
         "outsider",
         "trickster",
-        "moonshot"
+        "moonshot",
+        "first-principles",
+        "futurist"
       ],
       "rubric": "creative"
     },
@@ -993,13 +1200,14 @@
       "shape": "How do we get more people to use this?",
       "lenses": [
         "community",
-        "newcomer",
-        "economist"
+        "contrarian",
+        "day-100"
       ],
       "deep_add": [
+        "economist",
+        "newcomer",
         "storyteller",
-        "anthropologist",
-        "support-desk"
+        "anthropologist"
       ],
       "rubric": "creative"
     },
@@ -1014,7 +1222,9 @@
       "deep_add": [
         "child",
         "speedrunner",
-        "accessibility"
+        "accessibility",
+        "minimalist",
+        "day-100"
       ],
       "rubric": "creative"
     },
@@ -1028,7 +1238,8 @@
       ],
       "deep_add": [
         "systems-thinker",
-        "completionist"
+        "completionist",
+        "skeptic"
       ],
       "rubric": "decision"
     },
@@ -1042,7 +1253,8 @@
       ],
       "deep_add": [
         "data-steward",
-        "pre-mortem"
+        "pre-mortem",
+        "minimalist"
       ],
       "rubric": "decision"
     },
@@ -1056,7 +1268,8 @@
       ],
       "deep_add": [
         "adversary",
-        "anthropologist"
+        "anthropologist",
+        "historian"
       ],
       "rubric": "decision"
     },
@@ -1171,6 +1384,82 @@
       ],
       "rubric": "review",
       "wildcard": false
+    },
+    {
+      "id": "pricing",
+      "shape": "How should we price this?",
+      "lenses": [
+        "economist",
+        "first-principles",
+        "reference-class"
+      ],
+      "deep_add": [
+        "closer",
+        "competitor",
+        "skeptic"
+      ],
+      "rubric": "decision"
+    },
+    {
+      "id": "experiment",
+      "shape": "How do we test whether this works before we commit?",
+      "lenses": [
+        "skeptic",
+        "user-advocate",
+        "kill-criteria"
+      ],
+      "deep_add": [
+        "analyst",
+        "reference-class",
+        "pragmatist"
+      ],
+      "rubric": "decision"
+    },
+    {
+      "id": "incident",
+      "shape": "Why did this break, and what do we do now?",
+      "lenses": [
+        "first-principles",
+        "operator",
+        "what-changed"
+      ],
+      "deep_add": [
+        "data-steward",
+        "tester",
+        "systems-thinker"
+      ],
+      "rubric": "decision"
+    },
+    {
+      "id": "capacity",
+      "shape": "How do we get more from the space, hours, people or equipment we already have?",
+      "lenses": [
+        "minimalist",
+        "user-advocate",
+        "rhythm"
+      ],
+      "deep_add": [
+        "quartermaster",
+        "economist",
+        "closer",
+        "outsider"
+      ],
+      "rubric": "creative"
+    },
+    {
+      "id": "personal-decision",
+      "shape": "Should I take this job, move, quit, or commit to this?",
+      "lenses": [
+        "skeptic",
+        "user-advocate",
+        "one-way-door"
+      ],
+      "deep_add": [
+        "pre-mortem",
+        "economist",
+        "anthropologist"
+      ],
+      "rubric": "decision"
     }
   ],
   "reframes": [
@@ -1259,6 +1548,16 @@
       "name": "Principal contradiction",
       "how": "List the tensions in the situation and find the one that, once resolved, makes the others easy. Work only on that one.",
       "source": "Mao, On Contradiction (抓主要矛盾); close to Theory of Constraints"
+    },
+    {
+      "id": "make-reversible",
+      "name": "Make it reversible",
+      "how": "What makes this feel stuck is that it looks permanent. What would it take to make the choice undoable: a trial period, a staged rollout, an exit clause, a copy kept? Once it is a two-way door, which option would you try first?"
+    },
+    {
+      "id": "satisfice",
+      "name": "Good enough",
+      "how": "Stop looking for the best option. Write the minimum bar an answer must clear, then take the first option that clears it. Which one is that, and what is lost by not optimising further?"
     }
   ],
   "reframe_sets": [
@@ -1352,6 +1651,45 @@
         "temporal-shift",
         "principal-contradiction"
       ]
+    },
+    {
+      "id": "too-many-options",
+      "when": "Too many options, cannot choose",
+      "reframes": [
+        "satisfice",
+        "redefine-done",
+        "critical-uncertainties"
+      ],
+      "deep_add": [
+        "smallest-instance",
+        "principal-contradiction"
+      ]
+    },
+    {
+      "id": "afraid-to-commit",
+      "when": "The choice feels permanent and the stakes feel too high",
+      "reframes": [
+        "make-reversible",
+        "temporal-shift",
+        "smallest-instance"
+      ],
+      "deep_add": [
+        "inversion",
+        "domain-check"
+      ]
+    },
+    {
+      "id": "lost-the-why",
+      "when": "Working hard, but no longer sure what it is for",
+      "reframes": [
+        "abstraction-shift",
+        "redefine-done",
+        "stakeholder-swap"
+      ],
+      "deep_add": [
+        "how-might-we",
+        "wicked-question"
+      ]
     }
   ],
   "decompositions": [
@@ -1423,6 +1761,11 @@
       "name": "Ecocycle",
       "how": "Place every activity in birth, maturity, creative destruction or renewal. Look for the phase where things pile up, and what should be let go.",
       "source": "Liberating Structures: Ecocycle Planning"
+    },
+    {
+      "id": "issue-tree",
+      "name": "Issue tree",
+      "how": "Break the question into sub-questions that do not overlap and together cover it, down to questions a single piece of evidence can answer. Each leaf names that evidence."
     }
   ],
   "decomposition_sets": [
@@ -1515,6 +1858,45 @@
       "deep_add": [
         "ownership",
         "failure-mode"
+      ]
+    },
+    {
+      "id": "research-question",
+      "when": "A question to answer, not a thing to build",
+      "decompositions": [
+        "issue-tree",
+        "risk",
+        "temporal"
+      ],
+      "deep_add": [
+        "is-is-not",
+        "value-chain"
+      ]
+    },
+    {
+      "id": "team-or-org",
+      "when": "Changing how a team or organisation works",
+      "decompositions": [
+        "ownership",
+        "value-chain",
+        "ecocycle"
+      ],
+      "deep_add": [
+        "constraint",
+        "reversibility"
+      ]
+    },
+    {
+      "id": "event-or-launch",
+      "when": "An event, launch or one-time push with a date",
+      "decompositions": [
+        "temporal",
+        "ownership",
+        "failure-mode"
+      ],
+      "deep_add": [
+        "risk",
+        "reversibility"
       ]
     }
   ],

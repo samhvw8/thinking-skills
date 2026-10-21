@@ -10,7 +10,11 @@ WHY THEY'RE STUCK: {stuck_reason}
 WHAT THEY'VE TRIED: {attempts}
 YOUR REFRAME STRATEGY: {strategy_name} — {strategy_description}
 
-You are not solving the problem. You are changing how they SEE it. A good reframe makes the next step obvious.
+You are not solving the problem; you are changing how they see it. A good reframe makes the next step obvious.
+
+Use your tools to test the frame you name against the real material: read the files, notes or data
+the problem points at, and search for how others got past the same trap. A fact from outside what you
+were given is either checked, with its source, or marked "(unchecked)".
 
 Requirements:
 1. Name the assumption or frame that's creating the stuckness
@@ -41,7 +45,7 @@ Output:
 
 The definitions, and which combination to use for which situation, live in `perspectives.json`
 (`reframes` and `reframe_sets`), so there is one copy. List them with the commands below.
-`HT` is the heavy-think skill folder, the parent of this `references/` folder (`${CLAUDE_SKILL_DIR}` when heavy-think is the loaded skill). Never a fixed install path.
+`HT` is the heavy-think skill folder, the parent of this `references/` folder (Claude Code sets `${CLAUDE_SKILL_DIR}` when heavy-think is the loaded skill). Never a fixed install path.
 
 ```bash
 python3 "$HT/deck.py" reframes            # every strategy, then the sets
