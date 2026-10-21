@@ -59,9 +59,17 @@ cases; they are judged by a blind LLM judge in both orders, not by a script.
 approval gate, auto mode) with graders, a receipts check against the transcript, a
 blind judge pass and `run-all.sh` to run them headless; see
 [evals/ambition/README.md](evals/ambition/README.md). `python3 -m unittest discover -s
-skills/ambition/tests` checks ambition's dealer and deck. `tools/build_deck.py` rebuilds
-that deck (models with a move and a receipt, Range field cards, and lenses copied from
-heavy-think); it refuses to build a pattern that would deal no fitted model.
+skills/ambition/tests` checks ambition's dealer and deck. 
+
+## Shared decks
+
+Every card lives once, in [`decks/`](decks/README.md): one JSON file per kind (lenses,
+techniques, mental models, patterns, Range fields, reframes and more), checked against
+`decks/schema.json`. `python3 tools/build_decks.py` writes each skill its own copy, as
+`decks/bundles.json` lists, so every skill installs and runs alone (ccp and `npx skills`
+install only the skill folder). Edit `decks/`, never a built copy, then rebuild.
+`python3 -m unittest discover -s tests` fails on a stale copy, a dangling id, a skill that
+reads another skill's deck, or a skill that breaks when installed alone.
 
 ## License
 
