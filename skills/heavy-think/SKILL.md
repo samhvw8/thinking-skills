@@ -31,6 +31,41 @@ When uncertain: **ask the user** which mode fits. Don't guess.
 
 When modes should chain: decompose first → brainstorm on each piece, or unstick → then solve.
 
+## The reply (every mode)
+
+The user compares your reply with what one strong answer, with no agents, would have given. The agents
+are worth their cost only if the reply holds everything that answer would, plus what the agents found
+that it would miss. Blind judges of real runs marked these reply habits down: process narration, agent
+claims passed on unchecked, visible scores, fewer ideas than a plain answer, less runnable material.
+
+- **Write it as one expert's answer about the user's problem, not a report on your method.** Leave out
+  agents, lenses, angles, thinkers, rounds, red teams, "verified by one agent", "four angles agreed".
+  Turn the synthesis into content instead: what several lenses found independently becomes a plain,
+  firm statement; a split becomes a condition ("if you sell to enterprises, X; otherwise Y"); a point
+  only one lens saw is simply stated. Describe the method only when the user asks how you got there.
+- **Meet the plain answer's floor first.** Before writing, picture the answer a single expert would give
+  with no agents, and make sure yours contains all of it. Then add what the run found. In practice:
+  - technical problem: a runnable command, query or config line for each check or step you recommend,
+    not just its name; no implementation code the user did not ask for;
+  - brainstorm: every distinct idea worth keeping, one line each and grouped, not only the shortlist;
+    the developed picks get a few lines each, the rest one line, nothing more;
+  - decision: the call, what would flip it, and the first steps.
+- **Agent claims are leads, not facts.** Before a specific reaches the reply (a setting, flag or GUC
+  name, a command, an API, a price, a version, a date, a statistic, or what a product can or cannot
+  do), check it yourself: run it, read
+  `--help`, open the docs or the source. If you can't check it, cut it, or keep it only if the answer
+  needs it and say at that line what to verify. Present something as a toggle, flag or setting only
+  if you have seen it exists. An agent saying it verified something is not a check. Check what the
+  answer leans on, and cut minor specifics rather than spend a call on each.
+- **Scores are for your ranking only.** The rubric orders the candidates; the reply gives the order and
+  the reason in words. No 0-100 numbers or score tables unless the user asks for them.
+- **Length must be earned.** Lead with the answer in the first lines. Aim near the length a plain
+  answer would take; go past it only by what the run found that changes the answer. Cut restated
+  points, background the user did not ask for, and long examples. A judge reading a longer reply asks
+  whether every extra paragraph changed what the user will do.
+- **Caveats point at what is in the reply.** State assumptions in a line or two up front, and keep each
+  "unverified" note next to the claim it is about.
+
 ---
 
 ## Mode 1: Brainstorm
@@ -57,8 +92,11 @@ provocations, and presets by question shape (product direction, architecture, go
 prioritization, process, greenfield, growth, experience, risk, migration, policy, plus the `*-review`
 presets for reviews in Perspectives mode). Each preset names its rubric.
 
+`DECK` below stands for `python3 "${CLAUDE_SKILL_DIR}/deck.py"`. `${CLAUDE_SKILL_DIR}` is this skill's
+folder; outside Claude Code, use the folder this SKILL.md is in. Never use a fixed install path:
+the skill is installed in different places.
+
 ```bash
-DECK = python3 ~/.claude/skills/heavy-think/deck.py
 DECK presets                                              # which preset fits, and its rubric
 DECK deal --members 3 --preset architecture --no-technique --question "<the problem>"   # a decision: lenses only
 DECK deal --members 5 --preset greenfield --question "<the problem>"                    # ideation: lens + technique
@@ -70,16 +108,24 @@ DECK deal --members 4 --lenses "operator; maintainer; EU regulator: Would this p
   does not have is not dealt. `deck.py` picks the scorer and falls back on its own (the order and
   the flags are in `deck.py deal --help`); a family the deal must seat with no fitting lens, or a
   pool with too few fitting entries, is dealt from in full, at random. It prints what it used and
-  kept, and a `deck warn:` line when a scorer failed: pass that on to the user. A preset or
-  `--lenses` is always kept.
+  kept, and a `deck warn:` line when a scorer failed: pass that on to the user. The fit never drops
+  a preset's or `--lenses`' lenses.
 - **Techniques: ideation only.** For architecture, strategy and other technical or decision problems,
   deal with `--no-technique`. A forced technique (random entry, lateral provocation) helps generate
   ideas and hurts reasoning about trade-offs (see `references/tensions.md`, independence vs diversity).
 - **Custom lenses beat the deck.** When the problem has a stakeholder the deck lacks (a DBA on call,
   an EU regulator, the finance team), write it as `Name: the question it asks` and mix it in.
-- A random deal always seats ≥1 challenger, ≥1 stakeholder, ≥1 temporal lens, a wildcard from 4 up,
-  and lenses that clash with each other. A preset or `--lenses` is kept as chosen; missing families
-  are added only into spare seats.
+- **What the dealer seats.** A random deal always seats ≥1 challenger, ≥1 stakeholder, ≥1 temporal
+  lens, a wildcard from 4 members up, and lenses that clash with each other. The other cases:
+  - `--lenses` are always seated as given, and never swapped. Missing families go only into spare seats,
+    so with no spare seat a family can be missing: read the printed `[family]` tags, and add the lens
+    you need to `--lenses` yourself rather than re-dealing.
+  - A preset alone fills the seats in its order (lenses, then deep adds, up to `--members`). If a
+    required family is then missing, the dealer swaps out the last preset lens whose family is doubled.
+    So `--preset architecture --members 3` seats operator, first-principles and historian: minimalist
+    gives way to the temporal seat. At 4 members a wildcard also takes a doubled seat, unless the preset
+    is a review panel, which never seats one.
+  - To seat a preset exactly as listed, pass its lenses with `--lenses` (from `DECK presets`).
 
 ### Stage 3: Spawn Parallel Agents
 
@@ -101,6 +147,7 @@ Think through this lens ONLY, and generate with the technique for real.
 3. Write your first three ideas down as a Baseline (everyone has those, and sometimes the obvious one is right). Generate 3-5 past them, numbered {agent}.1, {agent}.2 …
 4. Pick strongest. Stress-test: what breaks? what scales?
 5. Second-order effects: if this succeeds, then what? And then what?
+Mark each fact you cite (a number, study, price, product feature) with its source, or "from memory".
 
 Output: ## Core Insight → ## The Real Problem → ## Baseline → ## Ideas → ## Second-Order Effects → ## Hidden Risk → ## Provocation
 ```
@@ -120,8 +167,8 @@ separate lists.
 2. **Collide** — where perspectives directly contradict (deepest insight lives here)
 3. **Extract surprises** — what exists in NO single output but emerges from combining (with 3b: the builds whose parents come from two lenses)
 4. **Second-order cascade** — trace strongest ideas: then what? and then what?
-5. **Score before you rank** — rate the top candidates (baselines included) on `references/rubric.md` with the right profile: `creative` (novelty 30, value 30, feasibility 20, specificity 10, emergence 10) for ideation, `decision` (value 35, feasibility 25, running cost 20, novelty 10, specificity 10) for anything that ships and has to be run. The preset names it. A baseline that wins under `decision` is a fine answer: say so.
-6. **Converge** — landscape → key insights (ranked by surprise) → tensions worth holding → recommendation → what to kill
+5. **Score before you rank** — rate the top candidates (baselines included) on `references/rubric.md` with the right profile: `creative` (novelty 30, value 30, feasibility 20, specificity 10, emergence 10) for ideation, `decision` (value 35, feasibility 25, running cost 20, novelty 10, specificity 10) for anything that ships and has to be run. The preset names it. A baseline that wins under `decision` is a fine answer: say so. The scores stay with you; the reply shows the order and why.
+6. **Converge** — key insights (ranked by surprise) → recommendation, with the top picks developed (what, why, the first step) → **the rest of the idea set**, one line each, grouped by the cause or area it addresses, baselines included → tensions worth holding, as conditions → what to stop doing. A brainstorm reply that offers fewer ideas than a plain answer would loses, however sharp its shortlist: the shortlist is the ranking, not the whole answer. A stress test (Stage 5) amends the ideas; it does not shrink the set.
 
 ### Stage 5 (Optional): Stress Test
 
@@ -203,11 +250,13 @@ For a large subject, point agents at paths or a command rather than pasting it i
    that's usually the real question.
 3. **Singletons** — what only one lens saw. Keep the ones that matter; say why the others missed it.
 4. **Blind spots** — what no lens could see, and whether that matters for the ask.
-5. **Answer the ASK** in the shape from the Stage 1 table. Don't just list lens outputs: say which
-   lens you weigh most for this subject, and why.
+5. **Answer the ASK** in the shape from the Stage 1 table. Don't just list lens outputs: decide which
+   concern weighs most for this subject, and why, and say it as a reason ("on-call load matters more
+   than lock-in at three people"), not as a lens name.
 
-If a claim would change the answer and you're unsure of it, check it before you lean on it: read the
-line, open the source, or for high stakes spawn a fresh agent told to refute it.
+Steps 1–4 are your analysis; the reply follows [The reply](#the-reply-every-mode). If a claim would
+change the answer and you're unsure of it, check it before you lean on it: read the line, open the
+source, or for high stakes spawn a fresh agent told to refute it.
 
 ### Review (when the ASK is review)
 
@@ -335,41 +384,11 @@ For deeply technical problems, swap in:
 | User-journey | By user experience | "What does the user do step by step?" |
 | Failure-mode | By what can go wrong | "What are the independent failure domains?" |
 
-**Agent prompt template** (see `references/decompose-prompt.md`):
-
-```
-You are a decomposition agent. Break down a complex problem using a specific strategy.
-
-PROBLEM: {problem}
-CONTEXT: {context}
-YOUR STRATEGY: {strategy_name} — {strategy_description}
-
-Decompose this problem using ONLY your assigned strategy. Don't try to be comprehensive — show what your lens uniquely reveals about the problem's structure.
-
-Requirements:
-1. Identify 3-7 components/phases/pieces
-2. For each: name it, define its scope, identify its inputs/outputs/dependencies
-3. Flag which pieces are independent (parallelizable) vs sequential
-4. Identify the hardest piece and explain why
-5. Name what your decomposition MISSES — what falls between the cracks?
-
-Output:
-
-## Decomposition ({strategy_name})
-
-### Components
-1. **[Name]** — [Scope]. Inputs: [X]. Outputs: [Y]. Dependencies: [Z].
-2. ...
-
-### Dependency Map
-[Which pieces depend on which? What can run in parallel?]
-
-### Hardest Piece
-[Which component and why — complexity, unknowns, risk]
-
-### Blind Spots
-[What does this decomposition miss or awkwardly split?]
-```
+**Agent prompt:** the full template is in `references/decompose-prompt.md` (one copy, so it cannot
+drift). Each agent decomposes with ONLY its strategy into 3-7 pieces with scope, inputs, outputs and
+dependencies; flags what is parallel; names the hardest piece and its blind spots; and gives each piece
+its first concrete action. For a technical or debugging problem that action is the exact command,
+query or config line, with any name it is unsure exists marked "(unsure)".
 
 ### Stage 3: Synthesize
 
@@ -380,22 +399,23 @@ You compare all decompositions yourself:
 3. **Blind spots** — what did each strategy miss? The union of blind spots shows hidden complexity.
 4. **Compose** — build the final decomposition by stealing the best cuts from each strategy.
 
-Output:
+Output (rename the headings to fit the user's problem, for example "Step 0 / Step 1" for a diagnosis):
 ```
-## Synthesized Decomposition
+## [The decomposition, named for the problem]
 
-### Components (with source)
-1. **[Name]** — [Scope]. Source: [which strategy revealed this most clearly]
+### Pieces, in the order to tackle them
+1. **[Name]** — [Scope, what it depends on]. First action: [for technical work, the runnable
+   command, query or code, in a code block]
 2. ...
 
 ### Execution Order
 [What's parallel, what's sequential, what's the critical path]
 
 ### Key Design Decisions
-[Where decomposition strategies disagreed — and which cut you chose and why]
+[The cuts that are choices, not facts: which one you chose and why]
 
 ### Hidden Complexity
-[What emerged from combining decompositions that no single one showed]
+[What only shows when the pieces are put together]
 ```
 
 ---
@@ -432,42 +452,9 @@ For deeper stuck-ness, add (alongside the first three — ≤6 in flight):
 | Adjacent Domain | "What field outside yours has solved an analogous problem?" |
 | First Principles | "Strip everything away — what's actually, provably true here?" |
 
-**Agent prompt template** (see `references/unstick-prompt.md`):
-
-```
-You are an unsticking agent. Someone is stuck on a problem. Your job: reframe it so movement becomes possible.
-
-PROBLEM: {problem}
-WHY THEY'RE STUCK: {stuck_reason}
-WHAT THEY'VE TRIED: {attempts}
-YOUR REFRAME STRATEGY: {strategy_name} — {strategy_description}
-
-You are not solving the problem. You are changing how they SEE it. A good reframe makes the next step obvious.
-
-Requirements:
-1. Name the assumption or frame that's creating the stuckness
-2. Apply your reframe strategy to shift it
-3. Show what the problem looks like after reframing
-4. Suggest 1-2 concrete next steps that are obvious in the new frame
-5. Name the risk of your reframe — what does it miss or oversimplify?
-
-Output:
-
-## The Trap
-[What assumption/frame is keeping them stuck?]
-
-## The Reframe
-[Apply your strategy — how does the problem change?]
-
-## After Reframing
-[Describe the problem in the new frame. What's now obvious?]
-
-## Next Steps
-[1-2 concrete actions that follow naturally from the new frame]
-
-## Reframe Risk
-[What does this new frame miss or distort?]
-```
+**Agent prompt:** the full template is in `references/unstick-prompt.md` (one copy). Each agent names
+the frame that creates the stuckness, applies its reframe, shows the problem in the new frame, gives
+1-2 next steps that are obvious there, and names what the reframe misses. It does not solve the problem.
 
 ### Stage 3: Synthesize
 
@@ -539,7 +526,7 @@ Use only when teams are unavailable (flag off, or you're inside a subagent). Wea
    - Defend what survives challenge
    - Integrate insights from challengers into a revised position
 
-4. **Final Synthesis** — YOU synthesize across all rounds. The value is in what survives challenge, not what sounded good initially.
+4. **Final Synthesis** — YOU synthesize across all rounds. The value is in what survives challenge, not what sounded good initially. Write it as in [The reply](#the-reply-every-mode): the surviving position and its conditions, not the rounds.
 
 ### Constraints (both mechanisms)
 
@@ -579,6 +566,8 @@ State the chain upfront: "I'll decompose first, then brainstorm on the hardest p
 | Brainstorming when asked for perspectives | Read what exists first; generate alternatives only if asked |
 | Perspectives that all agree | The lenses were too alike: seat one that would disagree |
 | Review findings without evidence | No quote, line or triggering input → it is a suspicion, not a finding |
+| Reporting the method in the reply ("four angles agreed", score tables) | State the findings as the answer; see The reply |
+| Passing an agent's setting name, number or price on unchecked | Check it, cut it, or mark it at the line; see The reply |
 
 ## References
 

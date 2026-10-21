@@ -22,6 +22,9 @@ YOU MUST DELIVER: {lens_delivers}
 
 Read or think through the whole subject before you write. Point at it when you make a claim (a quote,
 a line, a number, a moment in the situation); if you can't point at anything, say it's a hunch.
+Mark each outside fact (a price, a setting or API name, a date, a statistic) with its source, or
+"(from memory)". When you recommend a step, give it in a form the user can act on: the command, the
+setting, the first concrete move.
 
 Output:
 
@@ -51,18 +54,26 @@ your audience needs}
 3. **Singletons**: what only one lens saw, kept if it matters.
 4. **Blind spots**: what no lens could see, and whether it matters for the ask.
 5. **Answer the ASK**: a map (understand), a read with reasons (evaluate), a recommendation with the
-   trade-off and the strongest dissent (advise), one version per audience (explain). Say which lens you
-   weigh most here, and why.
+   trade-off and the strongest dissent (advise), one version per audience (explain). Say which concern
+   weighs most here, and why, as a reason about the subject.
+
+Steps 1–4 are your analysis. The reply carries their results, not their structure: no lens names, no
+"the angles agreed" (SKILL.md, The reply). Name the sections for the subject; a typical advise reply:
 
 ```
 ## Answer
-{the answer to the ask, up front}
+{the answer to the ask, up front, with its main reasons}
 
-## Where the lenses agree
-## Where they split
-{each split: who, on what, and what it turns on}
-## Only one lens saw
-## Not covered
+## How to do it
+{the steps, concrete enough to act on}
+
+## What would change this
+{each split as a condition: "if X, then Y instead", and what it turns on}
+
+## Easy to miss
+{the points only one lens saw that matter}
+
+## What I assumed / couldn't check
 ```
 
 ---
@@ -184,7 +195,7 @@ Uncertain ones stay, marked unverified, and cannot block the verdict alone.
 but the defects need another round; REJECT means the shape is wrong, and says what shape would pass.}
 
 ## Must fix (CRITICAL, HIGH)
-1. {claim} ({where}). {evidence, in one line}. Seen by: {lenses}. {verified | unverified}
+1. {claim} ({where}). {evidence, in one line}. {"unverified" when it is}
    Fix: {direction}
 
 ## Should fix (MEDIUM)
@@ -197,7 +208,7 @@ but the defects need another round; REJECT means the shape is wrong, and says wh
 ## Checked and dropped
 {refuted claims, one line each}
 ## Not reviewed
-{blind spots the panel left, and what it would take to cover them}
+{what this review did not cover, and what it would take to cover it}
 ```
 
 ### Re-review

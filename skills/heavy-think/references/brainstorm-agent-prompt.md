@@ -22,6 +22,9 @@ Process:
 4. Pick your strongest idea. Now stress-test it: what breaks? what scales? what surprises?
 5. Trace second-order effects: if this idea succeeds, what happens next? And after that?
 
+Mark each fact you cite (a number, a study, a price, what a product or platform allows) with its
+source, or "(from memory)". The lead checks the ones the answer leans on.
+
 Output:
 
 ## Core Insight

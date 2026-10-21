@@ -40,7 +40,7 @@ You (the main session) are the **moderator + synthesizer**. You do not argue —
 3. **Opening statements.** The spawn prompt tells each debater to open by `SendMessage`-ing its single strongest case to each opponent. They start arguing on spawn.
 4. **Cross-examination.** Each debater attacks the *weakest point in the opponent's latest message* and defends the strongest objection to its own. Messages from teammates are delivered automatically; you receive them and idle notifications without polling.
 5. **Converge.** When exchanges stop producing new arguments (debaters idle / only restating), message each to close: what it concedes, what survives, its final position.
-6. **Synthesize (YOU — never delegate).** The position/elements that survived adversarial pressure → recommendation, the tensions worth holding, and what to kill. What survives challenge beats what merely sounded good.
+6. **Synthesize (YOU — never delegate).** The position/elements that survived adversarial pressure → recommendation, the tensions worth holding, and what to kill. What survives challenge beats what merely sounded good. Write it as in `../SKILL.md` (The reply): the surviving position and its conditions, not a transcript of who argued what.
 7. **Shut down.** Ask each teammate to shut down once you have its final position.
 
 ## Debater spawn prompt (template)
@@ -87,7 +87,7 @@ The failure mode of unmonitored teams: they loop, drift, go hostile, or the lead
 
 ## Variants
 
-The formats live in the deck, so there is one copy: `python3 ~/.claude/skills/heavy-think/deck.py debates`
+The formats live in the deck, so there is one copy: `python3 "$HT/deck.py" debates` (`HT`: the heavy-think skill folder, the parent of this `references/` folder)
 lists 10 formats (position, scientific disprove, steelman tournament, blind first, method cards,
 calibrated critic, authentic dissent, opposite with equal rigour, PR-FAQ attack, cross-model review),
 when to use each, and the evidence-backed rules (max 2 rounds, compare against a plain vote, diversify

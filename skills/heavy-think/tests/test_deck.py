@@ -127,6 +127,29 @@ class Fit(unittest.TestCase):
         self.assertEqual({c["lens"]["id"] for c in cards},
                          {"custom-dba-on-call", "adversary", "operator", "pre-mortem"})
 
+    def test_preset_swaps_a_doubled_family_but_lenses_are_never_swapped(self):
+        # The behavior SKILL.md documents (Stage 2, "What the dealer seats").
+        ids = lambda cards: {c["lens"]["id"] for c in cards}
+        arch = D.deal_cards(3, 1, self.deck, preset="architecture", techniques=False)
+        self.assertEqual(ids(arch), {"operator", "first-principles", "historian"})
+        fams = [c["lens"]["family"] for c in D.deal_cards(4, 1, self.deck, preset="architecture", techniques=False)]
+        self.assertIn("wildcard", fams)
+        exact = D.parse_lens_spec("operator; first-principles; minimalist", self.deck)
+        kept = D.deal_cards(3, 1, self.deck, preset="architecture", explicit=exact, techniques=False)
+        self.assertEqual(ids(kept), {"operator", "first-principles", "minimalist"})
+        growth = D.parse_lens_spec("Week-2 quitter: Why did I stop?; newcomer; economist", self.deck)
+        fams = {c["lens"]["family"] for c in D.deal_cards(3, 1, self.deck, explicit=growth, techniques=False)}
+        self.assertNotIn("challenger", fams, "--lenses fill every seat, so no family is added")
+
+    def test_docs_name_no_fixed_install_path(self):
+        root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        docs = [os.path.join(root, "SKILL.md")] + [os.path.join(root, "references", f)
+                                                   for f in os.listdir(os.path.join(root, "references"))
+                                                   if f.endswith(".md")]
+        for path in docs:
+            with open(path, encoding="utf-8") as fh:
+                self.assertNotIn("~/.claude/skills", fh.read(), path)
+
     def test_bm25_prefers_shared_words(self):
         pools = {"reframes": [{"id": "a", "name": "Stakeholder swap", "how": "See it as the customer."},
                               {"id": "b", "name": "Database", "how": "Think about the schema migration."}]}

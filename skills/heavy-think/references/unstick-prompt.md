@@ -40,9 +40,10 @@ Output:
 ## Strategy Definitions and Sets
 
 The definitions, and which combination to use for which situation, live in `perspectives.json`
-(`reframes` and `reframe_sets`), so there is one copy. List them with:
+(`reframes` and `reframe_sets`), so there is one copy. List them with the commands below.
+`HT` is the heavy-think skill folder, the parent of this `references/` folder (`${CLAUDE_SKILL_DIR}` when heavy-think is the loaded skill). Never a fixed install path.
 
 ```bash
-python3 ~/.claude/skills/heavy-think/deck.py reframes            # every strategy, then the sets
-python3 ~/.claude/skills/heavy-think/deck.py reframes --set <id> # one set, ready to paste into prompts
+python3 "$HT/deck.py" reframes            # every strategy, then the sets
+python3 "$HT/deck.py" reframes --set <id> # one set, ready to paste into prompts
 ```

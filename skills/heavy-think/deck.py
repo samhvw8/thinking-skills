@@ -21,7 +21,9 @@ free daily allocation) asks them when the `cf` CLI is logged in, or CLOUDFLARE_A
 CLOUDFLARE_ACCOUNT_ID are set. If Clef is unavailable or fails, Jev (TypeSafe) asks them when
 TYPESAFE_API_KEY is set. Otherwise BM25 ranks entries by the words they share with the question.
 A scorer that fails prints a "deck warn:" line on stderr. A pool with too few fitting entries
-is used in full, at random. --relevance off skips it. A preset or --lenses is always kept as chosen.
+is used in full, at random. --relevance off skips it. The fit never drops a preset's or --lenses'
+lenses. When seating: --lenses are never swapped; a preset alone gives up a seat to a missing
+required family where it doubled one up (see deal_lenses).
 
 A lens id from the deck, or a custom lens written as "Name: the question it asks". Separate
 entries with ";" when a custom question contains commas.

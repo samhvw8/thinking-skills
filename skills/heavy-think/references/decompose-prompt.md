@@ -17,6 +17,10 @@ Requirements:
 3. Flag which pieces are independent (parallelizable) vs sequential
 4. Identify the hardest piece and explain why
 5. Name what your decomposition MISSES — what falls between the cracks?
+6. For each piece, give its first concrete action or cheapest check. For a technical or debugging
+   problem, write the exact command, query, config line or code, not its name. Mark any setting, flag
+   or API you are not sure exists as "(unsure)", and any number as "(from memory)" unless you
+   opened its source.
 
 Output:
 
@@ -24,6 +28,7 @@ Output:
 
 ### Components
 1. **[Name]** — [Scope]. Inputs: [X]. Outputs: [Y]. Dependencies: [Z].
+   First action: [the command, query or step]
 2. ...
 
 ### Dependency Map
@@ -39,9 +44,10 @@ Output:
 ## Strategy Definitions and Sets
 
 The definitions, and which combination to use for which situation, live in `perspectives.json`
-(`decompositions` and `decomposition_sets`), so there is one copy. List them with:
+(`decompositions` and `decomposition_sets`), so there is one copy. List them with the commands
+below. `HT` is the heavy-think skill folder, the parent of this `references/` folder (`${CLAUDE_SKILL_DIR}` when heavy-think is the loaded skill). Never a fixed install path.
 
 ```bash
-python3 ~/.claude/skills/heavy-think/deck.py decompositions            # every strategy, then the sets
-python3 ~/.claude/skills/heavy-think/deck.py decompositions --set <id> # one set, ready to paste into prompts
+python3 "$HT/deck.py" decompositions            # every strategy, then the sets
+python3 "$HT/deck.py" decompositions --set <id> # one set, ready to paste into prompts
 ```
