@@ -12,12 +12,14 @@ from pathlib import Path
 
 SKILLS = Path(__file__).resolve().parents[2]
 HARNESS = SKILLS / "heavy-think" / "references" / "harness.md"
+# Only this repo's skills: installed, SKILLS is a folder shared with every other skill.
+OURS = ("ambition", "council", "creative", "debate", "heavy-think")
 VENDOR = re.compile(r"SendMessage|subagent_type|general-purpose|CLAUDE_[A-Z_]+|\b(opus|sonnet|haiku)\b|"
                     r"ToolSearch|mcp__|WebSearch|WebFetch|`Agent`|claude -p", re.I)
 
 
 def skill_files():
-    for p in sorted(SKILLS.rglob("*")):
+    for p in sorted(q for s in OURS for q in (SKILLS / s).rglob("*")):
         if p.suffix in (".md", ".py", ".json") and p != HARNESS and not {"tests", "evals"} & set(p.parts):
             yield p
 
