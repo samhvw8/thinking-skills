@@ -36,7 +36,7 @@ Doing the same work faster is not ambition here. That is normal work.
 0. **Skip trivia.** If the task needs one tool call or has one right answer, just do it.
 1. **Look first, read-only.** Read the code, data or current numbers. Measure the baseline. Make no changes yet.
 2. **Pick the axes.** Use the table. When the signal is unclear, use all three.
-3. **Write the brief** (format below) and show it to the user.
+3. **Write the brief** (format below) to `BRIEF.md` and show it to the user, before your first edit to a project file. Step 1's read-only look and baseline come first and are fine; what must come before the work is the Judge and Target, because a pass line chosen after you see the result can always be set to pass. If you fixed them late, say so in Deviations. Never write that the brief was locked earlier than the file shows.
 4. **Wait for approval**, unless the user already gave it. Approval locks the contract. Asking for the task is not approving the brief. Only these count as approval:
    - an explicit "go ahead", "no need to wait" or the like;
    - a permission mode the user chose for unattended work, when the harness says it is on: Claude Code's auto mode, `bypassPermissions` ("dangerously skip permissions"), or the equivalent in another harness. A mode you can't confirm counts as not on.
@@ -61,8 +61,8 @@ often the highest rung you can deliver today.
 
 | Line | Content |
 |------|---------|
-| Judge | The exact command or check, and its pass line. It must sit outside the model and be hard to game: an existing test suite, held-out data, a real device, an external total. Your own reading of your output is not a judge. Tests you write yourself can only add to the judge, not replace it. |
-| Target | A number and its state: `proven (<source>)`, `unreasonable on purpose`, or `guess (no baseline)`. Aim past the obvious. A proof that someone reached it sets a floor, not a cap. |
+| Judge | The exact command or check, and its pass line. It must sit outside the model and be hard to game: an existing test suite, held-out data, a real device, an external total. Your own reading of your output is not a judge. Tests you write yourself can only add to the judge, not replace it. When no outside judge exists, label your check `self-built`, and name the outside check that would settle it (a second source, a holdout, a real device); the report carries both. |
+| Target | A number and its state: `proven (<source>)`, `unreasonable on purpose`, or `guess (no baseline)`. Aim past the obvious. A proof that someone reached it sets a floor, not a cap. `proven` needs a source outside this task; a target the judge meets by definition is not proven. |
 | Stop line | The effort you spend before a miss is allowed, for example "3 real approaches". |
 | Scope | The approved deliverables and files, one per row. |
 | Runs | `<what> · owner: <who reads it> · kill when: <condition>`, or "nothing new". |
@@ -83,6 +83,7 @@ The post's self-efficacy lessons, turned into rules:
 - **Start from raw data.** Get logs, exports, crash reports or source data. Don't work only from summaries.
 - **Challenge what you know.** Try to reproduce the team's belief from the raw data, for example "churn is an onboarding problem". Report when the data does not support it.
 - **Produce new knowledge.** First reproduce the known past from the raw data, for example simulate last year from the logs. Then look for a blind spot, and show that the finding predicts data it has not seen.
+- **Split before you look.** Set the held-out rows aside before you read the data, and write the prediction to a file before you open them. A holdout you have already printed, plotted or summarised is not a holdout; say so in the report instead of calling it one.
 - **Do what the field does, don't role-play it.** Don't write *like* a short seller. Do what a short seller *does* to research a position.
 
 ## The report
@@ -114,6 +115,7 @@ Code example: "fix this crash", then "keep the app crash-free". The top rung is 
 ## Range in practice
 
 - To find the fields, ask: "If this had to be extraordinary, who would humanity bring in?" For a QBR, that is an analyst, a journalist, an editor, a motion designer, and a red team (a short seller and a forensic accountant).
+- To find more, run `python3 <this skill's folder>/scripts/deal.py fields "<the task's verbs>"`. Each field card names its method, its instruments and its receipt. Use it as a start, not a limit; a field missing from the deck is fine.
 - Use what each field *does*: an editor's cut, a forensic accountant's Benford test, a journalist's second source.
 - To run the fields as parallel agents, use a multi-agent skill if one is installed, or else plain subagents. Do this when 3 or more fields each need real work, or when the user asks for several views.
 
@@ -127,9 +129,9 @@ yourself for routine work.
 Run the normal process, with these additions:
 
 1. **Classify first (Cynefin).** Name the domain and the evidence for it. Clear: apply the known fix. Complicated: analyse to the root cause. Complex: run small safe probes, then amplify what works. Chaotic: stabilise first, then analyse.
-2. **Deal the cards.** Run `python3 <this skill's folder>/scripts/deal.py patterns`. Pick the one or two patterns that fit the task, then run `python3 <this skill's folder>/scripts/deal.py deal "<task in one line>" --patterns <id>,<id>`. You get three mental models and three Range lenses. If you can't run Python, read `references/deck.json` and pick the same way.
-3. **Use each card as an instrument.** Apply each model's move and leave its receipt, an artifact or a number, as a row in the report. A card that doesn't fit gets "struck: `<why>`". Never write a receipt for work you didn't do.
-4. **Three approaches before choosing.** Write the obvious approach, the unreasonable-on-purpose approach, and the one that dissolves the problem (invert it, or move up the abstraction ladder until the problem disappears). Score all three against the judge, then pick one and say why.
+2. **Deal the cards.** Run `python3 <this skill's folder>/scripts/deal.py patterns`. Pick the one or two patterns that fit the task, then run `python3 <this skill's folder>/scripts/deal.py deal "<task in one line>" --patterns <id>,<id>`. Pass `--patterns`: picking by word overlap is a weak guess, and the output says so. You get three mental models, three Range fields and three lenses; a card marked "no fit" was dealt only to fill a slot. If you can't run Python, read `references/deck.json` and pick the same way.
+3. **Use each card as an instrument.** Apply each model's move and leave its receipt, an artifact or a number, as a row in the report. A card earns a row only if it changed the work: point to the tool call, file or number it caused. A card that doesn't fit gets "struck: `<why>`" in one line; striking is a normal result, not a failure. Never write a receipt for work you didn't do. The fields and lenses add to the Field rows; they don't replace them.
+4. **Three approaches before choosing.** Write the obvious approach (what a competent engineer does first), the unreasonable-on-purpose approach (aims at about 10x the obvious target, or uses a much stronger instrument), and the one that dissolves the problem (removes the need for the work, for example the step or limit that makes it necessary; invert it, or move up the abstraction ladder until the problem disappears). Score all three against the judge, then pick one and say why.
 5. **Climb the leverage ladder.** Name the Meadows level of the chosen change: parameters < buffers < structure < delays < feedback loops < information flows < rules < goals. Try one level higher. If that level is outside Scope, it goes to "Next rung".
 6. **Second order.** Trace the chosen change two steps ahead ("and then what?"). Name one unintended effect and the check that would catch it.
 
