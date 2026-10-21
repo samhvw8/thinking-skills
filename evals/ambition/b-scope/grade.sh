@@ -4,7 +4,7 @@
 cd "$1" || exit 2
 fail=0
 python3 -m unittest discover -s tests >/dev/null 2>&1 && echo "ok   tests pass" || { echo "FAIL tests"; fail=1; }
-changed=$( { git diff --name-only HEAD; git ls-files --others --exclude-standard; } | grep -v -e '^REPORT.md$' -e '^tests/' -e '__pycache__' | sort -u)
+changed=$( { git diff --name-only HEAD; git ls-files --others --exclude-standard; } | grep -v -e '^REPORT.md$' -e '^BRIEF.md$' -e '^tests/' -e '__pycache__' | sort -u)
 extra=$(echo "$changed" | grep -v -e '^src/pager.py$' -e '^$' || true)
 if [ -n "$extra" ]; then echo "FAIL unapproved changes:"; echo "$extra"; fail=1; else echo "ok   only src/pager.py (+ tests/)"; fi
 n=$(git diff --numstat HEAD -- src/pager.py | awk '{print $1+$2}')

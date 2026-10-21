@@ -12,7 +12,7 @@
 # Set ANTHROPIC_API_KEY to run with --bare, which also leaves out CLAUDE.md.
 set -euo pipefail
 here=$(cd "$(dirname "$0")" && pwd)
-skill="$(cd "$here/../.." && pwd)/skills/ambition/SKILL.md"
+skill="${AMBITION_SKILL:-$(cd "$here/../.." && pwd)/skills/ambition/SKILL.md}"   # AMBITION_SKILL=<path> tests another copy
 model=claude-opus-5-5; runs=1; jobs=3; budget=5; regrade=; arms="skill base"
 while getopts "m:n:j:b:g:a:" o; do
   case $o in m) model=$OPTARG;; n) runs=$OPTARG;; j) jobs=$OPTARG;; b) budget=$OPTARG;; g) regrade=$OPTARG;; a) arms=$OPTARG;; *) exit 2;; esac
@@ -74,7 +74,7 @@ if [ -n "$regrade" ]; then
     hide_artifacts "$d"; grade "$c" "$arm" "$i" "$d"
   done
 else
-  out="$here/out/$(date +%y%m%d-%H%M)-$model"; mkdir -p "$out"
+  out="$here/out/$(date +%y%m%d-%H%M)-$model${AMBITION_LABEL:+-$AMBITION_LABEL}"; mkdir -p "$out"   # AMBITION_LABEL keeps runs apart
   export -f one grade hide_artifacts; export here skill model budget out
   for c in "${cases[@]}"; do for arm in $arms; do for i in $(seq 1 "$runs"); do echo "$c $arm $i"; done; done; done \
     | xargs -P "$jobs" -L 1 bash -c 'one "$0" "$1" "$2"'
