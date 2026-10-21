@@ -1,0 +1,34 @@
+[
+  {
+    "rule": "Stop after one or two rounds. More rounds add sycophancy, not accuracy.",
+    "source": "MAD (2305.19118); Voting or Consensus (2502.19130); Peacemaker (2509.23055)"
+  },
+  {
+    "rule": "Compare against a plain vote. Most of a debate's gain is the vote, at two to three times the tokens.",
+    "source": "Debate or Vote (2508.17536); Should we be going MAD (ICML 2024)"
+  },
+  {
+    "rule": "Diversify the reasoning method, not the persona. Personas do not raise accuracy.",
+    "source": "DMAD (ICLR 2025); Personas in system prompts (EMNLP 2024 Findings)"
+  },
+  {
+    "rule": "Use 3 or 4 distinct roles when judging; quality drops at 5 and with near-duplicate roles.",
+    "source": "ChatEval (2308.07201)"
+  },
+  {
+    "rule": "Keep dissent moderate. 'Disagree with everything' does worse than none.",
+    "source": "MAD (2305.19118); M3MAD-Bench (2601.02854)"
+  },
+  {
+    "rule": "Never let the author review its own work in the same context.",
+    "source": "Self-preference and drift studies (31.7% of own drift missed)"
+  },
+  {
+    "rule": "Harvest each member's unique ideas before any merge or vote. Plain councils lose about three quarters of them.",
+    "source": "Strange Loop Canon, LLM councils show groupthink (16 prompts, blind judges)"
+  },
+  {
+    "rule": "Treat LLM idea rankings as a sort, not a verdict. LLM idea judgments are near chance against human reviewers.",
+    "source": "Si et al. 2409.04109 (53.3% vs 56.1% human agreement)"
+  }
+]

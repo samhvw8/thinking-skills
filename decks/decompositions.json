@@ -1,0 +1,76 @@
+[
+  {
+    "id": "functional",
+    "name": "Functional",
+    "how": "Decompose by capability or responsibility. Each component owns one coherent set of behaviours."
+  },
+  {
+    "id": "temporal",
+    "name": "Temporal",
+    "how": "Decompose by sequence and dependency: what must happen first, second, third. Focus on ordering, prerequisites and the critical path."
+  },
+  {
+    "id": "risk",
+    "name": "Risk",
+    "how": "Decompose by uncertainty and difficulty. Separate known from unknown and easy from hard; group by confidence."
+  },
+  {
+    "id": "data-flow",
+    "name": "Data flow",
+    "how": "Decompose by information movement: where data originates, where it flows, how it transforms. Boundaries are where data changes shape."
+  },
+  {
+    "id": "user-journey",
+    "name": "User journey",
+    "how": "Decompose by what the user does, step by step. Each component is a stage in their journey."
+  },
+  {
+    "id": "failure-mode",
+    "name": "Failure mode",
+    "how": "Decompose by what can go wrong. Each component groups the failure modes that share a domain."
+  },
+  {
+    "id": "interface-first",
+    "name": "Interface first",
+    "how": "Define the contracts between pieces before the pieces. Let the components emerge from what lives on each side of each interface."
+  },
+  {
+    "id": "ownership",
+    "name": "Ownership",
+    "how": "Decompose by who will build, own and be paged for each piece. Boundaries follow teams, so the seams are where handoffs and misunderstandings happen."
+  },
+  {
+    "id": "reversibility",
+    "name": "Reversibility",
+    "how": "Split the decisions into one-way doors (expensive to undo) and two-way doors (cheap to undo). Sequence the one-way doors carefully and move fast through the rest."
+  },
+  {
+    "id": "constraint",
+    "name": "Constraint",
+    "how": "Find the one constraint that limits the whole system. Exploit it, make everything else serve it, then raise it, and look for the next one.",
+    "source": "Goldratt, Theory of Constraints: five focusing steps"
+  },
+  {
+    "id": "is-is-not",
+    "name": "Is / is not",
+    "how": "State what, where, when and how much the problem IS, and what it IS NOT though it could be. Any cause must explain that difference.",
+    "source": "Kepner-Tregoe problem analysis"
+  },
+  {
+    "id": "value-chain",
+    "name": "Value chain",
+    "how": "Start from the user need, list the components that serve it and their dependencies, and mark each as novel, custom, product or commodity. Build only the novel and custom parts.",
+    "source": "Wardley mapping"
+  },
+  {
+    "id": "ecocycle",
+    "name": "Ecocycle",
+    "how": "Place every activity in birth, maturity, creative destruction or renewal. Look for the phase where things pile up, and what should be let go.",
+    "source": "Liberating Structures: Ecocycle Planning"
+  },
+  {
+    "id": "issue-tree",
+    "name": "Issue tree",
+    "how": "Break the question into sub-questions that do not overlap and together cover it, down to questions a single piece of evidence can answer. Each leaf names that evidence."
+  }
+]

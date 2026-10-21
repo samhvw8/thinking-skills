@@ -1,0 +1,225 @@
+[
+  {
+    "id": "forensic-accounting",
+    "name": "Forensic accounting",
+    "verbs": [
+      "trace",
+      "reconcile",
+      "detect manipulation",
+      "find missing volume",
+      "audit"
+    ],
+    "method": "Reconcile every unit of a total to an independent total; test digit distributions for fabrication.",
+    "instruments": "A reconciliation join between two sources; a Benford first-digit test.",
+    "receipt": "A reconciliation table with the unexplained residual, and the Benford test statistic."
+  },
+  {
+    "id": "epidemiology",
+    "name": "Epidemiology",
+    "verbs": [
+      "link a cause to an outcome",
+      "rule out confounders",
+      "date an exposure",
+      "attribute"
+    ],
+    "method": "Compare exposed and unexposed groups over the same period (difference-in-differences, case-control); look for dose-response.",
+    "instruments": "A 2×2 table or difference-in-differences estimate with an unexposed control group.",
+    "receipt": "The effect with its confidence interval, and the control group that rules out a common shock."
+  },
+  {
+    "id": "investigative-journalism",
+    "name": "Investigative journalism",
+    "verbs": [
+      "verify a claim",
+      "find who knows",
+      "build a timeline"
+    ],
+    "method": "Two independent sources per key fact; a dated document trail.",
+    "instruments": "A source log: claim, source 1, source 2, date.",
+    "receipt": "Each key claim with two independent sources, or marked single-source."
+  },
+  {
+    "id": "sre",
+    "name": "Site reliability engineering",
+    "verbs": [
+      "keep a service up",
+      "find why it broke",
+      "decide what to alert on",
+      "debug"
+    ],
+    "method": "A blameless timeline from raw logs; service level objectives with error budgets.",
+    "instruments": "A log query that builds a minute-by-minute timeline; a service level indicator query.",
+    "receipt": "The timeline with the trigger and the contributing factors, and the error budget burned."
+  },
+  {
+    "id": "experimental-design",
+    "name": "Clinical trials and biostatistics",
+    "verbs": [
+      "prove a change causes an effect",
+      "size a test",
+      "predict",
+      "evaluate"
+    ],
+    "method": "Pre-register the prediction, randomize, size the sample by power analysis, and analyse as planned.",
+    "instruments": "A prediction file written before the data is read; a power calculation; a randomized holdout.",
+    "receipt": "The prediction file (written before the data was read), n from the power calculation, and the effect with its interval."
+  },
+  {
+    "id": "short-seller",
+    "name": "Short-seller research",
+    "verbs": [
+      "find what is overstated",
+      "test a claim against reality",
+      "check a number"
+    ],
+    "method": "Channel checks: compare each reported number with an observable proxy from outside the company.",
+    "instruments": "An independent data source set against the reported metric.",
+    "receipt": "The claim, the independent measure, and the gap."
+  },
+  {
+    "id": "editing",
+    "name": "Editing (books, film)",
+    "verbs": [
+      "make a busy reader follow",
+      "cut",
+      "order an argument",
+      "persuade"
+    ],
+    "method": "Reverse-outline the draft, then cut every section that doesn't advance the one point.",
+    "instruments": "A reverse outline: one line per section stating its point.",
+    "receipt": "Word count before and after, and the reverse outline with the cut sections marked."
+  },
+  {
+    "id": "aviation-safety",
+    "name": "Aviation safety and human factors",
+    "verbs": [
+      "prevent rare catastrophic error",
+      "make routine steps reliable",
+      "harden"
+    ],
+    "method": "Failure modes and effects analysis; checklists for critical steps; read-back.",
+    "instruments": "An FMEA table scored severity × occurrence × detection.",
+    "receipt": "FMEA rows with risk priority numbers, and the mitigation for the top row."
+  },
+  {
+    "id": "operations-research",
+    "name": "Operations research and queueing",
+    "verbs": [
+      "allocate scarce capacity",
+      "cut waiting",
+      "schedule",
+      "optimize throughput"
+    ],
+    "method": "Model the system (Little's law, M/M/c queues, linear programming) and simulate before changing it.",
+    "instruments": "A queueing model or LP solver checked against observed throughput.",
+    "receipt": "Modelled vs observed wait and throughput, and the objective value of the chosen allocation."
+  },
+  {
+    "id": "red-team",
+    "name": "Security red team",
+    "verbs": [
+      "find how it breaks under an adversary",
+      "abuse a limit",
+      "attack"
+    ],
+    "method": "Threat model (STRIDE), an attack tree, then real exploit attempts.",
+    "instruments": "An attack tree and a proof-of-concept script run against the real system.",
+    "receipt": "Each leaf of the attack tree tried, with the working proof of concept or the blocked result."
+  },
+  {
+    "id": "performance-engineering",
+    "name": "Performance engineering",
+    "verbs": [
+      "make it faster",
+      "find where time goes",
+      "cut cost per request"
+    ],
+    "method": "Measure first: profile under a realistic load, fix the top frame, and measure again.",
+    "instruments": "A profiler (flame graph) and a benchmark with a fixed workload and repeat runs.",
+    "receipt": "The before and after benchmark with variance, and the flame-graph frame that moved."
+  },
+  {
+    "id": "ux-research",
+    "name": "UX research",
+    "verbs": [
+      "learn what users need",
+      "find where people get stuck",
+      "test a design"
+    ],
+    "method": "Watch five real users try the task without help, and count where they fail.",
+    "instruments": "A task-based usability test script and a session recording or transcript.",
+    "receipt": "Task success rate per step, and the quoted stall points."
+  },
+  {
+    "id": "actuarial-science",
+    "name": "Actuarial science",
+    "verbs": [
+      "price a risk",
+      "estimate a tail",
+      "plan reserves"
+    ],
+    "method": "Fit a loss distribution to historical claims and price from its tail, not its mean.",
+    "instruments": "A fitted frequency-severity model on historical loss data.",
+    "receipt": "The fitted distribution, the 99th-percentile loss, and the reserve it implies."
+  },
+  {
+    "id": "supply-chain",
+    "name": "Supply chain and logistics",
+    "verbs": [
+      "keep things flowing",
+      "buffer against variability",
+      "cut lead time"
+    ],
+    "method": "Map the flow end to end with lead times and inventory at each node; size buffers from demand variability.",
+    "instruments": "A value-stream map with lead time and inventory per step; a safety-stock calculation.",
+    "receipt": "Lead time per step, the share that is waiting, and the buffer sized from variance."
+  },
+  {
+    "id": "game-design",
+    "name": "Game design",
+    "verbs": [
+      "make people want to come back",
+      "teach without instructions",
+      "balance"
+    ],
+    "method": "Design the core loop and its reward schedule, then playtest and tune numbers from telemetry.",
+    "instruments": "A core-loop diagram and playtest telemetry (drop-off per step).",
+    "receipt": "The loop, the drop-off per step from a playtest, and the number tuned."
+  },
+  {
+    "id": "intelligence-analysis",
+    "name": "Intelligence analysis",
+    "verbs": [
+      "decide under deception",
+      "weigh conflicting evidence",
+      "forecast"
+    ],
+    "method": "Analysis of competing hypotheses: score every piece of evidence against every hypothesis and keep the least-contradicted one.",
+    "instruments": "An ACH matrix of evidence × hypotheses.",
+    "receipt": "The matrix, the surviving hypothesis, and the single piece of evidence that would flip it."
+  },
+  {
+    "id": "law",
+    "name": "Litigation and contract law",
+    "verbs": [
+      "argue a case",
+      "find the loophole",
+      "write rules that hold"
+    ],
+    "method": "Read the text literally, find the strongest opposing reading, and test every clause against an adversarial counterparty.",
+    "instruments": "A clause-by-clause adversarial read with precedent or source cited.",
+    "receipt": "Each clause with its hostile reading, and the rewrite that closes it."
+  },
+  {
+    "id": "ethnography",
+    "name": "Ethnography",
+    "verbs": [
+      "understand a culture",
+      "find the unwritten rule",
+      "see the workaround"
+    ],
+    "method": "Observe people doing the real work in place, and record what they do, not what they say.",
+    "instruments": "Field notes or a screen recording of the real workflow.",
+    "receipt": "The workarounds observed, each quoted or timestamped, and the rule each reveals."
+  }
+]

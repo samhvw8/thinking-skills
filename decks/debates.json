@@ -1,0 +1,72 @@
+[
+  {
+    "id": "position",
+    "name": "Position debate",
+    "how": "Each debater owns one candidate answer and argues for it against the others.",
+    "when": "Choosing between known options.",
+    "source": "heavy-think team-debate protocol"
+  },
+  {
+    "id": "disprove",
+    "name": "Scientific disprove",
+    "how": "Each debater owns one hypothesis, and the job is to disprove the others with evidence.",
+    "when": "Root cause: why is this happening.",
+    "source": "heavy-think team-debate protocol"
+  },
+  {
+    "id": "steelman",
+    "name": "Steelman tournament",
+    "how": "Before rebutting, each debater must restate the opponent's case better than the opponent did.",
+    "when": "High stakes; guards against strawmen.",
+    "source": "heavy-think team-debate protocol"
+  },
+  {
+    "id": "blind-first",
+    "name": "Blind first, one reveal",
+    "how": "Everyone answers alone first, then sees the others once, then revises once. Report the spread, not just the consensus.",
+    "when": "Default for anything with a checkable answer.",
+    "source": "Voting or Consensus (arXiv 2502.19130); Demystifying MAD (2601.19921)"
+  },
+  {
+    "id": "method-cards",
+    "name": "Method cards",
+    "how": "Each debater uses a different reasoning method (first principles, analogy, base rates, working backwards), not a different persona.",
+    "when": "Reasoning problems where everyone keeps making the same mistake.",
+    "source": "DMAD, ICLR 2025 (Breaking Mental Set)"
+  },
+  {
+    "id": "calibrated-critic",
+    "name": "Calibrated critic",
+    "how": "One critic is strict but not absolute: it must find real flaws and may concede. A separate judge breaks ties.",
+    "when": "Evaluating a draft or decision.",
+    "source": "DEBATE (arXiv 2405.09935): +6.4pp over G-Eval; MAD (2305.19118): modest disagreement beats total"
+  },
+  {
+    "id": "authentic-dissent",
+    "name": "Authentic dissent (red team)",
+    "how": "Give one debater a genuinely conflicting goal (the competitor's, the customer's, the budget owner's) and the job of defeating the plan. The decider rules after both sides fight.",
+    "when": "Strategy and plans where everyone already agrees.",
+    "source": "Nemeth 2001 (authentic dissent beats an assigned devil's advocate); Huawei blue army (蓝军)"
+  },
+  {
+    "id": "opposite-rigor",
+    "name": "Opposite with equal rigour",
+    "how": "After the case for, demand the case against with the same rigour and the same length.",
+    "when": "A one-sided recommendation.",
+    "source": "r/ClaudeAI practitioner consensus"
+  },
+  {
+    "id": "pr-faq",
+    "name": "PR-FAQ attack",
+    "how": "Write the launch press release and the hardest customer and internal FAQ first. Reviewers attack only the FAQ answers.",
+    "when": "Product and launch decisions.",
+    "source": "Amazon Working Backwards"
+  },
+  {
+    "id": "cross-model",
+    "name": "Cross-model review",
+    "how": "A different model family reviews the work. Every claim needs evidence, and no concession without a reason.",
+    "when": "Code review and anything where one model's blind spot matters.",
+    "source": "Milvus code-review test: 53% of bugs solo vs 80% with 5 models (15 PRs, directional)"
+  }
+]

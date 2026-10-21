@@ -1,0 +1,12 @@
+[
+  "At least one challenger family lens.",
+  "At least one stakeholder family lens.",
+  "At least one temporal family lens.",
+  "Every lens should clash with at least one other lens in the set.",
+  "No two lenses that would say roughly the same thing.",
+  "Sets of 4 or more get one wildcard family lens.",
+  "A lens written for this specific problem beats any lens in the deck. Add custom lenses as 'Name: the question it asks'.",
+  "For judging or deciding, keep it to 3 or 4 distinct lenses; more lenses only pay off when generating ideas.",
+  "A lens changes the question and the required output, never the claimed expertise. Expert personas do not raise accuracy.",
+  "For a review, seat lenses whose findings would differ: a defect lens, a stakeholder who lives with the artifact, and a time lens. Never techniques, never a wildcard (the review presets set \"wildcard\": false)."
+]

@@ -1,0 +1,148 @@
+[
+  {
+    "id": "free-forever",
+    "text": "What if it had to be free forever? Who pays then, and what changes?"
+  },
+  {
+    "id": "one-day",
+    "text": "What if it had to ship tomorrow with what already exists?"
+  },
+  {
+    "id": "no-software",
+    "text": "What if software were not allowed? What does the analogue version teach us?"
+  },
+  {
+    "id": "hostile-user",
+    "text": "What would a hostile or lazy user love about it?"
+  },
+  {
+    "id": "delete-core",
+    "text": "Delete the feature everyone thinks is the core. What is left, and is it better?"
+  },
+  {
+    "id": "opposite",
+    "text": "What if the opposite of the current best idea were true?"
+  },
+  {
+    "id": "competitor",
+    "text": "Our strongest competitor just shipped the leading idea. What do we do instead?"
+  },
+  {
+    "id": "million",
+    "text": "It has a million users in a week. What breaks first and what becomes possible?"
+  },
+  {
+    "id": "kid",
+    "text": "Explain the leading idea to a ten-year-old. What did you have to cut, and should it go for real?"
+  },
+  {
+    "id": "ten-years",
+    "text": "It is ten years later and this is everywhere. What did it replace?"
+  },
+  {
+    "id": "missing-person",
+    "text": "Who is not in this room and would hate every idea so far?"
+  },
+  {
+    "id": "combine-two",
+    "text": "Take the two ideas furthest apart in the pool and force them into one."
+  },
+  {
+    "id": "wrong-question",
+    "text": "What if the question itself is the wrong one? Write the better question."
+  },
+  {
+    "id": "boring",
+    "text": "Which idea is boring but would quietly work? Make it exciting without losing what works."
+  },
+  {
+    "id": "honor-error",
+    "text": "Honor thy error as a hidden intention. What if the mistake is the idea?",
+    "source": "Eno and Schmidt, Oblique Strategies (1975)"
+  },
+  {
+    "id": "emphasize-flaws",
+    "text": "Emphasize the flaws. What if the weakest part became the point?",
+    "source": "Eno and Schmidt, Oblique Strategies (1975)"
+  },
+  {
+    "id": "embarrassing",
+    "text": "Look closely at the most embarrassing details and amplify them.",
+    "source": "Eno and Schmidt, Oblique Strategies (1975)"
+  },
+  {
+    "id": "cut-connection",
+    "text": "Cut a vital connection. Which link does everyone assume, and what happens without it?",
+    "source": "Eno and Schmidt, Oblique Strategies (1975)"
+  },
+  {
+    "id": "do-nothing",
+    "text": "Do nothing for as long as possible. What happens if we never act?",
+    "source": "Eno and Schmidt, Oblique Strategies (1975)"
+  },
+  {
+    "id": "do-both",
+    "text": "Faced with a choice, do both. What would that look like?",
+    "source": "Eno and Schmidt, Oblique Strategies (1975)"
+  },
+  {
+    "id": "last-mistakes",
+    "text": "What mistakes did you make last time?",
+    "source": "Eno and Schmidt, Oblique Strategies (1975)"
+  },
+  {
+    "id": "change-nothing",
+    "text": "Change nothing and continue with immaculate consistency. What is the case for that?",
+    "source": "Eno and Schmidt, Oblique Strategies (1975)"
+  },
+  {
+    "id": "what-wouldnt",
+    "text": "What wouldn't you do? Do that.",
+    "source": "Eno and Schmidt, Oblique Strategies (1975)"
+  },
+  {
+    "id": "stop-doing",
+    "text": "What must we stop doing to make progress on what we care about most?",
+    "source": "Liberating Structures: Making Space with TRIZ"
+  },
+  {
+    "id": "no-permission",
+    "text": "What can be done right now, with no more resources and no one's permission?",
+    "source": "Liberating Structures: 15% Solutions"
+  },
+  {
+    "id": "flip-assumption",
+    "text": "Which single assumption, if wrong, flips the whole plan?",
+    "source": "Critical Uncertainties; Evaporating cloud"
+  },
+  {
+    "id": "for-what-purpose",
+    "text": "For what purpose? Ask it three times, going up a level each time.",
+    "source": "Practitioner alternative to Five Whys (HN 19625754)"
+  },
+  {
+    "id": "wicked",
+    "text": "How is it that we are ___ while at the same time ___? Name the paradox we are living in.",
+    "source": "Liberating Structures: Wicked Questions"
+  },
+  {
+    "id": "press-release",
+    "text": "It is launch day. What is the first line of the press release, and the hardest question in the FAQ?",
+    "source": "Amazon Working Backwards, PR-FAQ"
+  },
+  {
+    "id": "kill-shot",
+    "text": "Name the one thing that, if true, kills this.",
+    "source": "Practitioner anti-sycophancy prompts"
+  },
+  {
+    "id": "least-welcome",
+    "text": "What is the counterview we would least want to accept? Not the easiest one to digest.",
+    "source": "經理人 (Manager Today) anti-sycophancy prompt"
+  },
+  {
+    "id": "score-to-ten",
+    "text": "Score the leading idea 1 to 10. What exactly would make it a 10?",
+    "source": "r/ClaudeAI practitioner consensus"
+  }
+]

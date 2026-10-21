@@ -1,0 +1,132 @@
+[
+  {
+    "id": "technical-system",
+    "when": "Technical systems",
+    "decompositions": [
+      "functional",
+      "data-flow",
+      "risk"
+    ],
+    "deep_add": [
+      "interface-first",
+      "failure-mode"
+    ]
+  },
+  {
+    "id": "project-plan",
+    "when": "Projects and plans",
+    "decompositions": [
+      "temporal",
+      "risk",
+      "functional"
+    ],
+    "deep_add": [
+      "ownership",
+      "reversibility"
+    ]
+  },
+  {
+    "id": "product",
+    "when": "Products",
+    "decompositions": [
+      "user-journey",
+      "functional",
+      "risk"
+    ],
+    "deep_add": [
+      "data-flow",
+      "reversibility"
+    ]
+  },
+  {
+    "id": "debugging",
+    "when": "Debugging complex failures",
+    "decompositions": [
+      "is-is-not",
+      "failure-mode",
+      "data-flow"
+    ],
+    "deep_add": [
+      "temporal",
+      "interface-first"
+    ]
+  },
+  {
+    "id": "migration",
+    "when": "Migrations and rewrites",
+    "decompositions": [
+      "reversibility",
+      "data-flow",
+      "temporal"
+    ],
+    "deep_add": [
+      "ownership",
+      "failure-mode"
+    ]
+  },
+  {
+    "id": "strategy",
+    "when": "Strategy and portfolio choices",
+    "decompositions": [
+      "value-chain",
+      "ecocycle",
+      "risk"
+    ],
+    "deep_add": [
+      "constraint",
+      "reversibility"
+    ]
+  },
+  {
+    "id": "throughput",
+    "when": "Something is too slow or stuck",
+    "decompositions": [
+      "constraint",
+      "data-flow",
+      "temporal"
+    ],
+    "deep_add": [
+      "ownership",
+      "failure-mode"
+    ]
+  },
+  {
+    "id": "research-question",
+    "when": "A question to answer, not a thing to build",
+    "decompositions": [
+      "issue-tree",
+      "risk",
+      "temporal"
+    ],
+    "deep_add": [
+      "is-is-not",
+      "value-chain"
+    ]
+  },
+  {
+    "id": "team-or-org",
+    "when": "Changing how a team or organisation works",
+    "decompositions": [
+      "ownership",
+      "value-chain",
+      "ecocycle"
+    ],
+    "deep_add": [
+      "constraint",
+      "reversibility"
+    ]
+  },
+  {
+    "id": "event-or-launch",
+    "when": "An event, launch or one-time push with a date",
+    "decompositions": [
+      "temporal",
+      "ownership",
+      "failure-mode"
+    ],
+    "deep_add": [
+      "risk",
+      "reversibility"
+    ]
+  }
+]

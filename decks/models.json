@@ -1,0 +1,706 @@
+[
+  {
+    "id": "cynefin-framework",
+    "name": "Cynefin Framework",
+    "discipline": "decision-making",
+    "use_when": "Applying the wrong problem-solving method (e.g., best-practice playbooks in a complex system) produces failure; most leaders lack a way to distinguish problem types.",
+    "move": "Name the domain from evidence: clear (apply best practice), complicated (analyse), complex (probe, sense, respond), chaotic (act to stabilise first).",
+    "receipt": "The domain named (clear, complicated, complex, chaotic) with the evidence for it, and the method that follows from it."
+  },
+  {
+    "id": "reversible-vs-irreversible-decisions",
+    "name": "Reversible vs. Irreversible Decisions (Type 1 / Type 2)",
+    "discipline": "decision-making",
+    "use_when": "Organizations apply the same heavyweight decision process to all choices, making them slow without improving quality on reversible decisions.",
+    "move": "Tag each decision one-way or two-way door; move fast on two-way doors and slow down only for one-way doors.",
+    "receipt": "Each decision tagged one-way or two-way door, with the speed that follows."
+  },
+  {
+    "id": "expected-value",
+    "name": "Expected Value",
+    "discipline": "decision-making",
+    "use_when": "Human intuition handles single vivid outcomes well but fails on probabilistic sequences; we confuse low-probability/high-magnitude events with high-probability/low-magnitude ones.",
+    "move": "List the options, give each outcome a probability and a payoff, and compute the sum per option.",
+    "receipt": "Options with probabilities and payoffs, and the expected value of each."
+  },
+  {
+    "id": "reference-class-forecasting",
+    "name": "Reference Class Forecasting",
+    "discipline": "decision-making",
+    "use_when": "The planning fallacy causes systematic underestimation of costs and timelines due to optimistic inside-view thinking.",
+    "move": "Find past cases like this one, take their actual outcome distribution, and start your estimate from it.",
+    "receipt": "A reference class of similar cases with its base rate, compared to your estimate."
+  },
+  {
+    "id": "bayesian-updating",
+    "name": "Bayesian Updating",
+    "discipline": "decision-making",
+    "use_when": "New information is routinely either over-weighted (base-rate neglect) or under-weighted (conservatism bias), producing miscalibrated beliefs.",
+    "move": "Write a prior as a number, weigh each piece of evidence by how much likelier it is under each hypothesis, and update.",
+    "receipt": "A prior, the evidence, and the updated estimate, as numbers."
+  },
+  {
+    "id": "decision-matrix",
+    "name": "Decision Matrix",
+    "discipline": "decision-making",
+    "use_when": "When multiple options exist and several factors must be weighed simultaneously, subjective gut-feel leads to inconsistent or biased choices.",
+    "move": "Fix the criteria and their weights before scoring any option, score every option, then test whether the winner holds when the top weight moves.",
+    "receipt": "Options × criteria with weights fixed before scoring, the totals, and whether the winner survives the top weight moving ±50%."
+  },
+  {
+    "id": "opportunity-cost",
+    "name": "Opportunity Cost",
+    "discipline": "decision-making",
+    "use_when": "People evaluate options in isolation, ignoring the implicit cost of not choosing alternatives — leading to resource misallocation and anchoring on sunk effort.",
+    "move": "Name the best alternative use of the same time or money, and price it.",
+    "receipt": "The best option given up, and its value."
+  },
+  {
+    "id": "margin-of-safety",
+    "name": "Margin of Safety",
+    "discipline": "strategic-thinking",
+    "use_when": "Estimates are always wrong; operating at theoretical limits leaves no room for the unexpected, making systems fragile.",
+    "move": "Size a buffer against the worst plausible case, not the expected one.",
+    "receipt": "The buffer chosen, and the failure it absorbs."
+  },
+  {
+    "id": "pre-mortem",
+    "name": "Pre-Mortem",
+    "discipline": "decision-making",
+    "use_when": "Overconfidence and groupthink suppress risk identification during planning; standard risk reviews feel hypothetical and generate weak lists.",
+    "move": "Assume it failed a year from now; write why, then guard the most likely cause.",
+    "receipt": "A written 'it failed a year later because...' list, with a guard for the top item."
+  },
+  {
+    "id": "steel-manning",
+    "name": "Steel-Manning",
+    "discipline": "decision-making",
+    "use_when": "Confirmation bias leads people to engage only with weak versions of opposing views, producing decisions that fail when the strong version turns out to be true.",
+    "move": "Write the strongest version of the option you are about to reject, then show why it still loses.",
+    "receipt": "The strongest case for the option you rejected, in its best form, and why it still loses."
+  },
+  {
+    "id": "scenario-planning",
+    "name": "Scenario Planning",
+    "discipline": "strategic-thinking",
+    "use_when": "Single-point forecasts create false certainty; strategy built on one assumed future is brittle when reality diverges.",
+    "move": "Cross the two most important uncertainties into four futures, run the plan through each, and name the early signal for each.",
+    "receipt": "Two key uncertainties crossed into four scenarios, the plan's result in each, and the early signal that shows which one is unfolding."
+  },
+  {
+    "id": "base-rate-fallacy",
+    "name": "Base Rate Fallacy",
+    "discipline": "cognitive-bias",
+    "use_when": "Leads to wildly miscalibrated probability assessments in medicine, investment, security, and hiring.",
+    "move": "State the base rate before you look at the specific evidence.",
+    "receipt": "The base rate stated before the specific evidence is weighed."
+  },
+  {
+    "id": "survivorship-bias",
+    "name": "Survivorship Bias",
+    "discipline": "cognitive-bias",
+    "use_when": "Leads to overconfidence in strategies, advice, and models built only on visible successes.",
+    "move": "List who is missing from the data (churned, failed, filtered out) and fetch them before concluding.",
+    "receipt": "The cases missing from the data (failures, churned, dropped), and how they change the answer."
+  },
+  {
+    "id": "confirmation-bias",
+    "name": "Confirmation Bias",
+    "discipline": "cognitive-bias",
+    "use_when": "Decisions based on selectively filtered information appear well-supported but systematically ignore the strongest counter-evidence.",
+    "move": "Write the result that would prove your favoured explanation wrong, then go look for it.",
+    "receipt": "The result that would prove the favoured explanation wrong, the search for it, and what the search found."
+  },
+  {
+    "id": "anchoring-effect",
+    "name": "Anchoring Effect",
+    "discipline": "cognitive-bias",
+    "use_when": "Negotiations, estimates, and decisions get skewed by irrelevant or arbitrary initial values.",
+    "move": "Write your own estimate before you read the number you were given.",
+    "receipt": "An independent estimate written down before you saw the given number, and the gap between the two."
+  },
+  {
+    "id": "planning-fallacy",
+    "name": "Planning Fallacy",
+    "discipline": "cognitive-bias",
+    "use_when": "Causes project overruns, budget explosions, and missed deadlines at every scale from personal to megaproject.",
+    "move": "Set the inside-view estimate beside how long similar past tasks actually took, and correct it.",
+    "receipt": "The inside-view estimate beside the actual durations of past similar tasks, and the corrected estimate."
+  },
+  {
+    "id": "overconfidence-bias",
+    "name": "Overconfidence Bias",
+    "discipline": "cognitive-bias",
+    "use_when": "Drives excessive risk-taking, poor planning, and failure to seek disconfirming information.",
+    "move": "Give 90% intervals instead of points, and check how often past intervals held the truth.",
+    "receipt": "Estimates as 90% intervals, and the hit rate of past intervals."
+  },
+  {
+    "id": "curse-of-knowledge",
+    "name": "Curse of Knowledge",
+    "discipline": "cognitive-bias",
+    "use_when": "Produces bad teaching, poor documentation, and communication failures between experts and non-experts.",
+    "move": "Give the artifact alone to a reader with none of your context (a fresh subagent) and record where it stalls.",
+    "receipt": "The cold reader's stall points, quoted, and the fix for each."
+  },
+  {
+    "id": "inversion",
+    "name": "Inversion",
+    "discipline": "problem-solving",
+    "use_when": "Forward-thinking is additive and optimistic; it misses failure modes and unintended harms that backward-thinking reveals.",
+    "move": "Ask how to guarantee failure, list the ways, then rule each one out.",
+    "receipt": "A list of the ways the goal fails, each with the check that rules it out."
+  },
+  {
+    "id": "first-principles-thinking",
+    "name": "First Principles Thinking",
+    "discipline": "problem-solving",
+    "use_when": "Reasoning by analogy from existing solutions inherits their constraints and assumptions; breakthrough solutions require questioning fundamentals.",
+    "move": "Strip the problem to the facts nobody can dispute, then rebuild the answer from those alone.",
+    "receipt": "The two or three facts nobody can argue with, and the answer rebuilt from them alone."
+  },
+  {
+    "id": "abstraction-laddering",
+    "name": "Abstraction Laddering",
+    "discipline": "problem-solving",
+    "use_when": "Teams get stuck solving the wrong problem because they treat the first problem statement as fixed.",
+    "move": "Ask why to move up a level and how to move down; pick the level where the work pays most.",
+    "receipt": "The problem restated one level up (why?) and one level down (how?), and which level the work targets."
+  },
+  {
+    "id": "five-whys",
+    "name": "Five Whys",
+    "discipline": "problem-solving",
+    "use_when": "Addressing only visible symptoms leaves the underlying cause intact, so problems recur.",
+    "move": "Ask why from the symptom until you reach a cause you can change, backing each step with data.",
+    "receipt": "A why-chain from symptom to a cause you can change, each step backed by data."
+  },
+  {
+    "id": "root-cause-analysis",
+    "name": "Root Cause Analysis",
+    "discipline": "problem-solving",
+    "use_when": "Treating symptoms wastes resources and allows problems to return; RCA finds the deepest fixable cause.",
+    "move": "List the candidate causes and rule each out with evidence until one remains.",
+    "receipt": "The root cause with the evidence that rules out the other candidates."
+  },
+  {
+    "id": "fishbone-diagram",
+    "name": "Fishbone Diagram (Ishikawa / Cause-and-Effect Diagram)",
+    "discipline": "problem-solving",
+    "use_when": "Teams focus on the most obvious causes and miss systemic or multi-category contributors to a problem.",
+    "move": "Sort candidate causes into categories (people, process, tools, data, environment) and confirm or rule out each with data.",
+    "receipt": "Cause categories with their candidate causes, each marked confirmed or ruled out by a named piece of data."
+  },
+  {
+    "id": "issue-trees",
+    "name": "Issue Trees (Logic Trees)",
+    "discipline": "problem-solving",
+    "use_when": "Large problems feel intractable because they lack structure; important sub-issues get missed or double-counted.",
+    "move": "Split the question into sub-questions that don't overlap and together cover it, down to ones data can answer.",
+    "receipt": "The tree, with each leaf answered by a named piece of data."
+  },
+  {
+    "id": "mece-principle",
+    "name": "MECE Principle",
+    "discipline": "problem-solving",
+    "use_when": "Poorly structured analysis leads to gaps (missed causes) or overlaps (double-counting), producing flawed conclusions.",
+    "move": "Break the whole into parts that don't overlap and leave nothing out, and check that the parts sum to the whole.",
+    "receipt": "The breakdown's parts, with a check that none overlap and that their numbers sum to the whole."
+  },
+  {
+    "id": "retrograde-analysis",
+    "name": "Retrograde Analysis (Working Backwards)",
+    "discipline": "problem-solving",
+    "use_when": "Forward-planning from the present has too many branching paths; working backwards from a fixed goal prunes the search space dramatically.",
+    "move": "Write the finished end state first, then derive each step that must precede it.",
+    "receipt": "The end state written first, and the chain of steps derived back to today."
+  },
+  {
+    "id": "constraint-relaxation",
+    "name": "Constraint Relaxation",
+    "discipline": "problem-solving",
+    "use_when": "Perceived constraints (often self-imposed mental ones, not real ones) artificially narrow the solution space, causing impasse.",
+    "move": "Tag every constraint as real (with its source) or assumed, and solve once with an assumed one dropped.",
+    "receipt": "Every constraint tagged real (with its source) or assumed, and the solution with one assumed constraint dropped."
+  },
+  {
+    "id": "ishikawa-conflict-resolution-diagram",
+    "name": "Ishikawa Conflict Resolution Diagram (Evaporating Cloud)",
+    "discipline": "problem-solving",
+    "use_when": "Conflicts that appear to be dilemmas (A vs B) often rest on an unstated assumption; surfacing and challenging that assumption dissolves the conflict rather than forcing a compromise.",
+    "move": "Write the goal, the two needs and the two conflicting wants, then surface the assumption under each arrow and break one.",
+    "receipt": "The cloud (goal, two needs, two conflicting wants), the assumption under each arrow, and the one shown false."
+  },
+  {
+    "id": "pdsa-cycle",
+    "name": "PDSA Cycle (Plan-Do-Study-Act)",
+    "discipline": "problem-solving",
+    "use_when": "PDCA's 'Check' step is often treated as pass/fail verification rather than genuine learning about why something worked or didn't.",
+    "move": "Write the predicted result before the change, run the change small, compare result with prediction, then adopt, adapt or drop.",
+    "receipt": "The prediction file written before the change, the measured result, and the decision."
+  },
+  {
+    "id": "divergent-convergent-thinking",
+    "name": "Divergent / Convergent Thinking",
+    "discipline": "creativity",
+    "use_when": "Mixing idea generation with evaluation simultaneously kills creative options prematurely; separating modes improves both quality and quantity of solutions.",
+    "move": "Generate options with judging switched off, then write the criteria, then converge.",
+    "receipt": "A count of options generated before any was judged, then the criteria written down and the shortlist they produced."
+  },
+  {
+    "id": "scamper",
+    "name": "SCAMPER",
+    "discipline": "creativity",
+    "use_when": "Blank-slate brainstorming is hard; SCAMPER gives concrete prompts to systematically explore variations of something that already exists.",
+    "move": "Run the subject through Substitute, Combine, Adapt, Modify, Put to another use, Eliminate, Reverse.",
+    "receipt": "At least one idea per SCAMPER verb (seven or more), and the two kept, each with its reason."
+  },
+  {
+    "id": "reverse-brainstorming",
+    "name": "Reverse Brainstorming",
+    "discipline": "creativity",
+    "use_when": "Direct brainstorming hits a wall; inverting the question ('how do we make this worse?') is psychologically easier and often generates more original insights.",
+    "move": "List ways to make the problem worse, mark the ones already happening, and invert each into a fix.",
+    "receipt": "A list of ways to make the problem worse, the ones already happening marked, and each inverted into a candidate fix."
+  },
+  {
+    "id": "concept-fan",
+    "name": "Concept Fan",
+    "discipline": "creativity",
+    "use_when": "Teams exhaust solutions at one level of abstraction without realizing a slight problem re-framing would reveal entirely different options.",
+    "move": "Step up from the idea to the concept it serves, then fan out to other ideas that serve the same concept.",
+    "receipt": "The concept one level up, and at least three alternatives that serve it."
+  },
+  {
+    "id": "morphological-analysis",
+    "name": "Morphological Analysis (Zwicky Box)",
+    "discipline": "creativity",
+    "use_when": "Conventional brainstorming stays near familiar solutions; morphological analysis forces exhaustive exploration of the entire solution space by combining dimensions that are never normally paired.",
+    "move": "List the problem's independent dimensions, the options for each, and scan the combinations.",
+    "receipt": "A grid of dimensions and options, and the combinations it produced that nobody proposed."
+  },
+  {
+    "id": "triz",
+    "name": "TRIZ (Theory of Inventive Problem Solving)",
+    "discipline": "problem-solving",
+    "use_when": "Technical innovation is treated as random inspiration; TRIZ makes invention systematic by mapping contradictions to proven solution patterns.",
+    "move": "State the contradiction (improving X worsens Y) and apply the inventive principle that resolves it.",
+    "receipt": "The contradiction (improving X worsens Y) and the inventive principle that resolves it."
+  },
+  {
+    "id": "analogical-thinking",
+    "name": "Analogical Thinking",
+    "discipline": "creativity",
+    "use_when": "Novel problems lack obvious solution templates; analogies borrow proven structures from different domains to create a starting point.",
+    "move": "Find a field that solved the same shape of problem, map its mechanism part by part, and test one prediction it makes here.",
+    "receipt": "The source field, the part-by-part mapping, and the prediction tested."
+  },
+  {
+    "id": "jobs-to-be-done",
+    "name": "Jobs to Be Done (JTBD)",
+    "discipline": "strategic-thinking",
+    "use_when": "Product decisions based on customer demographics or competitor features miss the actual motivation behind purchase and use.",
+    "move": "Find the job the user hires this for, in their words, from real interviews or support tickets.",
+    "receipt": "The job the user hires this for, in their words, and what it changes in the solution."
+  },
+  {
+    "id": "impact-effort-matrix",
+    "name": "Impact-Effort Matrix",
+    "discipline": "decision-making",
+    "use_when": "Teams face too many competing initiatives with limited resources and no principled way to sequence them.",
+    "move": "Estimate impact and effort for each option as numbers, and take the high-impact, low-effort ones first.",
+    "receipt": "Each option with an impact and an effort estimate (numbers, not adjectives), and the quick wins taken first."
+  },
+  {
+    "id": "leverage-points",
+    "name": "Leverage Points",
+    "discipline": "systems-thinking",
+    "use_when": "Tells you where to focus effort for maximum impact in a complex system; prevents wasting resources on low-leverage interventions.",
+    "move": "Name the Meadows level of the change (parameters up to goals) and try one level higher.",
+    "receipt": "The Meadows level of the chosen change, and the attempt to move one level up."
+  },
+  {
+    "id": "causal-loop-diagram",
+    "name": "Causal Loop Diagram (CLD)",
+    "discipline": "systems-thinking",
+    "use_when": "Makes hidden system structure visible before intervening; prevents linear thinking in non-linear systems.",
+    "move": "Write the variables and the causal links with their signs, and close the loops.",
+    "receipt": "The loops written out (A -> B -> A), each marked reinforcing or balancing, with data for each link."
+  },
+  {
+    "id": "reinforcing-feedback-loop",
+    "name": "Reinforcing Feedback Loop",
+    "discipline": "systems-thinking",
+    "use_when": "Explains why small advantages compound into dominance, and why vicious/virtuous cycles are hard to escape.",
+    "move": "Find the loop that feeds itself and measure its gain per cycle.",
+    "receipt": "The loop written out, with its gain measured from data (growth or decay per cycle, or doubling time)."
+  },
+  {
+    "id": "balancing-feedback-loop",
+    "name": "Balancing Feedback Loop",
+    "discipline": "systems-thinking",
+    "use_when": "Explains why systems resist change, why policies often underperform, and how homeostasis works.",
+    "move": "Find the loop that pulls the system back to a target, and measure the target and the gap.",
+    "receipt": "The balancing loop, its goal, and the measured gap and correction rate."
+  },
+  {
+    "id": "stock-and-flow",
+    "name": "Stock and Flow",
+    "discipline": "systems-thinking",
+    "use_when": "Makes visible what accumulates and what moves in a system, preventing confusion between levels and rates.",
+    "move": "Name the stock, measure its inflows and outflows, and project it forward.",
+    "receipt": "The stock, its inflows and outflows as numbers, and a projection of where it goes."
+  },
+  {
+    "id": "delays",
+    "name": "Delays",
+    "discipline": "systems-thinking",
+    "use_when": "Managers intervene based on current state, but current state reflects past actions — without accounting for delays, they overcorrect and create cycles.",
+    "move": "Measure or estimate the delay in each loop, and plan for the overshoot it causes.",
+    "receipt": "The delay in each loop, measured or estimated, and how the plan accounts for it."
+  },
+  {
+    "id": "iceberg-model",
+    "name": "Iceberg Model",
+    "discipline": "systems-thinking",
+    "use_when": "Reactive thinking treats symptoms (events) while root causes (structures and mental models) remain invisible and unchanged.",
+    "move": "Go below the event to the pattern, below the pattern to the structure, and below that to the belief that holds it.",
+    "receipt": "The event, the pattern behind it, the structure behind that, and the mental model behind the structure."
+  },
+  {
+    "id": "fixes-that-fail-archetype",
+    "name": "Fixes That Fail Archetype",
+    "discipline": "systems-thinking",
+    "use_when": "Explains why organizations repeatedly apply the same failing solutions, mistaking symptom relief for problem-solving.",
+    "move": "Find the quick fix whose side effect brings the problem back, and show it in the data.",
+    "receipt": "The quick fix, the side effect that brings the problem back, and the data that shows it."
+  },
+  {
+    "id": "shifting-the-burden-archetype",
+    "name": "Shifting the Burden Archetype",
+    "discipline": "systems-thinking",
+    "use_when": "Short-term solutions crowd out fundamental solutions, leading to escalating reliance on symptomatic fixes.",
+    "move": "Separate the symptomatic fix from the fundamental one it crowds out, and plan the fundamental one.",
+    "receipt": "The symptomatic fix, the fundamental fix it crowds out, and the plan to do the fundamental one."
+  },
+  {
+    "id": "limits-to-growth-archetype",
+    "name": "Limits to Growth Archetype",
+    "discipline": "systems-thinking",
+    "use_when": "Explains why growth initiatives plateau and why pushing harder on the original strategy makes things worse.",
+    "move": "Find the growth loop and the resource that will stop it, and measure how close that limit is.",
+    "receipt": "The growth loop, the limiting resource, and the level at which it binds, with how far away that is now."
+  },
+  {
+    "id": "escalation-archetype",
+    "name": "Escalation Archetype",
+    "discipline": "systems-thinking",
+    "use_when": "Explains arms races, price wars, and interpersonal conflicts that seem to have a life of their own.",
+    "move": "Plot both sides' moves over time to show each one responding to the other, then find a one-sided step that breaks the loop.",
+    "receipt": "Both sides' moves plotted over time, showing each response to the other, and the one-sided step that breaks the loop."
+  },
+  {
+    "id": "tragedy-of-the-commons",
+    "name": "Tragedy of the Commons",
+    "discipline": "systems-thinking",
+    "use_when": "Explains why shared resources degrade without collective governance, and why individual rationality produces collective irrationality.",
+    "move": "Name the shared resource, and set each user's private gain against the shared cost.",
+    "receipt": "The shared resource, each user's gain against the shared cost as numbers, and the depletion rate."
+  },
+  {
+    "id": "ostrom-s-design-principles",
+    "name": "Ostrom's Design Principles",
+    "discipline": "systems-thinking",
+    "use_when": "The Tragedy of the Commons presents a false binary (privatize or regulate); Ostrom showed communities self-organize effective governance given the right conditions.",
+    "move": "Check the shared resource's governance against Ostrom's eight principles and add the missing one.",
+    "receipt": "The eight principles checked against the shared resource, and the missing one the plan adds."
+  },
+  {
+    "id": "tipping-point",
+    "name": "Tipping Point",
+    "discipline": "systems-thinking",
+    "use_when": "Linear thinking misses the non-linearity of system transitions — interventions that seem to have no effect suddenly produce dramatic change at the threshold.",
+    "move": "Find the threshold where behaviour changes, and measure where the system sits now.",
+    "receipt": "The threshold value, where the system is now, and the distance to it."
+  },
+  {
+    "id": "power-laws-fat-tails",
+    "name": "Power Laws / Fat Tails",
+    "discipline": "systems-thinking",
+    "use_when": "Gaussian (normal) distribution assumptions underestimate the frequency and impact of extreme events in interconnected, network-driven systems.",
+    "move": "Measure what share the top 1% and 10% carry before trusting any average.",
+    "receipt": "The top-1% and top-10% shares, and whether the mean is safe to use."
+  },
+  {
+    "id": "normal-accidents-theory",
+    "name": "Normal Accidents Theory",
+    "discipline": "systems-thinking",
+    "use_when": "Safety engineers over-rely on adding safeguards without recognizing that complexity and tight coupling make accidents 'normal' regardless of individual component reliability.",
+    "move": "Rate the system's coupling (tight or loose) and interactions (linear or complex); where both are high, add slack or decouple.",
+    "receipt": "Each component rated on coupling and complexity, and the decoupling or slack added at the worst one."
+  },
+  {
+    "id": "goodhart-s-law",
+    "name": "Goodhart's Law",
+    "discipline": "systems-thinking",
+    "use_when": "Organizations optimize metrics at the expense of the underlying goal those metrics were designed to track, producing perverse outcomes.",
+    "move": "For each metric the work improves, pick a second measure that would show if the real goal did not move.",
+    "receipt": "The metric the work improves, and a second measure that shows the real goal moved too."
+  },
+  {
+    "id": "cobra-effect",
+    "name": "Cobra Effect",
+    "discipline": "systems-thinking",
+    "use_when": "Policy designers create incentives without accounting for how rational actors will adapt to exploit them, inverting the intended effect.",
+    "move": "Describe the incentive the change creates, then play the person who games it.",
+    "receipt": "The incentive the change creates, and the way someone could game it."
+  },
+  {
+    "id": "jevons-paradox",
+    "name": "Jevons Paradox (Rebound Effect)",
+    "discipline": "systems-thinking",
+    "use_when": "Efficiency alone cannot reduce resource consumption; it may accelerate it by lowering effective costs and stimulating demand.",
+    "move": "Estimate the demand an efficiency gain unlocks before you count the saving.",
+    "receipt": "The efficiency gain, and the demand it may unlock, estimated."
+  },
+  {
+    "id": "unintended-consequences",
+    "name": "Unintended Consequences",
+    "discipline": "systems-thinking",
+    "use_when": "Linear cause-and-effect thinking ignores feedback loops, delays, and system adaptations that generate surprising and often adverse results.",
+    "move": "Ask who else the change touches and what they will do differently, then look for the earliest sign of it.",
+    "receipt": "Each affected party, its likely response, and the metric that would show it first."
+  },
+  {
+    "id": "pareto-principle",
+    "name": "Pareto Principle (80/20 Rule)",
+    "discipline": "strategic-thinking",
+    "use_when": "Treating all inputs/tasks as equally valuable disperses effort across low-leverage activities.",
+    "move": "Rank causes by their share of the effect and work only on the top few.",
+    "receipt": "A ranked breakdown showing which few causes carry most of the effect, with their share."
+  },
+  {
+    "id": "theory-of-constraints",
+    "name": "Theory of Constraints (TOC)",
+    "discipline": "problem-solving",
+    "use_when": "Optimization efforts spread across the whole system produce minimal gains; most work is on non-bottlenecks.",
+    "move": "Find the one step that limits throughput, measure it, and improve only that step until it moves.",
+    "receipt": "The one constraint, measured, and the result after the work moves it."
+  },
+  {
+    "id": "bottleneck-analysis",
+    "name": "Bottleneck Analysis",
+    "discipline": "problem-solving",
+    "use_when": "Performance improvement efforts are applied uniformly across a process when only one constraint actually limits output.",
+    "move": "Measure the queue and utilisation at every step; the one with the longest queue is the bottleneck.",
+    "receipt": "Utilisation and queue length per step, and the bottleneck named."
+  },
+  {
+    "id": "critical-path-method",
+    "name": "Critical Path Method (CPM)",
+    "discipline": "productivity",
+    "use_when": "Projects slip because resources are applied to non-critical tasks while the true duration bottleneck (the critical path) gets insufficient attention.",
+    "move": "Lay out the tasks with durations and dependencies, find the longest path, and protect it.",
+    "receipt": "The task graph with durations, the critical path and its length, and the slack on the other tasks."
+  },
+  {
+    "id": "unit-economics",
+    "name": "Unit Economics",
+    "discipline": "strategic-thinking",
+    "use_when": "Growing companies can appear healthy at an aggregate level while losing money on every customer — scale amplifies a broken unit model.",
+    "move": "Compute value and cost per unit (user, order, request), and show how the change moves each.",
+    "receipt": "The value and cost per unit, and how the change moves each."
+  },
+  {
+    "id": "gall-s-law",
+    "name": "Gall's Law",
+    "discipline": "systems-thinking",
+    "use_when": "Prevents big-bang system redesigns and grandiose complexity upfront; argues for incremental evolution from simple working systems.",
+    "move": "Build the smallest version that works end to end, and grow it from there.",
+    "receipt": "The smallest working version that the larger design grows from."
+  },
+  {
+    "id": "conway-s-law",
+    "name": "Conway's Law",
+    "discipline": "systems-thinking",
+    "use_when": "Teams wonder why their systems are fragmented, coupled in wrong places, or reflect political boundaries rather than functional needs.",
+    "move": "Draw the team and ownership boundaries beside the design's module boundaries, and decide whether they should match.",
+    "receipt": "The team or ownership boundary that the design follows, and whether it should."
+  },
+  {
+    "id": "map-is-not-the-territory",
+    "name": "Map Is Not the Territory",
+    "discipline": "systems-thinking",
+    "use_when": "People mistake their mental representations, models, and language for the actual world they describe, leading to rigid thinking and surprise when reality diverges.",
+    "move": "Name the model's main simplification and test it against the real system.",
+    "receipt": "The model's main simplification, and a real-world check of it."
+  },
+  {
+    "id": "minimum-viable-product",
+    "name": "Minimum Viable Product (MVP)",
+    "discipline": "strategic-thinking",
+    "use_when": "Teams build full products based on unvalidated assumptions, wasting months of effort on features nobody wants.",
+    "move": "Write the learning goal and its pass line, then build the least that tests it.",
+    "receipt": "The hypothesis, the pass line set before the test, and the result."
+  },
+  {
+    "id": "north-star-metric",
+    "name": "North Star Metric",
+    "discipline": "strategic-thinking",
+    "use_when": "Teams optimize local metrics (revenue, downloads, page views) that don't reflect whether the product is genuinely delivering value.",
+    "move": "Pick the one metric that tracks the value users get, plus a guardrail metric it must not hurt.",
+    "receipt": "The north star with its current value, and the guardrail metric beside it."
+  },
+  {
+    "id": "network-effects",
+    "name": "Network Effects",
+    "discipline": "strategic-thinking",
+    "use_when": "Products compete on features alone without building the structural advantages that make switching costs and scale self-reinforcing.",
+    "move": "Plot value per user against network size, and name which kind of network effect it is.",
+    "receipt": "Value per user plotted against the number of users (or another measure of network size), and which kind of network effect it is."
+  },
+  {
+    "id": "flywheel-effect",
+    "name": "Flywheel Effect",
+    "discipline": "strategic-thinking",
+    "use_when": "Organizations seek single breakthrough moments or silver bullets, missing that greatness comes from compound incremental improvements.",
+    "move": "Write the loop's steps and measure the conversion rate at each one.",
+    "receipt": "The loop's steps written out, with the conversion rate measured at each step, and the weakest step named."
+  },
+  {
+    "id": "competitive-moat",
+    "name": "Competitive Moat",
+    "discipline": "strategic-thinking",
+    "use_when": "Competitive advantages from product features or execution erode quickly; sustainable profitability requires structural barriers.",
+    "move": "Name the moat type (switching cost, network, scale, brand, intangible) and the evidence that it holds.",
+    "receipt": "The moat type, and a number that shows it holding (retention, price premium, cost gap)."
+  },
+  {
+    "id": "porter-s-five-forces",
+    "name": "Porter's Five Forces",
+    "discipline": "strategic-thinking",
+    "use_when": "Companies set strategy based on direct competitor moves alone, missing the structural forces that actually determine long-run profitability.",
+    "move": "Rate rivalry, new entrants, substitutes, buyer power and supplier power, each with evidence.",
+    "receipt": "The five forces rated with evidence, and the strongest one named."
+  },
+  {
+    "id": "wardley-mapping",
+    "name": "Wardley Mapping",
+    "discipline": "strategic-thinking",
+    "use_when": "Strategy is made without situational awareness — leaders don't know what's evolving into a commodity or where competitors will attack next.",
+    "move": "Place each component by how visible it is to the user and how evolved it is, then decide build, buy or outsource.",
+    "receipt": "Components placed by user visibility and evolution stage, and a build, buy or outsource call for each."
+  },
+  {
+    "id": "path-dependence-lock-in",
+    "name": "Path Dependence / Lock-In",
+    "discipline": "systems-thinking",
+    "use_when": "Organizations, technologies, and institutions remain stuck in inefficient configurations because switching costs and network effects make change prohibitively expensive.",
+    "move": "Estimate what it would cost to reverse the choice later, and what would keep it reversible.",
+    "receipt": "The switching cost of the choice, estimated in time or money, and what would keep it reversible."
+  },
+  {
+    "id": "technology-adoption-lifecycle",
+    "name": "Technology Adoption Lifecycle (Crossing the Chasm)",
+    "discipline": "strategic-thinking",
+    "use_when": "Companies succeed with early adopters but fail to cross into mainstream markets because these groups have fundamentally different needs and reference systems.",
+    "move": "Name the segment you are selling to now and the one beachhead niche that gets you to the early majority.",
+    "receipt": "The current adopter segment, the beachhead niche, and the whole product it needs."
+  },
+  {
+    "id": "diffusion-of-innovation",
+    "name": "Diffusion of Innovation (S-Curve)",
+    "discipline": "systems-thinking",
+    "use_when": "Explains why adoption of new ideas seems slow at first, then explosive, then plateaus — and how to accelerate or respond to diffusion.",
+    "move": "Place the product on its adoption S-curve from real numbers, and name the next segment's main objection.",
+    "receipt": "The adoption share now, the curve's phase, and the next segment's objection."
+  },
+  {
+    "id": "antifragility",
+    "name": "Antifragility",
+    "discipline": "systems-thinking",
+    "use_when": "Most risk management aims for robustness (survive shocks), ignoring the possibility of designing systems that get stronger from stress.",
+    "move": "Find where the system gains from stress, and add small, cheap, frequent stressors there.",
+    "receipt": "The stressor added, and a measure that shows the system got stronger from it."
+  },
+  {
+    "id": "black-swan",
+    "name": "Black Swan",
+    "discipline": "systems-thinking",
+    "use_when": "Normal-distribution thinking (Gaussian models) wildly underestimates the probability and impact of tail events in complex systems.",
+    "move": "List the rare events with outsized impact, and make the plan survive them, not predict them.",
+    "receipt": "The rare events listed, the plan's exposure to each, and the cap on the worst one."
+  },
+  {
+    "id": "minto-pyramid-principle",
+    "name": "Minto Pyramid Principle (BLUF)",
+    "discipline": "communication",
+    "use_when": "Audiences lack time for bottom-up narratives; burying conclusions in long preambles loses attention and obscures the key message.",
+    "move": "Put the answer first in one sentence, then three supporting points, then the evidence for each.",
+    "receipt": "The answer in one sentence at the top, three supporting points under it, the evidence under each, and nothing left over."
+  },
+  {
+    "id": "scqa-framework",
+    "name": "SCQA Framework",
+    "discipline": "communication",
+    "use_when": "Context-heavy openings lose busy executives; listeners disengage before the point is reached.",
+    "move": "Open with Situation, Complication, Question and Answer, one sentence each.",
+    "receipt": "The opening written as Situation, Complication, Question and Answer, each in one sentence, with the Answer matching the recommendation."
+  },
+  {
+    "id": "situation-behavior-impact",
+    "name": "Situation-Behavior-Impact (SBI)",
+    "discipline": "communication",
+    "use_when": "Feedback triggers defensiveness because it mixes observation with interpretation and personal judgment.",
+    "move": "Rewrite each piece of feedback as situation, observable behaviour and impact, without judgment words.",
+    "receipt": "Each piece of feedback rewritten as situation, observable behaviour and impact, with every judgment word removed."
+  },
+  {
+    "id": "psychological-safety",
+    "name": "Psychological Safety",
+    "discipline": "leadership",
+    "use_when": "Teams underperform because members self-censor, hide errors, and avoid experiments — not from incompetence but from fear of social consequences.",
+    "move": "Measure whether people can speak up (Edmondson's seven survey items, or who speaks in meetings) before asking for candour.",
+    "receipt": "The survey scores or the speaking counts, and the lowest item addressed."
+  },
+  {
+    "id": "batna-zopa",
+    "name": "BATNA & ZOPA",
+    "discipline": "negotiation",
+    "use_when": "Negotiators make poor deals (accept too little or reject viable ones) because they lack clear walk-away thresholds and don't understand the feasible deal space.",
+    "move": "Write both sides' best alternative to a deal, and the zone where a deal beats both.",
+    "receipt": "Each side's BATNA with its value, and the ZOPA's bounds, or proof that none exists."
+  },
+  {
+    "id": "principled-negotiation",
+    "name": "Principled Negotiation (Interest-Based Negotiation)",
+    "discipline": "negotiation",
+    "use_when": "Positional bargaining wastes value (people get anchored to positions) and damages relationships (conflates people with problems).",
+    "move": "List the interests behind each side's position, and generate options that serve both, judged by an objective standard.",
+    "receipt": "Each side's interests, the options generated, and the objective standard used to choose."
+  },
+  {
+    "id": "deliberate-practice",
+    "name": "Deliberate Practice",
+    "discipline": "learning",
+    "use_when": "Time-on-task alone does not produce expertise; most 'practice' is mindless repetition that plateaus quickly.",
+    "move": "Pick the one sub-skill just beyond current ability, drill it with immediate feedback, and score each repetition.",
+    "receipt": "The one sub-skill just beyond current ability, a drill with immediate feedback, and the score per repetition."
+  },
+  {
+    "id": "feynman-technique",
+    "name": "Feynman Technique",
+    "discipline": "learning",
+    "use_when": "People mistake recognition (reading notes and feeling familiar) for actual understanding.",
+    "move": "Explain it in plain words to a newcomer, mark where the explanation breaks, and go back to the source for each gap.",
+    "receipt": "A plain-language explanation for a newcomer, the places where it broke down, and the source used to fill each gap."
+  },
+  {
+    "id": "double-loop-learning",
+    "name": "Double-Loop Learning",
+    "discipline": "learning",
+    "use_when": "Organizations and individuals keep repeating the same mistakes because they fix symptoms without examining the faulty mental models causing them.",
+    "move": "When a fix keeps recurring, state the assumption behind it and test that instead of the fix.",
+    "receipt": "The assumption behind the recurring fix, stated and tested against data, and the rule changed if it fails."
+  }
+]

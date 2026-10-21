@@ -1,0 +1,98 @@
+[
+  {
+    "id": "inversion",
+    "name": "Inversion",
+    "how": "What if the opposite of the core assumption is true? If they assume X must be done, what if X should not be done at all? If Y looks like the constraint, what if Y is the solution?"
+  },
+  {
+    "id": "abstraction-shift",
+    "name": "Abstraction shift",
+    "how": "Go up one level: what is the goal behind the goal? Go down one level: what concrete sub-problem hides inside the vague one? Solve at whichever level moves."
+  },
+  {
+    "id": "constraint-flip",
+    "name": "Constraint flip",
+    "how": "List what is assumed fixed and what is assumed variable. Test each: maybe the fixed thing can move and the variable thing is actually fixed."
+  },
+  {
+    "id": "adjacent-domain",
+    "name": "Adjacent domain",
+    "how": "Find a field outside theirs that solved a problem with the same structure. Map the structure across; the answer may exist in another vocabulary."
+  },
+  {
+    "id": "first-principles",
+    "name": "First principles",
+    "how": "Strip away convention and precedent. What is provably true? Most stuckness comes from inherited assumptions, not physical laws. Rebuild from what is left."
+  },
+  {
+    "id": "temporal-shift",
+    "name": "Temporal shift",
+    "how": "What would you do with ten times more time? What if it had to ship tomorrow? The urgency frame often hides what actually matters."
+  },
+  {
+    "id": "stakeholder-swap",
+    "name": "Stakeholder swap",
+    "how": "Re-describe the problem from the point of view of someone else in it: the user, the operator, the person paying, the person who loses. Stuck problems often belong to someone else."
+  },
+  {
+    "id": "smallest-instance",
+    "name": "Smallest instance",
+    "how": "Solve the tiniest real instance of the problem by hand, end to end. Whatever was blocking the general case usually shows up, or disappears, at that size."
+  },
+  {
+    "id": "dissolve",
+    "name": "Dissolve the problem",
+    "how": "Instead of solving it, make it irrelevant: remove the need, change the process that creates it, or accept it and design around it."
+  },
+  {
+    "id": "redefine-done",
+    "name": "Redefine done",
+    "how": "The stuckness may come from the definition of success. Write three different, legitimate definitions of done and see which one has an obvious next step."
+  },
+  {
+    "id": "how-might-we",
+    "name": "How might we",
+    "how": "Restate the problem as 'How might we [outcome] for [who] so that [why]?', narrow enough to act on and wide enough to leave room.",
+    "source": "IDEO / Stanford d.school"
+  },
+  {
+    "id": "wicked-question",
+    "name": "Wicked question",
+    "how": "Name two things that are both true and pull against each other, and ask how both can hold. Stuckness often comes from pretending one of them is false.",
+    "source": "Liberating Structures: Wicked Questions"
+  },
+  {
+    "id": "critical-uncertainties",
+    "name": "Critical uncertainties",
+    "how": "Pick the two most uncertain, most impactful factors as axes of a 2x2. Find the move that is sound in all four corners.",
+    "source": "Liberating Structures: Critical Uncertainties"
+  },
+  {
+    "id": "domain-check",
+    "name": "Domain check",
+    "how": "Decide whether the problem is clear, complicated, complex or chaotic. Clear: apply best practice. Complicated: ask experts. Complex: run small safe experiments. Chaotic: act to stabilise first.",
+    "source": "Snowden, Cynefin framework (a method selector, not evidence-backed science)"
+  },
+  {
+    "id": "ladder-of-inference",
+    "name": "Ladder of inference",
+    "how": "Walk the disagreement down: conclusions, assumptions, meanings, selected data, raw data. Find the rung where the views split.",
+    "source": "Argyris and Senge"
+  },
+  {
+    "id": "principal-contradiction",
+    "name": "Principal contradiction",
+    "how": "List the tensions in the situation and find the one that, once resolved, makes the others easy. Work only on that one.",
+    "source": "Mao, On Contradiction (抓主要矛盾); close to Theory of Constraints"
+  },
+  {
+    "id": "make-reversible",
+    "name": "Make it reversible",
+    "how": "What makes this feel stuck is that it looks permanent. What would it take to make the choice undoable: a trial period, a staged rollout, an exit clause, a copy kept? Once it is a two-way door, which option would you try first?"
+  },
+  {
+    "id": "satisfice",
+    "name": "Good enough",
+    "how": "Stop looking for the best option. Write the minimum bar an answer must clear, then take the first option that clears it. Which one is that, and what is lost by not optimising further?"
+  }
+]

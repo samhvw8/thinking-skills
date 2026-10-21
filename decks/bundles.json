@@ -1,0 +1,223 @@
+{
+  "about": "How tools/build_decks.py turns decks/*.json into each skill's own files. A bundle is one built JSON file: its keys in order, each a fixed value or a deck (optionally only some ids, or only some fields). A skill lists the files it gets: a bundle, or a copy of a file in decks/. Every skill carries its own copy, so each installs and runs alone.",
+  "bundles": {
+    "perspective-deck": {
+      "indent": 2,
+      "keys": [
+        [
+          "version",
+          {
+            "value": 4
+          }
+        ],
+        [
+          "about",
+          {
+            "value": "The perspective deck shared by heavy-think (Brainstorm, Perspectives, Unstick, Decompose), the heavy-thinker agent, /council, /debate and /ambition. A card is one lens (who is looking) plus, optionally, one technique (how they generate). Every lens has 'asks' (its question), 'sees', 'misses', 'clashes', 'delivers' (the output it must produce) and 'instruments' (what it actually does: its raw material, the tools it uses, and the check it runs, plus what to do when that material is out of reach), so a lens changes the work, not only the words. Provocations are the facilitator's sparks. Presets are starting lens sets for common question shapes, each naming its rubric; the *-review presets seat a review panel when the Perspectives ask is review and never seat a wildcard. Reframes feed Unstick mode, decompositions feed Decompose mode, debates and debate_rules feed /debate, rubrics hold the scoring weights (criteria anchors live in rubric.md). deck.py deals from this file and lists it: add an entry and it is picked up, and never copy counts or lists from here into the docs. Ids must be unique within a list, and every id a lens, preset or set refers to must exist. Entries added from research carry a 'source'."
+          }
+        ],
+        [
+          "families",
+          {
+            "deck": "families"
+          }
+        ],
+        [
+          "lenses",
+          {
+            "deck": "lenses"
+          }
+        ],
+        [
+          "techniques",
+          {
+            "deck": "techniques"
+          }
+        ],
+        [
+          "provocations",
+          {
+            "deck": "provocations"
+          }
+        ],
+        [
+          "presets",
+          {
+            "deck": "presets"
+          }
+        ],
+        [
+          "reframes",
+          {
+            "deck": "reframes"
+          }
+        ],
+        [
+          "reframe_sets",
+          {
+            "deck": "reframe_sets"
+          }
+        ],
+        [
+          "decompositions",
+          {
+            "deck": "decompositions"
+          }
+        ],
+        [
+          "decomposition_sets",
+          {
+            "deck": "decomposition_sets"
+          }
+        ],
+        [
+          "debates",
+          {
+            "deck": "debates"
+          }
+        ],
+        [
+          "debate_rules",
+          {
+            "deck": "debate_rules"
+          }
+        ],
+        [
+          "rubrics",
+          {
+            "deck": "rubrics"
+          }
+        ],
+        [
+          "composition_rules",
+          {
+            "deck": "composition_rules"
+          }
+        ]
+      ]
+    },
+    "ambition-deck": {
+      "indent": 1,
+      "keys": [
+        [
+          "about",
+          {
+            "value": "Cards for ambition's high mode. Models: 88 of a 247-model catalog, kept because each has a move with a receipt. Patterns route a problem to models. Fields are Range cards: a field, its verbs, method, instruments and receipt. Lenses come from heavy-think's perspective deck."
+          }
+        ],
+        [
+          "models",
+          {
+            "deck": "models"
+          }
+        ],
+        [
+          "patterns",
+          {
+            "deck": "patterns"
+          }
+        ],
+        [
+          "fields",
+          {
+            "deck": "fields"
+          }
+        ],
+        [
+          "lenses",
+          {
+            "deck": "lenses",
+            "ids": [
+              "outsider",
+              "adversary",
+              "economist",
+              "operator",
+              "historian",
+              "newcomer",
+              "competitor",
+              "systems-thinker",
+              "craftsperson",
+              "storyteller",
+              "data-steward",
+              "skeptic",
+              "fact-checker"
+            ],
+            "fields": [
+              "id",
+              "family",
+              "name",
+              "asks",
+              "instruments",
+              "delivers"
+            ]
+          }
+        ]
+      ]
+    },
+    "creative-techniques": {
+      "indent": 2,
+      "keys": [
+        [
+          "about",
+          {
+            "value": "The generation techniques from the shared deck (thinking-skills decks/techniques.json), for creative's generator table. Built by tools/build_decks.py; edit decks/, not this file."
+          }
+        ],
+        [
+          "techniques",
+          {
+            "deck": "techniques"
+          }
+        ]
+      ]
+    }
+  },
+  "skills": {
+    "heavy-think": {
+      "deck.py": {
+        "copy": "deck.py"
+      },
+      "references/perspectives.json": {
+        "bundle": "perspective-deck"
+      },
+      "references/rubric.md": {
+        "copy": "rubric.md"
+      }
+    },
+    "council": {
+      "deck/deck.py": {
+        "copy": "deck.py"
+      },
+      "deck/references/perspectives.json": {
+        "bundle": "perspective-deck"
+      },
+      "deck/references/rubric.md": {
+        "copy": "rubric.md"
+      }
+    },
+    "debate": {
+      "deck/deck.py": {
+        "copy": "deck.py"
+      },
+      "deck/references/perspectives.json": {
+        "bundle": "perspective-deck"
+      },
+      "deck/references/rubric.md": {
+        "copy": "rubric.md"
+      }
+    },
+    "ambition": {
+      "references/deck.json": {
+        "bundle": "ambition-deck"
+      }
+    },
+    "creative": {
+      "references/techniques.json": {
+        "bundle": "creative-techniques"
+      },
+      "references/rubric.md": {
+        "copy": "rubric.md"
+      }
+    }
+  }
+}

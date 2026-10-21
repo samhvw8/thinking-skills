@@ -1,0 +1,195 @@
+[
+  {
+    "id": "scamper",
+    "name": "SCAMPER",
+    "how": "Run the subject through Substitute, Combine, Adapt, Modify, Put to another use, Eliminate, Reverse. One idea per verb at least; keep the two that surprise you."
+  },
+  {
+    "id": "reverse-brainstorm",
+    "name": "Reverse brainstorm",
+    "how": "Generate the worst possible ideas: how to make the problem much worse. Mark which ones you already do in some form, stop those, then invert the rest and keep the inversions that are not obvious.",
+    "source": "Liberating Structures: Making Space with TRIZ (the reckoning step)"
+  },
+  {
+    "id": "random-entry",
+    "name": "Random entry",
+    "how": "Pick three unrelated nouns (an object, a place, a profession). Force a connection from each to the problem and develop the strongest."
+  },
+  {
+    "id": "forced-mashup",
+    "name": "Forced mashup",
+    "how": "Combine the problem with a product or institution from a completely different industry. Ask what the hybrid would look like and what it would do better."
+  },
+  {
+    "id": "constraint-injection",
+    "name": "Constraint injection",
+    "how": "Re-solve under extreme constraints: zero budget, one day, ten times the users, no screen, no software. Keep what still works without the constraint."
+  },
+  {
+    "id": "constraint-removal",
+    "name": "Constraint removal",
+    "how": "List every constraint you assume. Delete them one at a time and solve as if each were gone. Then check which deletions were actually possible."
+  },
+  {
+    "id": "assumption-reversal",
+    "name": "Assumption reversal",
+    "how": "Write down the five assumptions everyone makes about this. Flip each to its opposite and build an idea that only works in the flipped world."
+  },
+  {
+    "id": "analogy-transfer",
+    "name": "Analogy transfer",
+    "how": "Find a field that solved a problem with the same shape (biology, games, logistics, cities, markets). Port its mechanism over and fix where the analogy breaks."
+  },
+  {
+    "id": "extreme-user",
+    "name": "Extreme users",
+    "how": "Design for the extremes: the heaviest user, the most reluctant one, the most constrained one. Ideas that serve extremes often serve everyone."
+  },
+  {
+    "id": "morphological",
+    "name": "Morphological box",
+    "how": "Split the problem into 3 to 5 dimensions, list 3 to 4 options per dimension, then combine one option from each into unusual configurations. Keep the strangest one that holds up."
+  },
+  {
+    "id": "triz-contradiction",
+    "name": "Contradiction resolution",
+    "how": "Name the core contradiction (we need X but X causes Y). Resolve it without compromise: separate in time, in space, by condition, or by system level."
+  },
+  {
+    "id": "subtraction",
+    "name": "Subtraction",
+    "how": "Remove an essential-looking component and ask what the thing becomes without it. Some of the best products are an old product minus one part."
+  },
+  {
+    "id": "scale-shift",
+    "name": "Scale shift",
+    "how": "Solve it for one person, then for a million, then for a single second and for ten years. Notice which ideas only appear at one scale."
+  },
+  {
+    "id": "backcasting",
+    "name": "Backcasting",
+    "how": "Describe the ideal outcome in concrete detail as if it already happened, then work backwards to the first move available this week."
+  },
+  {
+    "id": "jobs-to-be-done",
+    "name": "Jobs to be done",
+    "how": "State the job the person is hiring a solution to do, including the emotional and social job. Generate ideas that do the job better, even if they look nothing like the current solution."
+  },
+  {
+    "id": "provocation-po",
+    "name": "Lateral provocation",
+    "how": "Write a deliberately unreasonable statement starting with PO (cars have square wheels). Use it as a stepping stone: what useful idea moves away from it?"
+  },
+  {
+    "id": "role-storming",
+    "name": "Role storming",
+    "how": "Answer as three specific named archetypes would (a regulator, a teenager, a rival CEO). Keep the idea that only one of them would have."
+  },
+  {
+    "id": "ten-x",
+    "name": "10x not 10%",
+    "how": "Refuse incremental answers. For each idea ask what would make it ten times better, not ten percent better, and follow the one that requires a different approach."
+  },
+  {
+    "id": "verbalized-sampling",
+    "name": "Verbalized sampling",
+    "how": "Ask for five ideas together with how likely each one is, sampled from the tails where each is under 10% likely. Keep the unlikely ones that still hold up.",
+    "source": "Zhang et al. 2025, arXiv 2510.01171: 1.6 to 2.1x diversity in creative writing"
+  },
+  {
+    "id": "ordinary-personas",
+    "name": "Ordinary people",
+    "how": "Imagine three specific, ordinary people (a night-shift nurse, a retired bus driver, a first-year student). Generate one idea through each one's day, not through a famous creative.",
+    "source": "arXiv 2602.20408: ordinary personas beat famous-creative personas for idea diversity"
+  },
+  {
+    "id": "random-words",
+    "name": "Random words",
+    "how": "Pick five unrelated words (nouns, verbs, adjectives). Use each as an inspiration word and force one idea from it.",
+    "source": "LLM homogenization study (kiaghods.com): diversity rose for every model tested"
+  },
+  {
+    "id": "fifteen-percent",
+    "name": "15% solutions",
+    "how": "List what can be done right now, with no new resources and no one's permission. Start from the one most in reach.",
+    "source": "Liberating Structures: 15% Solutions"
+  },
+  {
+    "id": "boldest-first-step",
+    "name": "Boldest idea, first step",
+    "how": "Write the idea you would push if you were ten times bolder, then its very first concrete step. The step is what makes it real.",
+    "source": "Liberating Structures: 25/10 Crowd Sourcing"
+  },
+  {
+    "id": "evaporating-cloud",
+    "name": "Evaporating cloud",
+    "how": "State the shared goal, the two conflicting wants, the need behind each want, and the assumption linking them. Break one assumption and the conflict disappears.",
+    "source": "Goldratt, Theory of Constraints thinking processes"
+  },
+  {
+    "id": "mandal-art",
+    "name": "Nine-grid",
+    "how": "Put the goal in the centre of a 3x3 grid and force exactly eight sub-themes around it. Promote the most promising one to the centre of its own grid.",
+    "source": "Mandal-Art (曼陀羅思考法), Taiwanese and Japanese practice"
+  },
+  {
+    "id": "defect-listing",
+    "name": "Defect listing",
+    "how": "List every flaw, annoyance and omission of the current thing, then fix them one by one, worst first.",
+    "source": "Defect listing (缺點列舉法)"
+  },
+  {
+    "id": "wish-listing",
+    "name": "Wish listing",
+    "how": "Write 'I wish it could...' ten times without judging, then build an idea for each wish that is not obviously impossible.",
+    "source": "Wish-point listing (希望點列舉法)"
+  },
+  {
+    "id": "taking-out",
+    "name": "Take it out",
+    "how": "Find the part that causes the harm and pull it out, or keep only the part that matters and drop the rest.",
+    "source": "TRIZ principle 2: Taking out"
+  },
+  {
+    "id": "local-quality",
+    "name": "Local quality",
+    "how": "Stop treating the whole uniformly. Give each part the conditions and the job that suit it best.",
+    "source": "TRIZ principle 3: Local quality"
+  },
+  {
+    "id": "universality",
+    "name": "One part, many jobs",
+    "how": "Make one component do several jobs, so that other components can go.",
+    "source": "TRIZ principle 6: Universality"
+  },
+  {
+    "id": "preliminary-action",
+    "name": "Do it beforehand",
+    "how": "Do the work, or place the safeguard, before it is needed, when it is cheap.",
+    "source": "TRIZ principles 10 and 11: Preliminary action, Beforehand cushioning"
+  },
+  {
+    "id": "blessing-in-disguise",
+    "name": "Blessing in disguise",
+    "how": "Use the harmful factor as the resource, or amplify it until it cancels itself out.",
+    "source": "TRIZ principle 22: Blessing in disguise"
+  },
+  {
+    "id": "cheap-disposable",
+    "name": "Cheap and disposable",
+    "how": "Replace the expensive, durable thing with many cheap, short-lived ones.",
+    "source": "TRIZ principle 27: Cheap short-living objects"
+  },
+  {
+    "id": "self-service",
+    "name": "Self-service",
+    "how": "Make the system maintain, repair or feed itself from its own by-products.",
+    "source": "TRIZ principle 25: Self-service"
+  },
+  {
+    "id": "intermediary",
+    "name": "Go-between",
+    "how": "Insert a temporary intermediary between the two things that do not fit.",
+    "source": "TRIZ principle 24: Intermediary"
+  }
+]

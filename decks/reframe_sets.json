@@ -1,0 +1,132 @@
+[
+  {
+    "id": "every-option-wrong",
+    "when": "Every option feels wrong",
+    "reframes": [
+      "inversion",
+      "constraint-flip",
+      "first-principles"
+    ],
+    "deep_add": [
+      "redefine-done",
+      "dissolve"
+    ]
+  },
+  {
+    "id": "going-in-circles",
+    "when": "Going in circles",
+    "reframes": [
+      "abstraction-shift",
+      "adjacent-domain",
+      "temporal-shift"
+    ],
+    "deep_add": [
+      "stakeholder-swap",
+      "smallest-instance"
+    ]
+  },
+  {
+    "id": "no-next-step",
+    "when": "Cannot see the next step",
+    "reframes": [
+      "first-principles",
+      "constraint-flip",
+      "abstraction-shift"
+    ],
+    "deep_add": [
+      "smallest-instance",
+      "how-might-we"
+    ]
+  },
+  {
+    "id": "too-hard",
+    "when": "A solution exists but feels too hard",
+    "reframes": [
+      "temporal-shift",
+      "inversion",
+      "adjacent-domain"
+    ],
+    "deep_add": [
+      "dissolve",
+      "smallest-instance"
+    ]
+  },
+  {
+    "id": "politics",
+    "when": "Blocked by people, not by the problem",
+    "reframes": [
+      "stakeholder-swap",
+      "redefine-done",
+      "abstraction-shift"
+    ],
+    "deep_add": [
+      "dissolve",
+      "inversion"
+    ]
+  },
+  {
+    "id": "disagreement",
+    "when": "Smart people disagree and talk past each other",
+    "reframes": [
+      "ladder-of-inference",
+      "wicked-question",
+      "stakeholder-swap"
+    ],
+    "deep_add": [
+      "redefine-done",
+      "critical-uncertainties"
+    ]
+  },
+  {
+    "id": "too-many-unknowns",
+    "when": "Too many unknowns to plan",
+    "reframes": [
+      "domain-check",
+      "critical-uncertainties",
+      "smallest-instance"
+    ],
+    "deep_add": [
+      "temporal-shift",
+      "principal-contradiction"
+    ]
+  },
+  {
+    "id": "too-many-options",
+    "when": "Too many options, cannot choose",
+    "reframes": [
+      "satisfice",
+      "redefine-done",
+      "critical-uncertainties"
+    ],
+    "deep_add": [
+      "smallest-instance",
+      "principal-contradiction"
+    ]
+  },
+  {
+    "id": "afraid-to-commit",
+    "when": "The choice feels permanent and the stakes feel too high",
+    "reframes": [
+      "make-reversible",
+      "temporal-shift",
+      "smallest-instance"
+    ],
+    "deep_add": [
+      "inversion",
+      "domain-check"
+    ]
+  },
+  {
+    "id": "lost-the-why",
+    "when": "Working hard, but no longer sure what it is for",
+    "reframes": [
+      "abstraction-shift",
+      "redefine-done",
+      "stakeholder-swap"
+    ],
+    "deep_add": [
+      "how-might-we",
+      "wicked-question"
+    ]
+  }
+]

@@ -1,0 +1,371 @@
+[
+  {
+    "id": "product-direction",
+    "shape": "What should we build next?",
+    "lenses": [
+      "user-advocate",
+      "minimalist",
+      "adversary"
+    ],
+    "deep_add": [
+      "futurist",
+      "economist",
+      "competitor"
+    ],
+    "rubric": "creative"
+  },
+  {
+    "id": "architecture",
+    "shape": "Which technical approach should we take?",
+    "lenses": [
+      "operator",
+      "first-principles",
+      "minimalist"
+    ],
+    "deep_add": [
+      "historian",
+      "futurist"
+    ],
+    "rubric": "decision"
+  },
+  {
+    "id": "go-to-market",
+    "shape": "How should we enter this market?",
+    "lenses": [
+      "economist",
+      "contrarian",
+      "user-advocate"
+    ],
+    "deep_add": [
+      "competitor",
+      "outsider",
+      "reference-class"
+    ],
+    "rubric": "creative"
+  },
+  {
+    "id": "naming",
+    "shape": "What should we call this?",
+    "lenses": [
+      "storyteller",
+      "contrarian",
+      "futurist"
+    ],
+    "deep_add": [
+      "newcomer",
+      "trickster"
+    ],
+    "rubric": "creative"
+  },
+  {
+    "id": "prioritization",
+    "shape": "What should we do first?",
+    "lenses": [
+      "economist",
+      "user-advocate",
+      "operator"
+    ],
+    "deep_add": [
+      "minimalist",
+      "pre-mortem"
+    ],
+    "rubric": "decision"
+  },
+  {
+    "id": "process",
+    "shape": "How should we work differently?",
+    "lenses": [
+      "first-principles",
+      "contrarian",
+      "historian"
+    ],
+    "deep_add": [
+      "systems-thinker",
+      "community"
+    ],
+    "rubric": "decision"
+  },
+  {
+    "id": "greenfield",
+    "shape": "What could we build / how might we...?",
+    "lenses": [
+      "visionary",
+      "user-advocate",
+      "pragmatist"
+    ],
+    "deep_add": [
+      "outsider",
+      "trickster",
+      "moonshot",
+      "first-principles",
+      "futurist"
+    ],
+    "rubric": "creative"
+  },
+  {
+    "id": "growth",
+    "shape": "How do we get more people to use this?",
+    "lenses": [
+      "community",
+      "contrarian",
+      "day-100"
+    ],
+    "deep_add": [
+      "economist",
+      "newcomer",
+      "storyteller",
+      "anthropologist"
+    ],
+    "rubric": "creative"
+  },
+  {
+    "id": "experience",
+    "shape": "How should this feel to use?",
+    "lenses": [
+      "craftsperson",
+      "newcomer",
+      "power-user"
+    ],
+    "deep_add": [
+      "child",
+      "speedrunner",
+      "accessibility",
+      "minimalist",
+      "day-100"
+    ],
+    "rubric": "creative"
+  },
+  {
+    "id": "risk",
+    "shape": "What could go wrong, and what do we do about it?",
+    "lenses": [
+      "pre-mortem",
+      "adversary",
+      "operator"
+    ],
+    "deep_add": [
+      "systems-thinker",
+      "completionist",
+      "skeptic"
+    ],
+    "rubric": "decision"
+  },
+  {
+    "id": "migration",
+    "shape": "How do we move from the old system to the new one?",
+    "lenses": [
+      "maintainer",
+      "operator",
+      "incumbent"
+    ],
+    "deep_add": [
+      "data-steward",
+      "pre-mortem",
+      "minimalist"
+    ],
+    "rubric": "decision"
+  },
+  {
+    "id": "policy",
+    "shape": "What rules or limits should we set?",
+    "lenses": [
+      "regulator",
+      "ethicist",
+      "user-advocate"
+    ],
+    "deep_add": [
+      "adversary",
+      "anthropologist",
+      "historian"
+    ],
+    "rubric": "decision"
+  },
+  {
+    "id": "code-review",
+    "shape": "Is this code change correct, safe and keepable?",
+    "lenses": [
+      "correctness",
+      "adversary",
+      "maintainer"
+    ],
+    "deep_add": [
+      "cost-tracer",
+      "operator",
+      "completionist"
+    ],
+    "rubric": "review",
+    "wildcard": false
+  },
+  {
+    "id": "design-review",
+    "shape": "Will this design, RFC or architecture hold up once built and run?",
+    "lenses": [
+      "operator",
+      "pre-mortem",
+      "minimalist"
+    ],
+    "deep_add": [
+      "maintainer",
+      "adversary",
+      "incumbent"
+    ],
+    "rubric": "review",
+    "wildcard": false
+  },
+  {
+    "id": "plan-review",
+    "shape": "Will this plan get us where it says, on the time and people it assumes?",
+    "lenses": [
+      "scope-keeper",
+      "pre-mortem",
+      "bottleneck"
+    ],
+    "deep_add": [
+      "skeptic",
+      "economist",
+      "completionist"
+    ],
+    "rubric": "review",
+    "wildcard": false
+  },
+  {
+    "id": "proposal-review",
+    "shape": "Should we accept this proposal or decision as written?",
+    "lenses": [
+      "skeptic",
+      "economist",
+      "pre-mortem"
+    ],
+    "deep_add": [
+      "contrarian",
+      "scope-keeper",
+      "incumbent"
+    ],
+    "rubric": "review",
+    "wildcard": false
+  },
+  {
+    "id": "writing-review",
+    "shape": "Does this document land with its reader, and is it true?",
+    "lenses": [
+      "newcomer",
+      "fact-checker",
+      "maintainer"
+    ],
+    "deep_add": [
+      "minimalist",
+      "storyteller",
+      "accessibility"
+    ],
+    "rubric": "review",
+    "wildcard": false
+  },
+  {
+    "id": "ux-review",
+    "shape": "Can the people it is for actually use this?",
+    "lenses": [
+      "newcomer",
+      "minimalist",
+      "pre-mortem"
+    ],
+    "deep_add": [
+      "power-user",
+      "accessibility",
+      "support-desk"
+    ],
+    "rubric": "review",
+    "wildcard": false
+  },
+  {
+    "id": "prompt-review",
+    "shape": "Will a model reading this prompt, skill or spec cold do what the author meant?",
+    "lenses": [
+      "literalist",
+      "newcomer",
+      "maintainer"
+    ],
+    "deep_add": [
+      "minimalist",
+      "completionist",
+      "scope-keeper"
+    ],
+    "rubric": "review",
+    "wildcard": false
+  },
+  {
+    "id": "pricing",
+    "shape": "How should we price this?",
+    "lenses": [
+      "economist",
+      "first-principles",
+      "reference-class"
+    ],
+    "deep_add": [
+      "closer",
+      "competitor",
+      "skeptic"
+    ],
+    "rubric": "decision"
+  },
+  {
+    "id": "experiment",
+    "shape": "How do we test whether this works before we commit?",
+    "lenses": [
+      "skeptic",
+      "user-advocate",
+      "kill-criteria"
+    ],
+    "deep_add": [
+      "analyst",
+      "reference-class",
+      "pragmatist"
+    ],
+    "rubric": "decision"
+  },
+  {
+    "id": "incident",
+    "shape": "Why did this break, and what do we do now?",
+    "lenses": [
+      "first-principles",
+      "operator",
+      "what-changed"
+    ],
+    "deep_add": [
+      "data-steward",
+      "tester",
+      "systems-thinker"
+    ],
+    "rubric": "decision"
+  },
+  {
+    "id": "capacity",
+    "shape": "How do we get more from the space, hours, people or equipment we already have?",
+    "lenses": [
+      "minimalist",
+      "user-advocate",
+      "rhythm"
+    ],
+    "deep_add": [
+      "quartermaster",
+      "economist",
+      "closer",
+      "outsider"
+    ],
+    "rubric": "creative"
+  },
+  {
+    "id": "personal-decision",
+    "shape": "Should I take this job, move, quit, or commit to this?",
+    "lenses": [
+      "skeptic",
+      "user-advocate",
+      "one-way-door"
+    ],
+    "deep_add": [
+      "pre-mortem",
+      "economist",
+      "anthropologist"
+    ],
+    "rubric": "decision"
+  }
+]

@@ -1,0 +1,387 @@
+[
+  {
+    "id": "classify-before-solving",
+    "name": "Classify Before Solving",
+    "problem": "You are handed a problem and immediately start applying familiar solving tools, only to find the solution makes things worse or produces no improvement.",
+    "solution": "Apply Cynefin Framework first to determine the problem's complexity domain. If Complicated, use analytical decomposition (Issue Trees, Root Cause Analysis). If Complex, use probe-sense-respond (Design Thinking, OODA). If Chaotic, act first then stabilize. If Clear, apply best practice directly. Never skip classification.",
+    "models": [
+      "cynefin-framework"
+    ],
+    "other_models": [
+      "Hard Choice Model",
+      "Wicked Problems",
+      "System 1 / System 2 Thinking"
+    ],
+    "hidden": true
+  },
+  {
+    "id": "symptom-vs-structure-trap",
+    "name": "Symptom vs. Structure Trap",
+    "problem": "An intervention relieves the immediate problem but the problem keeps returning, often worse over time, and people wonder why their fixes are not working.",
+    "solution": "Recognize the Shifting the Burden or Fixes That Fail archetype. Apply Five Whys and Fishbone to locate the structural cause. Use the Iceberg Model to identify which layer (event, pattern, structure, mental model) is generating the symptom. Intervene at the structural level using Leverage Points.",
+    "models": [
+      "shifting-the-burden-archetype",
+      "fixes-that-fail-archetype",
+      "five-whys",
+      "fishbone-diagram",
+      "iceberg-model",
+      "leverage-points",
+      "root-cause-analysis"
+    ],
+    "other_models": []
+  },
+  {
+    "id": "diverge-then-converge",
+    "name": "Diverge Then Converge",
+    "problem": "Groups jump to the first plausible solution, narrowing prematurely before the full solution space has been explored, producing mediocre outcomes with high false confidence.",
+    "solution": "Explicitly split work into two phases using Divergent/Convergent Thinking. In the diverge phase, apply Brainstorming, SCAMPER, or Reverse Brainstorming with deferred judgment. In the converge phase, use Decision Matrix, MECE, or Impact-Effort Matrix to evaluate. Never allow convergence tools into the diverge phase.",
+    "models": [
+      "divergent-convergent-thinking",
+      "scamper",
+      "reverse-brainstorming",
+      "decision-matrix",
+      "mece-principle",
+      "impact-effort-matrix"
+    ],
+    "other_models": [
+      "Brainstorming"
+    ]
+  },
+  {
+    "id": "reframe-before-solving",
+    "name": "Reframe Before Solving",
+    "problem": "Exhaustive solving effort produces technically correct answers to the wrong question — the problem statement was accepted uncritically, baking in the real constraint.",
+    "solution": "Apply Abstraction Laddering before analysis begins: move up (Why?) to find the real purpose, move down (How?) to find alternatives. Use Inversion to ask what would guarantee failure. Check whether Jobs to Be Done reframes the problem from the customer's perspective. Only then commit to a problem statement.",
+    "models": [
+      "abstraction-laddering",
+      "first-principles-thinking",
+      "inversion",
+      "jobs-to-be-done",
+      "concept-fan"
+    ],
+    "other_models": [
+      "Reframing"
+    ]
+  },
+  {
+    "id": "pre-decision-adversarial-review",
+    "name": "Pre-Decision Adversarial Review",
+    "problem": "Teams invest weeks in a plan, then commit to it under social pressure without genuinely stress-testing it, only discovering fatal flaws after launch.",
+    "solution": "Before committing, run a Pre-Mortem (imagine it has already failed, work backward). Apply Steel-Manning to the strongest objection. Use Second-Order Thinking to trace two levels of consequences. Check Reference Class Forecasting against similar past initiatives. If any of these surface showstoppers, recycle back to option generation.",
+    "models": [
+      "pre-mortem",
+      "inversion",
+      "steel-manning",
+      "reference-class-forecasting",
+      "scenario-planning",
+      "margin-of-safety"
+    ],
+    "other_models": [
+      "Second-Order Thinking"
+    ]
+  },
+  {
+    "id": "bias-audit-before-deciding",
+    "name": "Bias Audit Before Deciding",
+    "problem": "A decision is made confidently, but in hindsight was obviously shaped by cognitive shortcuts — survivorship bias, anchoring on the first option, sunk cost reasoning — that were never surfaced.",
+    "solution": "Before finalizing any significant decision, run a structured bias audit using the System 1/System 2 lens. Check for: Confirmation Bias (did you seek disconfirming evidence?), Sunk Cost (are you continuing due to past investment?), Anchoring (did the first option anchor your evaluation?), Planning Fallacy (is the timeline realistic?), Survivorship Bias (are you only seeing winners?). Apply Bayesian Updating to revise estimates with actual evidence.",
+    "models": [
+      "confirmation-bias",
+      "anchoring-effect",
+      "planning-fallacy",
+      "survivorship-bias",
+      "bayesian-updating",
+      "reference-class-forecasting"
+    ],
+    "other_models": [
+      "System 1 / System 2 Thinking",
+      "Sunk Cost Awareness"
+    ]
+  },
+  {
+    "id": "measurement-corruption-warning",
+    "name": "Measurement Corruption Warning",
+    "problem": "A metric is chosen to track progress, the team optimizes for it, and performance on the metric improves while the underlying thing the metric was supposed to represent gets worse.",
+    "solution": "Before committing to any metric, apply Goodhart's Law and Campbell's Law as filters: ask 'how would people game this number?' and 'what behavior does this incentivize that we don't want?' Pair any metric with a counter-metric that catches gaming. Define the North Star at the level of genuine customer value rather than a proxy. Watch for Cobra Effect patterns after rollout.",
+    "models": [
+      "goodhart-s-law",
+      "cobra-effect",
+      "north-star-metric",
+      "survivorship-bias",
+      "jevons-paradox",
+      "unintended-consequences"
+    ],
+    "other_models": [
+      "Campbell's Law"
+    ]
+  },
+  {
+    "id": "leverage-point-identification",
+    "name": "Leverage Point Identification",
+    "problem": "Interventions in complex systems produce no lasting improvement despite enormous effort, because they are applied to variables that are not actually controlling the system's behavior.",
+    "solution": "Map the system using Causal Loop Diagram and Stock and Flow. Apply Meadows' Leverage Points hierarchy to rank potential interventions from parameters (weakest) to paradigms (strongest). Resist the intuition that the obvious intervention point is the best one — apply Forrester's Counterintuitive Behavior principle. Target structure over events.",
+    "models": [
+      "leverage-points",
+      "causal-loop-diagram",
+      "stock-and-flow",
+      "iceberg-model",
+      "reinforcing-feedback-loop",
+      "balancing-feedback-loop"
+    ],
+    "other_models": [
+      "Forrester's Counterintuitive Behavior"
+    ]
+  },
+  {
+    "id": "threshold-awareness",
+    "name": "Threshold Awareness",
+    "problem": "A system is pushed incrementally without recognition that small changes near a critical threshold will cause sudden, nonlinear, often irreversible state change.",
+    "solution": "Map the Reinforcing Feedback Loops that could produce runaway dynamics. Identify Tipping Points and Limits to Growth constraints. Apply Black Swan and Margin of Safety thinking at the boundaries. Use Hysteresis awareness — the system may not return to its previous state after the threshold is crossed. Design for resilience, not just optimization.",
+    "models": [
+      "tipping-point",
+      "limits-to-growth-archetype",
+      "reinforcing-feedback-loop",
+      "black-swan",
+      "margin-of-safety"
+    ],
+    "other_models": [
+      "Hysteresis",
+      "Resilience",
+      "Nonlinearity"
+    ]
+  },
+  {
+    "id": "commons-governance",
+    "name": "Commons Governance",
+    "problem": "A shared resource is being depleted by individually rational behavior because no effective governance mechanism exists — but neither privatization nor top-down control is viable or desirable.",
+    "solution": "Recognize the Tragedy of the Commons / Collective Action Problem pattern. Rather than defaulting to privatization or state regulation, apply Ostrom's Design Principles: define clear boundaries, match rules to local conditions, allow affected parties to participate in rule modification, establish monitoring, graduated sanctions, conflict resolution, and nested governance. This requires Reinforcing Feedback Loops that reward cooperation.",
+    "models": [
+      "tragedy-of-the-commons",
+      "ostrom-s-design-principles",
+      "reinforcing-feedback-loop",
+      "escalation-archetype"
+    ],
+    "other_models": [
+      "Collective Action Problem"
+    ]
+  },
+  {
+    "id": "structural-communication",
+    "name": "Structural Communication",
+    "problem": "Information is presented in the order it was discovered or thought of, requiring the audience to do cognitive work to find the point — causing misunderstanding, ignored recommendations, and wasted time.",
+    "solution": "Choose the communication structure based on audience and purpose. For recommendations and conclusions: apply Minto Pyramid (lead with answer, then support). For problem-framing with narrative context: apply SCQA (situation, complication, question, answer). For persuasion with action: apply Monroe's Motivated Sequence. Never bury the conclusion.",
+    "models": [
+      "minto-pyramid-principle",
+      "scqa-framework"
+    ],
+    "other_models": [
+      "Monroe's Motivated Sequence",
+      "Hero's Journey (Monomyth)",
+      "Ethos, Pathos, Logos (Rhetorical Triangle)"
+    ]
+  },
+  {
+    "id": "safety-before-candor",
+    "name": "Safety Before Candor",
+    "problem": "A team adopts a direct feedback culture or challenge process, but it produces defensiveness, withdrawn behavior, and political maneuvering rather than productive improvement.",
+    "solution": "Apply the SCARF Model to diagnose which social threat domain (Status, Certainty, Autonomy, Relatedness, Fairness) the feedback process is triggering. Build Psychological Safety as the foundation first: establish that interpersonal risk will not be punished. Only then introduce Radical Candor practices and the direct challenge dimension of the Crucial Conversations Framework. Use SBI structure to separate behavior from identity.",
+    "models": [
+      "psychological-safety",
+      "situation-behavior-impact"
+    ],
+    "other_models": [
+      "Radical Candor",
+      "SCARF Model",
+      "Crucial Conversations Framework",
+      "Five Dysfunctions of a Team",
+      "Trust Equation"
+    ]
+  },
+  {
+    "id": "option-expansion-before-optimization",
+    "name": "Option Expansion Before Optimization",
+    "problem": "A decision is framed as a binary choice ('should we do X or not?'), and the team optimizes between those two options, missing the third or fourth option that dominates both.",
+    "solution": "Apply the WRAP Framework's first principle: Widen Options. Use Concept Fan and Abstraction Laddering to find the broader problem space. Apply Morphological Analysis or SCAMPER to generate option variants. Only after generating at least three to five genuinely distinct alternatives apply Decision Matrix for evaluation. The number of options generated before convergence is a quality signal for the decision process.",
+    "models": [
+      "concept-fan",
+      "abstraction-laddering",
+      "morphological-analysis",
+      "scamper",
+      "decision-matrix",
+      "divergent-convergent-thinking"
+    ],
+    "other_models": [
+      "WRAP Framework"
+    ]
+  },
+  {
+    "id": "compound-learning-loop",
+    "name": "Compound Learning Loop",
+    "problem": "People practice skills for many hours but plateau — effort accumulates without proportional improvement because practice is not structured to drive genuine skill increment.",
+    "solution": "Design learning using Deliberate Practice within the Zone of Proximal Development: target specific weaknesses just beyond current ability with immediate feedback. Apply Spaced Repetition and Retrieval Practice (not re-reading) for retention. Use the Feynman Technique to surface gaps. Reflect using Kolb's Learning Cycle and Double-Loop Learning to question the assumptions behind the practice strategy itself. Track the Ebbinghaus Forgetting Curve to time review sessions.",
+    "models": [
+      "deliberate-practice",
+      "feynman-technique",
+      "double-loop-learning"
+    ],
+    "other_models": [
+      "Zone of Proximal Development (ZPD)",
+      "Spacing Effect (Spaced Repetition)",
+      "Retrieval Practice / Testing Effect",
+      "Kolb's Learning Cycle",
+      "Ebbinghaus Forgetting Curve"
+    ]
+  },
+  {
+    "id": "constraint-first-prioritization",
+    "name": "Constraint-First Prioritization",
+    "problem": "Teams improve many things simultaneously but overall throughput barely moves, because they are improving non-bottleneck steps while the bottleneck remains constant.",
+    "solution": "Apply Theory of Constraints: identify the single binding constraint (Bottleneck Analysis), exploit it fully before adding capacity elsewhere, subordinate everything else to that constraint's pace using Drum-Buffer-Rope scheduling, then elevate the constraint. Combine with Pareto Principle to confirm that the identified bottleneck accounts for the dominant share of throughput loss. Only after elevating the current constraint search for the next one.",
+    "models": [
+      "theory-of-constraints",
+      "bottleneck-analysis",
+      "pareto-principle",
+      "critical-path-method"
+    ],
+    "other_models": [
+      "Theory of Constraints — Drum-Buffer-Rope"
+    ]
+  },
+  {
+    "id": "reversibility-gate",
+    "name": "Reversibility Gate",
+    "problem": "Teams apply the same level of deliberation to all decisions, causing paralysis on reversible small decisions and insufficient scrutiny on irreversible large ones.",
+    "solution": "Apply Type 1/Type 2 decision classification as a gate. For Type 2 (reversible, two-way door) decisions: use OODA-speed iteration, decide quickly, learn from results. For Type 1 (irreversible, one-way door) decisions: require the full Pre-Decision Adversarial Review pattern — Pre-Mortem, Steel-Manning, Reference Class Forecasting, Margin of Safety. Combine with Path Dependence awareness for decisions that create lock-in.",
+    "models": [
+      "reversible-vs-irreversible-decisions",
+      "pre-mortem",
+      "margin-of-safety",
+      "path-dependence-lock-in",
+      "opportunity-cost"
+    ],
+    "other_models": [
+      "OODA Loop"
+    ]
+  },
+  {
+    "id": "escalation-de-escalation",
+    "name": "Escalation De-escalation",
+    "problem": "Two parties or two internal forces ratchet up their responses to each other in a self-reinforcing spiral that none of the participants explicitly chose but none can unilaterally exit.",
+    "solution": "Recognize the Escalation Archetype by mapping the Causal Loop Diagram. Apply Principled Negotiation to shift from positional to interest-based framing. Use Tactical Empathy and Nonviolent Communication to de-escalate by surfacing the underlying needs driving each position. Identify whether the shared resource driving competition triggers the Success to the Successful Archetype — if so, the structural fix is expanding the resource, not winning the competition.",
+    "models": [
+      "escalation-archetype",
+      "causal-loop-diagram",
+      "principled-negotiation",
+      "batna-zopa"
+    ],
+    "other_models": [
+      "Tactical Empathy (FBI Negotiation)",
+      "Nonviolent Communication (NVC)",
+      "Success to the Successful Archetype"
+    ]
+  },
+  {
+    "id": "moat-architecture",
+    "name": "Moat Architecture",
+    "problem": "A business grows successfully but finds that its advantages are easily replicated by competitors — margins compress as competitors close the gap and the company has no durable defense.",
+    "solution": "Identify existing or buildable moat types using Competitive Moat analysis. Check whether the business has Reinforcing Feedback Loops (Flywheel) or Network Effects that compound over time. Use Wardley Mapping to find which capabilities are in early evolutionary stages where proprietary investment builds advantage. Apply Disruption Theory to stress-test whether a simpler/cheaper entrant could serve the ignored customer segment before moving upmarket.",
+    "models": [
+      "competitive-moat",
+      "network-effects",
+      "flywheel-effect",
+      "wardley-mapping",
+      "path-dependence-lock-in",
+      "reinforcing-feedback-loop",
+      "porter-s-five-forces"
+    ],
+    "other_models": [
+      "Disruption Theory (Disruptive Innovation)"
+    ]
+  },
+  {
+    "id": "antifragile-design",
+    "name": "Antifragile Design",
+    "problem": "Systems are designed to be efficient and optimized, which makes them brittle — they perform well in expected conditions but fail catastrophically under stress, volatility, or surprise.",
+    "solution": "Apply Antifragility as the design goal beyond robustness: build systems that gain from disorder. Use Margin of Safety and Resilience principles to ensure survival of stress. Apply Normal Accidents Theory to accept that complex tightly-coupled systems will fail — design recovery, not just prevention. Embrace Panarchy/Adaptive Cycle: plan for the collapse-reorganization phase as opportunity. Use Black Swan thinking to prepare for events outside your model.",
+    "models": [
+      "antifragility",
+      "margin-of-safety",
+      "black-swan",
+      "normal-accidents-theory",
+      "gall-s-law"
+    ],
+    "other_models": [
+      "Resilience",
+      "Panarchy / Adaptive Cycle",
+      "Chaos Theory / Butterfly Effect"
+    ]
+  },
+  {
+    "id": "model-lattice-navigation",
+    "name": "Model Lattice Navigation",
+    "problem": "A practitioner knows many mental models but defaults to a small familiar set, systematically missing the better-fit model for the situation and importing inappropriate assumptions.",
+    "solution": "Build Munger's Latticework deliberately — curate models across disciplines (psychology, systems, economics, physics, biology) not just within your domain. Use Cynefin as the primary routing node. Use the Cognitive Framework bias check to detect when a familiar model is being applied due to availability rather than fit. Practice Metacognition about model choice — ask 'why this model?' before applying it. Use Double-Loop Learning to update your model selection heuristics after each application.",
+    "models": [
+      "cynefin-framework",
+      "double-loop-learning",
+      "confirmation-bias"
+    ],
+    "other_models": [
+      "Munger's Latticework of Mental Models",
+      "System 1 / System 2 Thinking",
+      "Metacognition",
+      "Availability Heuristic"
+    ],
+    "hidden": true
+  },
+  {
+    "id": "incentive-architecture-audit",
+    "name": "Incentive Architecture Audit",
+    "problem": "A well-designed intervention or policy produces the opposite of its intended effect because the incentive structure created by the intervention drives adaptive behavior that games or reverses it.",
+    "solution": "Before deploying any incentive, policy, or metric, apply Cobra Effect and Goodhart's Law stress-tests: map the second-order behavioral adaptations your intervention will trigger. Use Causal Loop Diagrams to trace how rational individual responses aggregate to system-level outcomes. Check for Jevons Paradox (efficiency gains creating higher total consumption) and Unintended Consequences. Apply Collective Action Problem analysis if the intervention involves shared resources or group behavior.",
+    "models": [
+      "cobra-effect",
+      "goodhart-s-law",
+      "unintended-consequences",
+      "jevons-paradox",
+      "causal-loop-diagram"
+    ],
+    "other_models": [
+      "Second-Order Thinking",
+      "Collective Action Problem",
+      "Campbell's Law"
+    ]
+  },
+  {
+    "id": "crossing-the-adoption-chasm",
+    "name": "Crossing the Adoption Chasm",
+    "problem": "A product or idea gains strong traction with early adopters but then stalls — the mainstream market does not adopt despite the technology working and early users loving it.",
+    "solution": "Apply Technology Adoption Lifecycle to diagnose that the chasm between early adopters and early majority has been reached. Recognize that early adopters and early majority require fundamentally different value propositions (early adopters want revolution; early majority want reliability and social proof). Apply Jobs to Be Done to reframe the product for the mainstream job. Use Tipping Point analysis to design the specific market-entry strategy that generates the social proof cascade needed to trigger crossing. Apply Diffusion of Innovation to sequence the crossing market by market.",
+    "models": [
+      "technology-adoption-lifecycle",
+      "diffusion-of-innovation",
+      "tipping-point",
+      "jobs-to-be-done",
+      "network-effects"
+    ],
+    "other_models": [
+      "Social Proof (via Cialdini)"
+    ]
+  },
+  {
+    "id": "conflict-as-hidden-assumption",
+    "name": "Conflict as Hidden Assumption",
+    "problem": "Two requirements, goals, or positions appear irreconcilably in conflict, forcing a compromise that satisfies neither — when in fact both could be satisfied if the underlying assumption creating the conflict were identified and challenged.",
+    "solution": "Apply the Ishikawa Conflict Resolution Diagram (Evaporating Cloud): map the two conflicting requirements, trace them to their underlying needs, identify the shared objective both serve, then surface the hidden assumption that makes the conflict appear necessary. Challenge that assumption through First Principles Thinking or Constraint Relaxation. Win-win solutions exist whenever the conflict is based on an untested assumption rather than a genuine physical constraint.",
+    "models": [
+      "ishikawa-conflict-resolution-diagram",
+      "principled-negotiation",
+      "first-principles-thinking",
+      "constraint-relaxation",
+      "steel-manning"
+    ],
+    "other_models": [
+      "Reframing"
+    ]
+  }
+]

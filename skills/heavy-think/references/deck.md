@@ -100,7 +100,9 @@ separate entries with `;` when a question contains commas. A custom lens gets a 
 
 ## Adding to the deck
 
-Add an entry to `perspectives.json` and `deck.py` picks it up. Every lens needs every field in the
+This file is built. In the thinking-skills repo, add the entry to `decks/<kind>.json` (for example
+`decks/lenses.json`) and run `python3 tools/build_decks.py`; it checks the schema and every id
+reference, then updates every skill's copy. Every lens needs every field in the
 table above; `load_deck` refuses a lens without `delivers` or `instruments`. Ids are unique within a
 list, every id a preset or set names must exist, and entries from research carry a `source`. Run
 the tests after a change: `python3 -m unittest discover -s tests` in the skill folder.

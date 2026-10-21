@@ -1,0 +1,30 @@
+{
+  "creative": {
+    "use_for": "Ideation: open questions, naming, product ideas, 'how might we'.",
+    "weights": {
+      "novelty": 30,
+      "value": 30,
+      "feasibility": 20,
+      "specificity": 10,
+      "emergence": 10
+    }
+  },
+  "decision": {
+    "use_for": "Choosing a direction: architecture, strategy, prioritization, anything that ships and has to be run.",
+    "weights": {
+      "value": 35,
+      "feasibility": 25,
+      "running_cost": 20,
+      "novelty": 10,
+      "specificity": 10
+    }
+  },
+  "review": {
+    "use_for": "Ranking review findings on an existing artifact: impact if left unfixed, how sure we are it is real, and how clearly it can be acted on. Confidence below 4 is a gate, not a low score: verify or drop.",
+    "weights": {
+      "impact": 45,
+      "confidence": 35,
+      "actionability": 20
+    }
+  }
+}
