@@ -143,14 +143,25 @@ Run `COUNCIL harvest`. Read only the develop and stress files it lists. Then giv
 Treat the judges' totals as a sort, not a verdict: LLM judgments of idea quality agree with human
 reviewers barely above chance (Si et al., arXiv 2409.04109). Read the developed concepts yourself.
 
+Write the reply as one expert's answer about the user's problem, not a report on the session. Blind
+judges of a real run preferred the council's ideas to a plain answer, but marked it down for process
+narration: agent counts, concept codes (C01), judge means, "dissent slot", "orphans", lens credits.
+Leave all of those out; they stay in the run folder.
+
 1. **The shortlist**, each as: the concept in two lines, why it matters, the first concrete move, the
-   strongest stress-test finding and whether the concept survives it.
-2. **Emergent ideas**: which shortlisted concepts exist only because two lenses met (the lineage
-   shows it). Name the lenses.
-3. **Tensions worth holding**: where concepts pull against each other, not resolved for the user.
-4. **The dissent slot and orphans**, if `harvest` flags them: say plainly that a concept split the
-   judges, or came from one member alone, and why it might be the most interesting thing in the run.
-5. **What to explore next**, and the run folder.
+   strongest stress-test finding (as a risk to the idea, not "the stress test said") and whether the
+   concept survives it.
+2. **What makes each one non-obvious**: say what the obvious answer misses that this idea catches. If a
+   concept only exists because two very different angles met, say what those angles were in plain
+   words ("a waste-collection logistics view crossed with a habit-forming one"), never by lens name.
+3. **Tensions worth holding**: where concepts pull against each other, as conditions for the user.
+4. **The long shot**: if `harvest` flags a concept the judges split on, or one only one member
+   proposed, present it as a riskier bet and say why it might matter most. No judging vocabulary.
+5. **The rest of the pool**, one line each, then what to try next. Give the run folder path in one line
+   at the end, for anyone who wants the full session.
+
+Agent claims are leads: check any specific the reply leans on (a statistic, a law, a program that
+"exists"), or cut it, or mark it at that line.
 
 If a concept would change files in the user's project, do not apply it. Ask.
 
