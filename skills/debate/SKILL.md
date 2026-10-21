@@ -33,7 +33,7 @@ If either fails, **say so explicitly** — do NOT silently simulate the debate a
 
 - Moderate, don't compete — you steer, you never take a side.
 - Max 2 rounds. Research on multi-agent debate finds the gain peaks at round 1 or 2 and sycophancy grows every round after; most of the gain is what a plain vote would give.
-- Pick the format from the deck: `python3 ~/.claude/skills/heavy-think/deck.py debates` lists 10 formats (position, disprove, steelman, blind-first, method cards, calibrated critic, authentic dissent, opposite with equal rigour, PR-FAQ attack, cross-model review) and the evidence-backed rules.
+- Pick the format from the deck: `python3 "${CLAUDE_SKILL_DIR}/../heavy-think/deck.py" debates` lists 10 formats (position, disprove, steelman, blind-first, method cards, calibrated critic, authentic dissent, opposite with equal rigour, PR-FAQ attack, cross-model review) and the evidence-backed rules.
 - Anti-sycophancy: debaters attack arguments, not flatter each other.
 - The deliverable is YOUR synthesis, not a transcript dump.
 
