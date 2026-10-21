@@ -24,14 +24,20 @@ they are installed.
 | Claude Code, as a plugin | `/plugin marketplace add samhvw8/thinking-skills`, then `/plugin install thinking-skills@thinking-skills` |
 | Claude Code, Codex, Cursor, OpenCode and others | `npx skills add samhvw8/thinking-skills` |
 | [ccp](https://github.com/samhvw8/claude-code-profile) | `ccp install samhvw8/thinking-skills skills/heavy-think --link .` (list more `skills/<name>` to install several) |
-| By hand | Copy the folders in `skills/` into `~/.claude/skills/`, keeping them side by side |
+| By hand | Copy the folders in `skills/` into your harness's skills folder (for example `~/.claude/skills/`), keeping them side by side |
 
 ## Worth knowing
 
-- **Live modes need agent teams.** `debate`, and the live modes of `council` and
-  `heavy-think`, use Claude Code agent teams: set `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`
-  and run them from the main session (a subagent cannot start teammates). `council full`
-  is file-based and runs anywhere.
+- **Not tied to one harness.** The skills name capabilities (spawn a sub-agent, a live
+  team) and model tiers (`strong`, `session`, `fast`), never one harness's tools or models.
+  [`heavy-think/references/harness.md`](skills/heavy-think/references/harness.md) maps them
+  to Claude Code, opencode and omp, with a fallback for a harness that has no sub-agents.
+  `heavy-think/tests/test_harness.py` fails when a vendor name appears unlabelled.
+- **Live modes need live teams.** `debate`, and the live modes of `council` and
+  `heavy-think`, need agents that message each other. Today only Claude Code has them: set
+  `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` and run from the main session. Elsewhere these
+  modes run written rounds of sub-agents and say so. `council full` is file-based and runs
+  in any harness with sub-agents.
 - **Multi-agent runs cost more.** A `council full` session runs 5–12 agents; `creative`
   is one agent and about the cost of a normal answer.
 - **The deck can use an outside ranker, optionally.** `heavy-think/deck.py` fits the
@@ -52,8 +58,10 @@ cases; they are judged by a blind LLM judge in both orders, not by a script.
 `evals/ambition/` has eight cases (honesty twice, scope, rewrite, depth, systems, the
 approval gate, auto mode) with graders, a receipts check against the transcript, a
 blind judge pass and `run-all.sh` to run them headless; see
-[evals/ambition/README.md](evals/ambition/README.md). `tools/build_deck.py` rebuilds
-ambition's mental-model deck.
+[evals/ambition/README.md](evals/ambition/README.md). `python3 -m unittest discover -s
+skills/ambition/tests` checks ambition's dealer and deck. `tools/build_deck.py` rebuilds
+that deck (models with a move and a receipt, Range field cards, and lenses copied from
+heavy-think); it refuses to build a pattern that would deal no fitted model.
 
 ## License
 
