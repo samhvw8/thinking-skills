@@ -8,7 +8,7 @@ and survives a context compaction: everything lives in council.json.
     python3 council.py plan [--members 8 --cross 2 --judges 3 --shortlist 4]   # calls per phase. Writes nothing.
     python3 council.py deal --members 4 [--preset P] [--seed S]                # cards only, for a live council
     python3 council.py presets                                                 # the preset lens sets
-    python3 council.py init --brief-file brief.md [--members 8] [--preset P | --lenses a,b,c] [--seed S]
+    python3 council.py init --brief-file brief.md [--members 8] [--preset P | --lenses a,b,c] [--seed S] [--model M] [--phase-model develop=strong]
     python3 council.py next                       # what to do now, and the exact command for it
     python3 council.py prompts <phase>            # write the briefs, list the jobs still to run
     python3 council.py check <phase>              # which outputs are still missing
@@ -19,6 +19,10 @@ and survives a context compaction: everything lives in council.json.
 
 Phases, in order: diverge, cross1 .. crossC, cluster, score, develop, stress.
 Every command takes --dir; without it, the run named in .council/LATEST is used.
+The prompt templates live in prompts.md beside this file.
+
+Exit codes: 0 when the step worked, 1 when it did not (an error, an output rejected,
+or a run that stopped because a job failed twice; `next` then prints STOPPED).
 
 Python 3.8+, standard library only.
 """
@@ -27,12 +31,13 @@ import json
 import os
 import random
 import re
+import shutil
 import sys
 import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SELF = os.path.abspath(__file__)
-SKILL_PATH = os.path.join(HERE, "SKILL.md")
+PROMPTS_PATH = os.path.join(HERE, "prompts.md")
 
 ROOT = ".council"
 LATEST = "LATEST"
@@ -41,7 +46,15 @@ TEMPLATES = ("diverge", "cross", "curator", "judge", "developer", "stress")
 
 DEFAULTS = {"members": 8, "cross": 2, "judges": 3, "shortlist": 4, "parallel": 6}
 QUICK = {"members": 5, "cross": 1, "judges": 2, "shortlist": 3}
-
+MIN_JUDGES = 2          # below this the "independent panel" is one opinion; fewer usable judges stop the run
+NO_OUTPUT = "NO OUTPUT"
+# Judgment (generating, curating, judging) runs on the session's model. Web research and the stress
+# test run on the fast tier: under a fixed budget, the strongest model everywhere bought fewer
+# concepts and lost to this mix. Tiers, not model names, so the run works in any harness;
+# heavy-think's references/harness.md maps each tier to a model.
+SESSION_MODEL = "session"
+RESEARCH_MODEL = "fast"
+RESEARCH_PHASES = ("develop", "stress")  # what the orchestrator writes into a job's output after the job failed twice
 
 
 # ---------------------------------------------------------------- the deck
@@ -63,10 +76,47 @@ import deck as D  # noqa: E402
 load_deck = D.load_deck
 deal_cards = D.deal_cards
 RUBRIC_PATH = D.RUBRIC_PATH
+MIN_MEMBERS = len(D.REQUIRED_FAMILIES)   # the deal seats one lens from each required family
+
+# The card fields the member templates show, by placeholder. check_deck validates exactly these
+# (plus the family, which seats the ring, and the provocation) before a run starts.
+CARD_FIELDS = {
+    "lens_name": ("lens", "name"), "lens_asks": ("lens", "asks"), "lens_sees": ("lens", "sees"),
+    "lens_misses": ("lens", "misses"), "lens_delivers": ("lens", "delivers"),
+    "technique_name": ("technique", "name"), "technique_how": ("technique", "how"),
+}
+OPTIONAL_CARD_FIELDS = {"lens_instruments": ("lens", "instruments")}   # shown only when the lens has it
+# Dealing data and provenance, never shown to members. A field added to the deck's lenses is either
+# rendered in prompts.md or listed here on purpose; tests/test_council.py fails otherwise.
+LENS_META_FIELDS = ("id", "family", "clashes", "source")
+DECK_POOLS = {"lens": "lenses", "technique": "techniques", "provocation": "provocations"}
 
 
 class CouncilError(Exception):
     pass
+
+
+def check_deck(deck, extra_lenses=()):
+    """Every card field a council prompt uses, present and non-empty, on every entry. Runs at
+    init so a deck change fails before any agent is paid for, not at the last cross round."""
+    load_templates()
+    need = {}
+    for part, field in list(CARD_FIELDS.values()) + [("lens", "family"), ("provocation", "text")]:
+        need.setdefault(part, []).append(field)
+    problems = []
+    for part, fields in sorted(need.items()):
+        items = list(deck.get(DECK_POOLS[part]) or [])
+        if part == "lens":
+            items += list(extra_lenses)
+        for it in items:
+            for f in fields:
+                v = it.get(f)
+                if not isinstance(v, str) or not v.strip():
+                    problems.append("%s '%s' has no '%s'" % (part, it.get("id", "?"), f))
+    if problems:
+        more = " (and %d more)" % (len(problems) - 8) if len(problems) > 8 else ""
+        raise CouncilError("the deck is missing card fields the council prompts use: %s%s"
+                           % ("; ".join(problems[:8]), more))
 
 
 def member_ids(n):
@@ -147,6 +197,10 @@ def judge_ids(state):
     return ["j%d" % i for i in range(1, state["judges"] + 1)]
 
 
+def active_judges(state):
+    return [j for j in judge_ids(state) if j not in state.get("dropped", [])]
+
+
 def all_idea_files(state):
     d = state["dir"]
     files = []
@@ -189,6 +243,11 @@ def new_state(n, seed, deck, run_dir, cross, judges, shortlist, parallel, preset
         "pool": None,
         "scores": None,
         "shortlist": None,
+        "failures": {},   # job id -> failed attempts; 2 ends the job
+        "dropped": [],    # judges that failed twice
+        "ended": None,    # why the run stopped, when a job it cannot do without failed twice
+        "model": None,    # the session's model: diverge, cross, cluster and score run on it
+        "phase_models": {},  # per-phase overrides; develop and stress default to RESEARCH_MODEL
     }
     state["ring"] = make_ring(ids, agents, seed)
     return state
@@ -216,7 +275,7 @@ def phase_jobs(state, phase):
         jobs.append({"id": "curator", "kind": "curator", "phase": phase, "outputs": [pool_out(d)]})
     elif phase == "score":
         if state["pool"] is not None:
-            for j in judge_ids(state):
+            for j in active_judges(state):
                 jobs.append({"id": j, "kind": "judge", "phase": phase, "judge": j,
                              "outputs": [score_out(d, j)]})
     elif phase in ("develop", "stress"):
@@ -234,7 +293,9 @@ def missing_jobs(jobs):
 
 
 def next_action(state):
-    """(phase, jobs_left, jobs_total). phase is a phase name, 'collect' or 'done'."""
+    """(phase, jobs_left, jobs_total). phase is a phase name, 'collect', 'ended' or 'done'."""
+    if state.get("ended"):
+        return "ended", [], []
     for phase in phases(state):
         if phase == "score" and state["pool"] is None:
             return "collect", [], []
@@ -253,13 +314,18 @@ _TEMPLATE_RE = re.compile(r"<!-- template:([a-z]+) -->\s*```text\n(.*?)\n```\s*<
 _PLACEHOLDER_RE = re.compile(r"\{\{(\w+)\}\}")
 
 
-def load_templates(path=SKILL_PATH):
+def load_templates(path=PROMPTS_PATH):
     with open(path, encoding="utf-8") as fh:
         text = fh.read()
     found = {m.group(1): m.group(2) for m in _TEMPLATE_RE.finditer(text)}
     missing = [t for t in TEMPLATES if t not in found]
     if missing:
-        raise CouncilError("SKILL.md is missing prompt templates: %s" % ", ".join(missing))
+        raise CouncilError("prompts.md is missing prompt templates: %s" % ", ".join(missing))
+    known = set(CARD_FIELDS) | set(OPTIONAL_CARD_FIELDS)
+    unknown = sorted(set(p for t in found.values() for p in _PLACEHOLDER_RE.findall(t)
+                         if p.startswith(("lens_", "technique_")) and p not in known))
+    if unknown:
+        raise CouncilError("prompts.md uses card placeholders council.py does not fill: %s" % ", ".join(unknown))
     return found
 
 
@@ -288,6 +354,19 @@ def concept(state, cid):
     raise CouncilError("no concept '%s' in the pool" % cid)
 
 
+def _instruments(lens):
+    """The lens's instruments as a card line, or nothing when the lens has none. When it has
+    them, the member must work with them: a lens without method changes the words, not the work."""
+    v = lens.get("instruments")
+    if isinstance(v, (list, tuple)):
+        v = "; ".join(str(x) for x in v)
+    v = str(v or "").strip()
+    if not v:
+        return ""
+    return ("\nYour instruments: %s\nWork with them, not only with the lens's vocabulary: get each idea by "
+            "putting the brief through at least one of them, and say which instrument it came from." % v)
+
+
 def render_job(state, job, templates, brief):
     d = state["dir"]
     v = {"brief": brief, "council_dir": d, "rubric": os.path.join(d, "rubric.md"),
@@ -296,10 +375,10 @@ def render_job(state, job, templates, brief):
     if kind in ("diverge", "cross"):
         m = job["member"]
         card = state["members"][m]["card"]
-        v.update(member=m, lens_name=card["lens"]["name"], lens_asks=card["lens"]["asks"],
-                 lens_delivers=card["lens"].get("delivers", "A direct answer to your lens's question."),
-                 lens_sees=card["lens"]["sees"], lens_misses=card["lens"]["misses"],
-                 technique_name=card["technique"]["name"], technique_how=card["technique"]["how"])
+        v["member"] = m
+        for ph, (part, field) in CARD_FIELDS.items():
+            v[ph] = card[part][field]
+        v["lens_instruments"] = _instruments(card["lens"])
         if kind == "cross":
             k = job["stage"]
             ps = partners(state, m, k)
@@ -316,12 +395,14 @@ def render_job(state, job, templates, brief):
             else:
                 v["provocation"] = "No provocation this round."
     elif kind == "curator":
-        v.update(idea_files=_bullets(all_idea_files(state)), pool_max=state["pool_max"], orphan_slots=ORPHAN_SLOTS)
+        v.update(idea_files=_bullets(all_idea_files(state)), pool_max=state["pool_max"], orphan_slots=ORPHAN_SLOTS,
+                 member_list=", ".join(sorted(state["members"])))
     elif kind == "judge":
         crit = [k for k, _ in state["weights"]]
         v.update(judge=job["judge"], pool=pool_out(d), profile=state["rubric"],
                  criteria=", ".join("%s (%d)" % tuple(kv) for kv in state["weights"]),
-                 score_fields=", ".join('"%s": 0' % k for k in crit))
+                 score_fields=", ".join('"%s": 0' % k for k in crit),
+                 concept_ids=", ".join(c["id"] for c in state["pool"]))
     elif kind in ("developer", "stress"):
         c = concept(state, job["concept"])
         srcs = sorted(set(stage_file(d, m, s) for m in c.get("members", []) if m in state["members"]
@@ -333,6 +414,8 @@ def render_job(state, job, templates, brief):
 
 
 def write_prompts(state, phase):
+    if state.get("ended"):
+        raise CouncilError("the run stopped: %s" % state["ended"])
     jobs = phase_jobs(state, phase)
     left = missing_jobs(jobs)
     if not left:
@@ -368,6 +451,22 @@ def _set_aside(path):
     os.replace(path, path + ".unreadable")
 
 
+def _is_no_output(text):
+    return text.strip().upper().startswith(NO_OUTPUT)
+
+
+def _failed(state, job, path, no_output):
+    """Count a failed attempt and set the file aside. NO OUTPUT means the orchestrator already
+    ran the job twice. Returns True when the job is out of attempts."""
+    f = state.setdefault("failures", {})
+    f[job] = 2 if no_output else f.get(job, 0) + 1
+    _set_aside(path)
+    return f[job] >= 2
+
+
+PARENT_RE = re.compile(r"^(m\d+)\.\S+$")
+
+
 ORPHAN_SLOTS = 3
 
 
@@ -389,13 +488,44 @@ def parse_pool(state, data):
         if not str(c.get("title") or "").strip() or not str(c.get("pitch") or "").strip():
             raise CouncilError("concept %s needs a title and a pitch" % cid)
         parents = [str(p).strip().lower() for p in c.get("parents") or []]
+        for p in parents:
+            if not PARENT_RE.match(p):
+                raise CouncilError("concept %s: parent '%s' is not an idea id like m03.2 or m03.r1.4" % (cid, p))
         members = sorted(set(str(m).strip().lower() for m in (c.get("members") or [])) |
-                         set(p.split(".")[0] for p in parents if re.match(r"^m\d+\.", p)))
+                         set(PARENT_RE.match(p).group(1) for p in parents))
+        unknown = [m for m in members if m not in state["members"]]
+        if unknown:
+            raise CouncilError("concept %s cites member(s) %s, but the council is %s"
+                               % (cid, ", ".join(unknown), ", ".join(sorted(state["members"]))))
+        if not members:
+            raise CouncilError("concept %s names no member and no parent idea: its lineage is lost" % cid)
         seen.add(cid)
         out.append({"id": cid, "title": str(c["title"]).strip(), "pitch": str(c["pitch"]).strip(),
-                    "parents": parents, "members": [m for m in members if m in state["members"]],
-                    "orphan": orphan})
+                    "parents": parents, "members": members, "orphan": orphan})
     return out
+
+
+def verdict_problems(state, v):
+    """Why a judge's file cannot be counted: every pool concept, every criterion, a number
+    from 0 to 10, and no ids outside the pool. Empty when it can."""
+    if not isinstance(v, dict) or not isinstance(v.get("scores"), dict):
+        return ["no 'scores' object"]
+    scores = {str(k).strip().upper(): s for k, s in v["scores"].items()}
+    ids = [c["id"] for c in state["pool"]]
+    problems = []
+    for cid in ids:
+        s = scores.get(cid)
+        if not isinstance(s, dict):
+            problems.append("%s %s" % (cid, "not scored" if s is None else "is not an object of scores"))
+            continue
+        for key, _ in state["weights"]:
+            val = s.get(key)
+            if isinstance(val, bool) or not isinstance(val, (int, float)) or not 0 <= val <= 10:
+                problems.append("%s '%s' is %s, not a number from 0 to 10" % (cid, key, json.dumps(val)))
+    extra = sorted(set(scores) - set(ids))
+    if extra:
+        problems.append("ids not in the pool: %s" % ", ".join(extra))
+    return problems
 
 
 def weighted_total(scores, weights):
@@ -426,6 +556,8 @@ def tally(state, verdicts):
     most that the average left out, when that judge's total beats the slot's average.
     Divisive ideas are where the novelty usually is."""
     table = {}
+    keys = [k for k, _ in state["weights"]]
+    nov_key = "novelty" if "novelty" in keys else keys[0]   # the tie-break, under every rubric
     for c in state["pool"]:
         totals, off, nov = [], 0, []
         for v in verdicts:
@@ -434,7 +566,7 @@ def tally(state, verdicts):
             if t is None:
                 continue
             totals.append(t)
-            nov.append(float(s.get(state["weights"][0][0], 0)))
+            nov.append(float(s.get(nov_key, 0)))
             off += 1 if _truthy(s.get("off_brief")) else 0
         if not totals:
             continue
@@ -455,43 +587,81 @@ def tally(state, verdicts):
     return table, short
 
 
+def _read(path):
+    with open(path, encoding="utf-8", errors="replace") as fh:
+        return fh.read()
+
+
 def collect(state):
+    """Read the pool or the judges' scores. Each result is (what, status, note); a status other
+    than recorded, read or dropped means the step did not go through."""
     d = state["dir"]
+    if state.get("ended"):
+        return [("run", "stopped", state["ended"])]
     if state["pool"] is None:
         path = pool_out(d)
         if not _has_output(path):
             return [("pool", "missing", "")]
-        with open(path, encoding="utf-8", errors="replace") as fh:
-            data = extract_json(fh.read())
-        try:
-            state["pool"] = parse_pool(state, data)
-        except (CouncilError, D.DeckError) as e:
-            _set_aside(path)
-            return [("pool", "unreadable", str(e))]
-        return [("pool", "recorded", "%d concepts" % len(state["pool"]))]
+        text = _read(path)
+        no_output = _is_no_output(text)
+        if not no_output:
+            data = extract_json(text)
+            try:
+                state["pool"] = parse_pool(state, data)
+            except (CouncilError, D.DeckError) as e:
+                note = str(e)
+            else:
+                cut = max(0, len(data["concepts"]) - state["pool_max"])
+                note = "%d concepts" % len(state["pool"])
+                if cut:
+                    note += " (%d more were cut: the pool holds %d)" % (cut, state["pool_max"])
+                return [("pool", "recorded", note)]
+        else:
+            note = "the curator wrote NO OUTPUT"
+        if _failed(state, "curator", path, no_output):
+            state["ended"] = ("the curator failed twice (%s). Without a pool there is nothing to score: "
+                              "report the run as stopped and give the user the member files" % note)
+            return [("pool", "failed", note)]
+        return [("pool", "unreadable", note + ". Rerun the cluster phase once")]
     if state["shortlist"] is None:
         results, verdicts = [], []
         for j in judge_ids(state):
+            if j in state.get("dropped", []):
+                results.append((j, "dropped", "failed twice earlier"))
+                continue
             path = score_out(d, j)
             if not _has_output(path):
                 results.append((j, "missing", ""))
                 continue
-            with open(path, encoding="utf-8", errors="replace") as fh:
-                v = extract_json(fh.read())
-            if not isinstance(v, dict) or not isinstance(v.get("scores"), dict):
-                _set_aside(path)
-                results.append((j, "unreadable", "no 'scores' object"))
+            text = _read(path)
+            no_output = _is_no_output(text)
+            v = None if no_output else extract_json(text)
+            problems = ["the judge wrote NO OUTPUT"] if no_output else verdict_problems(state, v)
+            if problems:
+                note = "; ".join(problems[:6]) + (" (and %d more)" % (len(problems) - 6) if len(problems) > 6 else "")
+                if _failed(state, j, path, no_output):
+                    state.setdefault("dropped", []).append(j)
+                    results.append((j, "dropped", note))
+                else:
+                    results.append((j, "rejected", note + ". Rerun this judge once"))
                 continue
             v["scores"] = {str(k).strip().upper(): s for k, s in v["scores"].items()}
             verdicts.append(v)
-            results.append((j, "read", "%d concepts scored" % len(v["scores"])))
-        if any(r[1] != "read" for r in results):
+            results.append((j, "read", "all %d concepts scored" % len(state["pool"])))
+        if any(r[1] in ("missing", "rejected") for r in results):
+            return results
+        need = min(MIN_JUDGES, state["judges"])
+        if len(verdicts) < need:
+            state["ended"] = ("only %d of %d judges gave usable scores and the panel needs %d: report the run as "
+                              "stopped, with the pool unscored" % (len(verdicts), state["judges"], need))
+            results.append(("score", "failed", state["ended"]))
             return results
         table, short = tally(state, verdicts)
         if not short:
             raise CouncilError("no concept survived scoring (all off-brief?). Rerun cluster or narrow the brief")
         state["scores"], state["shortlist"] = table, short
-        results.append(("shortlist", "recorded", ", ".join(short)))
+        results.append(("shortlist", "recorded", "%s (every concept scored by %d of %d judges)"
+                        % (", ".join(short), len(verdicts), state["judges"])))
         return results
     return []
 
@@ -541,6 +711,11 @@ def _sizes(args):
         val = getattr(args, key, None)
         if val is not None:
             base[key] = val
+    if base["members"] < MIN_MEMBERS:
+        raise CouncilError("--members must be at least %d: the deal seats one lens from each of %s"
+                           % (MIN_MEMBERS, ", ".join(D.REQUIRED_FAMILIES)))
+    if base["parallel"] < 1:
+        raise CouncilError("--parallel must be at least 1")
     if base["cross"] < 1:
         raise CouncilError("--cross must be at least 1: cross-pollination is the point of a council")
     if base["judges"] < 1 or base["shortlist"] < 1:
@@ -569,6 +744,20 @@ def cmd_presets(args):
     D.cmd_presets(args)
 
 
+def _make_run_dir():
+    """A new, empty run folder. Names are second-resolution timestamps, so a retry within the
+    same second gets a suffix instead of failing."""
+    os.makedirs(ROOT, exist_ok=True)
+    base = time.strftime("%Y%m%d-%H%M%S")
+    name, k = base, 2
+    while True:
+        try:
+            os.makedirs(os.path.join(ROOT, name))
+            return name
+        except FileExistsError:
+            name, k = "%s-%d" % (base, k), k + 1
+
+
 def cmd_init(args):
     deck = load_deck()
     s = _sizes(args)
@@ -583,33 +772,42 @@ def cmd_init(args):
         raise CouncilError("the brief is empty")
     seed = args.seed if args.seed is not None else random.randrange(1, 10 ** 6)
     explicit = D.parse_lens_spec(args.lenses, deck) if args.lenses else None
+    check_deck(deck, explicit or ())
     # Fit the deck to the brief before dealing: Clef, else Jev, else BM25, else the whole pool (deck.py).
     full = deck
     deck, relevance = D.fit_deck(deck, brief, s["members"], mode=args.relevance, minimum=args.relevance_min,
                                  techniques=not args.no_technique, preset=args.preset, key=D._key(),
                                  cf_auth=D._cf(args.relevance))
-    name = time.strftime("%Y%m%d-%H%M%S")
-    run_dir = os.path.join(ROOT, name)
-    os.makedirs(run_dir, exist_ok=False)
-    state = new_state(s["members"], seed, deck, run_dir, s["cross"], s["judges"], s["shortlist"],
+    # Everything that can fail on bad input runs before the folder exists.
+    state = new_state(s["members"], seed, deck, ".", s["cross"], s["judges"], s["shortlist"],
                       s["parallel"], args.preset, explicit, rubric=args.rubric, techniques=not args.no_technique)
+    state["model"] = args.model
+    state["phase_models"] = _parse_phase_models(args.phase_model, state)
     state["relevance"] = ({k: relevance.get(k) for k in ("method", "model", "minimum", "fallback", "notes")}
                           if relevance else None)
-    if relevance:
-        with open(os.path.join(run_dir, "relevance.json"), "w", encoding="utf-8") as fh:
-            json.dump(relevance, fh, indent=1)
-            fh.write("\n")
-    with open(os.path.join(run_dir, "brief.md"), "w", encoding="utf-8") as fh:
-        fh.write(brief.rstrip("\n") + "\n")
-    with open(RUBRIC_PATH, encoding="utf-8") as src, \
-            open(os.path.join(run_dir, "rubric.md"), "w", encoding="utf-8") as dst:
-        dst.write(src.read())
-    save_state(state)
+    name = _make_run_dir()
+    run_dir = os.path.join(ROOT, name)
+    state["dir"] = os.path.abspath(run_dir)
+    try:
+        if relevance:
+            with open(os.path.join(run_dir, "relevance.json"), "w", encoding="utf-8") as fh:
+                json.dump(relevance, fh, indent=1)
+                fh.write("\n")
+        with open(os.path.join(run_dir, "brief.md"), "w", encoding="utf-8") as fh:
+            fh.write(brief.rstrip("\n") + "\n")
+        with open(RUBRIC_PATH, encoding="utf-8") as src, \
+                open(os.path.join(run_dir, "rubric.md"), "w", encoding="utf-8") as dst:
+            dst.write(src.read())
+        save_state(state)
+    except BaseException:
+        shutil.rmtree(run_dir, ignore_errors=True)
+        raise
     with open(os.path.join(ROOT, LATEST), "w", encoding="utf-8") as fh:
         fh.write(name + "\n")
     total = sum(n for _, n in plan_rows(s["members"], s["cross"], s["judges"], s["shortlist"]))
     print("council %s: %d members, seed %s, %s rubric, %d calls"
           % (state["dir"], s["members"], seed, state["rubric"], total))
+    print("models: %s" % _models_line(state))
     for line in D.report_lines(relevance, full):
         print(line)
     for m in sorted(state["members"]):
@@ -617,9 +815,41 @@ def cmd_init(args):
     print("next: %s" % _cmd("next"))
 
 
+def _parse_phase_models(spec, state):
+    out = {}
+    for part in [x.strip() for x in (spec or "").split(",") if x.strip()]:
+        phase, _, model = part.partition("=")
+        phase, model = phase.strip(), model.strip()
+        known = ["diverge", "cross", "cluster", "score", "develop", "stress"]
+        if phase not in known or not model:
+            raise CouncilError("--phase-model wants phase=model with a phase from %s, not '%s'"
+                               % (", ".join(known), part))
+        out[phase] = model
+    return out
+
+
+def phase_model(state, phase):
+    """The model for a phase's sub-agents: an override, else the fast tier for research, else the session's."""
+    key = "cross" if phase.startswith("cross") else phase
+    over = (state.get("phase_models") or {}).get(key)
+    if over:
+        return over
+    if key in RESEARCH_PHASES:
+        return RESEARCH_MODEL
+    return state.get("model") or SESSION_MODEL
+
+
+def _models_line(state):
+    order = ["diverge", "cross", "cluster", "score", "develop", "stress"]
+    return ", ".join("%s %s" % (p, phase_model(state, p)) for p in order)
+
+
 def cmd_next(args):
     state = load_state(args)
     phase, left, jobs = next_action(state)
+    if phase == "ended":
+        print("STOPPED: %s" % state["ended"])
+        return 1
     if phase == "done":
         print("DONE. Run %s, then read the develop and stress files it lists." % _cmd("harvest"))
     elif phase == "collect":
@@ -627,6 +857,7 @@ def cmd_next(args):
     else:
         print("phase %s: %d of %d jobs left" % (phase, len(left), len(jobs)))
         print("run: %s" % _cmd("prompts", phase))
+    return 0
 
 
 def cmd_prompts(args):
@@ -635,8 +866,11 @@ def cmd_prompts(args):
     if not left:
         print("nothing left in %s. %s" % (args.phase, _cmd("next")))
         return
-    print("%d job%s in %s. Keep at most %d in flight; launch the next as each finishes:"
+    print("%d job%s in %s. Keep at most %d in flight; launch the next as each finishes."
           % (len(left), "" if len(left) == 1 else "s", args.phase, state["parallel"]))
+    print("Each: one general sub-agent, model %s, description 'council <job>', "
+          "prompt 'Read <prompt file>: it is your whole brief.' (Tool and tier names per harness: %s)"
+          % (phase_model(state, args.phase), os.path.join(_find_deck(), "references", "harness.md")))
     for j in left:
         print("  %-18s %s" % (j["id"], j["prompt"]))
 
@@ -661,11 +895,15 @@ def cmd_collect(args):
     for what, status, note in results:
         print("%-10s %-10s %s" % (what, status, note))
     print("next: %s" % _cmd("next"))
+    return 0 if all(st in ("recorded", "read", "dropped") for _, st, _ in results) else 1
 
 
 def cmd_status(args):
     state = load_state(args)
     print("council %s, seed %s, %d members" % (state["dir"], state["seed"], state["members_n"]))
+    print("models: %s" % _models_line(state))
+    if state.get("ended"):
+        print("STOPPED: %s" % state["ended"])
     for phase in phases(state):
         try:
             jobs = phase_jobs(state, phase)
@@ -695,7 +933,8 @@ def cmd_harvest(args):
         lenses = ", ".join("%s %s" % (m, members[m]["card"]["lens"]["name"]) for m in c["members"]) or "?"
         tag = "  [dissent slot: one judge scored it %s]" % r.get("max") if r.get("dissent") else ""
         tag += "  [orphan: one member's idea, kept as written]" if c.get("orphan") else ""
-        print("\n%s  %s  mean %s, spread %s%s" % (cid, c["title"], r.get("mean"), r.get("spread"), tag))
+        print("\n%s  %s  mean %s, spread %s, %s of %d judges%s"
+              % (cid, c["title"], r.get("mean"), r.get("spread"), r.get("judges"), state["judges"], tag))
         print("  pitch: %s" % c["pitch"])
         print("  lineage: %s" % (", ".join(c["parents"]) or "none"))
         print("  lenses: %s" % lenses)
@@ -708,7 +947,8 @@ def cmd_harvest(args):
         for cid in rest:
             r = table[cid]
             flag = " OFF-BRIEF" if r["off_brief"] else ""
-            print("  %s  %-6s spread %-6s %s%s" % (cid, r["mean"], r["spread"], concept(state, cid)["title"], flag))
+            print("  %s  %-6s spread %-6s %s of %d judges  %s%s"
+                  % (cid, r["mean"], r["spread"], r["judges"], state["judges"], concept(state, cid)["title"], flag))
     print("\nrun folder: %s" % state["dir"])
 
 
@@ -754,6 +994,10 @@ def build_parser():
     s.add_argument("--rubric", choices=("creative", "decision"), help="default: the preset's, else creative")
     s.add_argument("--no-technique", action="store_true", help="lenses only")
     s.add_argument("--seed")
+    s.add_argument("--model", help="the session's model, for the judgment phases (diverge, cross, cluster, "
+                                   "score); printed with every phase")
+    s.add_argument("--phase-model", help="overrides as phase=model,... (default: develop and stress on %s)"
+                   % RESEARCH_MODEL)
     s.add_argument("--relevance", choices=("auto", "clef", "jev", "bm25", "off"), default="auto",
                    help="fit the deck to the brief first: auto (default) uses Clef if Cloudflare is logged "
                         "in, else Jev if TYPESAFE_API_KEY is set, else BM25. clef / jev: that one or fail. "
@@ -777,11 +1021,14 @@ def main(argv=None):
     args = build_parser().parse_args(argv)
     handler = globals()["cmd_" + args.cmd]
     try:
-        handler(args)
-    except CouncilError as e:
+        return handler(args) or 0
+    except (CouncilError, D.DeckError) as e:
         print("council: %s" % e, file=sys.stderr)
-        return 1
-    return 0
+    except OSError as e:
+        print("council: %s: %s" % (e.strerror or e, e.filename or ""), file=sys.stderr)
+    except json.JSONDecodeError as e:   # a council.json or deck that is not JSON
+        print("council: not valid JSON: %s" % e, file=sys.stderr)
+    return 1
 
 
 if __name__ == "__main__":
