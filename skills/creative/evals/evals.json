@@ -1,6 +1,6 @@
 {
   "skill_name": "creative",
-  "note": "Judge with a blind LLM judge on the strongest model available, comparing against a no-skill baseline. The judge writes the obvious pool first, then scores novelty, value, diversity, specificity and honesty (spot-checking 2+ prior-art or collision claims with web search). Show each pair to the judge in both orders and count a verdict only when both agree; use 3+ samples per arm before calling a close result.",
+  "note": "Two kinds of check. Assertions marked 'script' are format checks: run evals/check.py on each sample's final answer (python3 check.py <id> sample1.md sample2.md ...). Keep them out of the blind judge's prompt, because a baseline can't pass them without the skill and they would make the judge score compliance. Assertions marked 'judge' go to a blind LLM judge on the strongest model available, comparing against a baseline (no skill, or the previous version of the skill). The judge writes the obvious pool first, then scores novelty, value, diversity, specificity and honesty (spot-checking 2+ prior-art or collision claims with web search). Show each pair in both orders and count a verdict only when both agree; use 3+ samples per arm before calling a close result. Headless runs need: --add-dir <skills dir> --allowedTools \"Read,Glob,Grep,WebSearch,WebFetch,Bash(shuf:*),Bash(python3:*),Bash(gh search:*)\".",
   "evals": [
     {
       "id": 1,
@@ -8,10 +8,30 @@
       "prompt": "need name ideas for a bubble-tea delivery app launching in Ho Chi Minh City. young crowd, mostly Vietnamese speakers, but the name should work in English too.",
       "expected_output": "A shortlist of names far from the obvious pool (boba/tea/sip puns), each with pronunciation in both languages, a collision check and risks.",
       "assertions": [
-        "[judge] Names the obvious answers it is beating",
-        "[judge] Top picks sit outside the judge's obvious pool and differ from each other",
-        "[judge] Each pick works when said in Vietnamese and in English",
-        "[judge] Collision claims (an existing shop, app or trademark) are real when spot-checked"
+        {
+          "text": "Fence lines name both tiers: the obvious answers and the clever ones",
+          "check": "script: check.py fence lines"
+        },
+        {
+          "text": "Every shortlisted name has a receipt line showing its generator's input",
+          "check": "script: check.py receipts"
+        },
+        {
+          "text": "Printed weighted totals match the scores",
+          "check": "script: check.py totals"
+        },
+        {
+          "text": "Top picks sit outside the judge's obvious pool and differ from each other",
+          "check": "judge"
+        },
+        {
+          "text": "Each pick works when said in Vietnamese and in English",
+          "check": "judge"
+        },
+        {
+          "text": "Collision claims (an existing shop, app or trademark) are real when spot-checked",
+          "check": "judge"
+        }
       ]
     },
     {
@@ -20,7 +40,7 @@
       "prompt": "give me launch campaign ideas for our invoice reconciliation SaaS for mid-size accounting firms. everything we come up with sounds like every other fintech ad.",
       "expected_output": "Campaign ideas outside the obvious B2B pool (ROI calculator, save hours, month-end pain) that skeptical accountants would trust and a small team could run.",
       "assertions": [
-        "[judge] Names the obvious answers it is beating",
+        "[script] Fence lines name both tiers (check.py)",
         "[judge] Top picks are outside the judge's obvious pool",
         "[judge] Each pick has concrete mechanics, a first step and a risk",
         "[judge] Prior-art and statistic claims are real when spot-checked"
@@ -32,7 +52,7 @@
       "prompt": "story premise ideas for a short story about a lighthouse keeper. I want something that doesn't feel like every other lighthouse story.",
       "expected_output": "Premises outside the obvious pool (ghost, isolation madness, last keeper before automation, storm night) with a story engine and a first scene.",
       "assertions": [
-        "[judge] Names the obvious answers it is beating",
+        "[script] Fence lines name both tiers (check.py)",
         "[judge] Premises are outside the judge's obvious pool and still read as lighthouse-keeper stories",
         "[judge] Each premise has conflict, stakes and an ending in view",
         "[judge] Named prior works are real when spot-checked"
@@ -97,22 +117,36 @@
       "assertions": [
         {
           "text": "30-day challenge and influencer partnerships are absent from the shortlist",
-          "check": "script: grep"
+          "check": "script: check.py forbidden titles"
+        },
+        {
+          "text": "Fence lines name both tiers, and every shortlisted idea has a receipt line",
+          "check": "script: check.py"
+        },
+        {
+          "text": "Printed weighted totals match the scores",
+          "check": "script: check.py totals"
         },
         {
           "text": "Each shortlist idea names a first move doable this week",
-          "check": "blind judge"
+          "check": "judge"
         },
         {
           "text": "No idea breaks the $2k / 2 people / 3 weeks constraint",
-          "check": "blind judge"
+          "check": "judge"
         },
         {
-          "text": "Rubric scores (novelty, value, feasibility) are shown for the shortlist",
-          "check": "script: grep for score columns"
+          "text": "Top picks sit outside the judge's obvious pool, including the ideas a sharp marketer would give",
+          "check": "judge"
         }
       ],
       "name": "v4-launch-campaign"
+    }
+  ],
+  "suite_assertions": [
+    {
+      "text": "The same core idea does not top two or more samples of one eval (3 samples per eval)",
+      "check": "script for exact repeats (check.py with several files prints each sample's top pick); a judge, shown only the top picks, for the same idea under different names"
     }
   ]
 }
