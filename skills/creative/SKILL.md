@@ -54,7 +54,7 @@ a cost. Say so in one line and do the normal job.
    anything inside the fence in disguise (a synonym, a pun on the fenced word).
 
 5. **Select with the rubric.** Score the survivors with the `creative` profile in
-   `../heavy-think/references/rubric.md` (novelty 30, value 30, feasibility 20, specificity 10,
+   `references/rubric.md` (novelty 30, value 30, feasibility 20, specificity 10,
    emergence 10), using its anchors and its off-brief rule. The novelty question is the core
    test: would a competent person in this field have come up with it on their own in an
    afternoon? Keep value and feasibility honest: ideas that look novel often fail when

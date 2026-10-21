@@ -6,9 +6,9 @@ an input you can write down (the receipt column). Write it before the ideas: it 
 the generator run instead of being a label added afterwards, and it becomes the idea's
 receipt line in the output.
 
-Where a deck id is given, the method lives in heavy-think's deck. Read just that entry, not
-the whole file: grep `../heavy-think/references/perspectives.json` for `"id": "morphological"`
-(the part after `techniques.`) with three lines of context. If the deck is missing, the
+Where a deck id is given, the method lives in this skill's `references/techniques.json` (a copy
+of the shared deck). Read just that entry, not the whole file: grep it for `"id": "morphological"`
+(the part after `techniques.`) with three lines of context. If the file is missing, the
 technique's name is enough to run it.
 
 | Generator | Deck id | Use it this way here | Receipt | Good for |
