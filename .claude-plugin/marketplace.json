@@ -1,7 +1,10 @@
 {
   "name": "thinking-skills",
-  "owner": { "name": "samhvw8", "url": "https://github.com/samhvw8" },
-  "description": "thinking-skills: creative, heavy-think, council and debate.",
+  "owner": {
+    "name": "samhvw8",
+    "url": "https://github.com/samhvw8"
+  },
+  "description": "thinking-skills: creative, heavy-think, council, debate and ambition.",
   "plugins": [
     {
       "name": "thinking-skills",

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: evals/run.sh <case> <dest-dir>
+# Usage: evals/ambition/run.sh <case> <dest-dir>
 # Copies the case's fixture into a fresh git repo at <dest-dir> and prints the task.
 set -euo pipefail
 here=$(cd "$(dirname "$0")" && pwd)

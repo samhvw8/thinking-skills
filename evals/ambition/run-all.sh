@@ -2,9 +2,9 @@
 # Run every case with and without the skill, headless, then grade each run and
 # check its receipts against the transcript.
 #
-# Usage: evals/run-all.sh [-m model] [-n runs] [-j parallel] [-b usd-per-run] [-a "base skill high"] [case ...]
-#        evals/run-all.sh -g evals/out/<run-dir>    # re-grade saved runs, no agents
-# Output: evals/out/<date>-<model>/<case>-<arm>-<i>/ and a summary table.
+# Usage: evals/ambition/run-all.sh [-m model] [-n runs] [-j parallel] [-b usd-per-run] [-a "base skill high"] [case ...]
+#        evals/ambition/run-all.sh -g evals/ambition/out/<run-dir>    # re-grade saved runs, no agents
+# Output: evals/ambition/out/<date>-<model>/<case>-<arm>-<i>/ and a summary table.
 #
 # Agents run with acceptEdits and a short tool allow-list (file tools, python3,
 # read-only git). Your user settings and hooks are left out (--setting-sources
@@ -12,7 +12,7 @@
 # Set ANTHROPIC_API_KEY to run with --bare, which also leaves out CLAUDE.md.
 set -euo pipefail
 here=$(cd "$(dirname "$0")" && pwd)
-skill="$(cd "$here/.." && pwd)/skills/ambition/SKILL.md"
+skill="$(cd "$here/../.." && pwd)/skills/ambition/SKILL.md"
 model=claude-opus-5-5; runs=1; jobs=3; budget=5; regrade=; arms="skill base"
 while getopts "m:n:j:b:g:a:" o; do
   case $o in m) model=$OPTARG;; n) runs=$OPTARG;; j) jobs=$OPTARG;; b) budget=$OPTARG;; g) regrade=$OPTARG;; a) arms=$OPTARG;; *) exit 2;; esac

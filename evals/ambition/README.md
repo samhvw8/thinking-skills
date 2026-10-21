@@ -22,8 +22,8 @@ claims must appear in a tool call in the transcript.
 ## Run all of them
 
 ```bash
-evals/run-all.sh                          # Opus, 1 run per cell, 3 in parallel, $5 cap per run
-evals/run-all.sh -m claude-sonnet-5-5 -n 3 d-depth a2-speed
+evals/ambition/run-all.sh                          # Opus, 1 run per cell, 3 in parallel, $5 cap per run
+evals/ambition/run-all.sh -m claude-sonnet-5-5 -n 3 d-depth a2-speed
 ```
 
 It runs `claude -p` headless in a fresh git repo per run, with `acceptEdits` and a
@@ -32,7 +32,7 @@ settings and hooks are left out, so both arms see the same setup. With an OAuth
 login your global CLAUDE.md still loads into both arms. Set `ANTHROPIC_API_KEY` to
 run with `--bare`, which leaves it out. A case can set its own permission mode
 (`mode` file) and a system note (`system` file). Results land
-in `evals/out/<date>-<model>/` (git-ignored): the transcript, `REPORT.md`, the
+in `evals/ambition/out/<date>-<model>/` (git-ignored): the transcript, `REPORT.md`, the
 grade and the receipts per run, plus a summary table.
 
 ## Judge quality, blind
@@ -41,10 +41,10 @@ Pass/fail graders can't tell a good pass from a great one. `judge/` adds a blind
 judge pass, run by Claude Code Opus subagents (no API calls):
 
 ```bash
-python3 evals/judge/prepare.py evals/out/<run>              # packets with A/B/C shuffled; arm names redacted
-python3 evals/judge/prepare.py evals/out/<run> --seed 2     # a second shuffle, against position bias
+python3 evals/ambition/judge/prepare.py evals/ambition/out/<run>              # packets with A/B/C shuffled; arm names redacted
+python3 evals/ambition/judge/prepare.py evals/ambition/out/<run> --seed 2     # a second shuffle, against position bias
 # give each judge the rubric (judge/rubric.md) and the packet paths; save its JSON as judge*/scores*.json
-python3 evals/judge/unblind.py evals/out/<run> [...]        # map letters back to arms and average
+python3 evals/ambition/judge/unblind.py evals/ambition/out/<run> [...]        # map letters back to arms and average
 ```
 
 Judges score ambition, grounding, honesty, scope and usefulness from 0 to 10,
@@ -53,8 +53,8 @@ then rank the three. They see each answer's report, diff and grader facts.
 ## Run one case by hand
 
 ```bash
-evals/run.sh a-honest /tmp/eval-a       # fresh git repo with the fixture, prints the task
-evals/a-honest/grade.sh /tmp/eval-a     # exit 0 = pass
+evals/ambition/run.sh a-honest /tmp/eval-a       # fresh git repo with the fixture, prints the task
+evals/ambition/a-honest/grade.sh /tmp/eval-a     # exit 0 = pass
 ```
 
 Each grader prints `ok` / `FAIL` per check, plus one `MANUAL` line for what a

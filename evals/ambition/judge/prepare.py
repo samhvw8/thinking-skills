@@ -1,6 +1,6 @@
 """Build blind judging packets from one run-all output folder.
 
-Usage: python3 prepare.py <evals/out/run-dir> [--seed N]
+Usage: python3 prepare.py <evals/ambition/out/run-dir> [--seed N]
 Writes <run-dir>/judge/<case>-<i>.md (judge-s<N>/ for --seed N other than 1) (A/B/C in random order) and
 <run-dir>/judge/key.json (which letter is which arm). Judges get packets only.
 """

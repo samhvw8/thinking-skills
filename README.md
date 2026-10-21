@@ -10,9 +10,12 @@ other, and pressure-test a decision.
 | `heavy-think` | Classifies a hard problem (brainstorm, perspectives, solve, decompose, unstick, debate) and runs parallel agents on it, then synthesizes | Several, in parallel |
 | `council` | Collaborative brainstorm where perspectives build on each other ("yes, and…"); live teammates or a file-based session of 5–12 agents dealt lens and technique cards | 2–12 |
 | `debate` | Live debate between named teammates who argue through messages; you moderate and keep what survived | 2–4 teammates |
+| `ambition` | Does a task, or rewrites a prompt, at a higher level: the goal behind the goal (Altitude), an expert's raw data, real instruments and an outside judge (Depth), and methods from other fields (Range). Writes a brief with a contract and waits for your OK; `/ambition high` adds mental-model cards and three approaches | One (Range can fan out) |
 
 `heavy-think` is the core: `council`, `debate` and `creative` read its files (the
 perspective deck, the scoring rubric, the team protocols). Install them side by side.
+`ambition` stands alone; it hands multi-field work to `heavy-think` or `council` when
+they are installed.
 
 ## Install
 
@@ -20,7 +23,7 @@ perspective deck, the scoring rubric, the team protocols). Install them side by 
 |-------|-----|
 | Claude Code, as a plugin | `/plugin marketplace add samhvw8/thinking-skills`, then `/plugin install thinking-skills@thinking-skills` |
 | Claude Code, Codex, Cursor, OpenCode and others | `npx skills add samhvw8/thinking-skills` |
-| [ccp](https://github.com/samhvw8/claude-code-profile) | `ccp install samhvw8/thinking-skills skills/heavy-think --link .` (repeat for each skill) |
+| [ccp](https://github.com/samhvw8/claude-code-profile) | `ccp install samhvw8/thinking-skills skills/heavy-think --link .` (list more `skills/<name>` to install several) |
 | By hand | Copy the folders in `skills/` into `~/.claude/skills/`, keeping them side by side |
 
 ## Worth knowing
@@ -35,14 +38,22 @@ perspective deck, the scoring rubric, the team protocols). Install them side by 
   perspective deck to your question. It uses Cloudflare Workers AI when `CLOUDFLARE_*`
   credentials are set, else TypeSafe when `TYPESAFE_API_KEY` is set, else an offline BM25
   ranking. Nothing is sent anywhere unless you set one of those up.
-- **Hand-offs to other skills** (`arena`, `ambition`) are suggestions; they apply only when
+- **Hand-offs to other skills** (for example `arena`) are suggestions; they apply only when
   those skills are installed.
+- **`ambition` needs real tools for Depth and its judge**: a shell, access to your data
+  and checks it can run. In a plain chat it still writes the brief, and it says which
+  checks stayed on paper. It suggests a bigger scope but never takes one.
 
 ## Tests
 
 `python3 -m unittest discover -s skills/heavy-think/tests` checks the deck (standard
 library only, no network). `skills/creative/evals/evals.json` holds the creative eval
 cases; they are judged by a blind LLM judge in both orders, not by a script.
+`evals/ambition/` has eight cases (honesty twice, scope, rewrite, depth, systems, the
+approval gate, auto mode) with graders, a receipts check against the transcript, a
+blind judge pass and `run-all.sh` to run them headless; see
+[evals/ambition/README.md](evals/ambition/README.md). `tools/build_deck.py` rebuilds
+ambition's mental-model deck.
 
 ## License
 
