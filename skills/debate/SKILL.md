@@ -17,7 +17,7 @@ Check first, and if either fails, say so before doing anything else:
 
 When one fails, the playbook's Fallback runs a simulated version; tell the user it is simulated.
 
-The deck behind the playbook: `python3 "$SKILL_DIR/../heavy-think/deck.py" debates` (`SKILL_DIR`: this file's folder) prints the
+The deck behind the playbook: `python3 "$SKILL_DIR/deck/deck.py" debates` (`SKILL_DIR`: this file's folder) prints the
 formats and the evidence-backed rules the playbook is built on.
 
 Done means: the transcript folder holds the baseline and the verdict, the user has the verdict
