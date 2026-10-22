@@ -1,6 +1,6 @@
 ---
 name: ambition
-description: "Do a task, or rewrite a prompt, at a higher level of ambition: Altitude (the goal behind the goal), Depth (an expert's raw data, real instruments and an outside judge) and Range (methods from other fields). Use when the user says be ambitious, think bigger, aim higher, go deeper, 10x this, what would the best in the field do, or asks to make a prompt more ambitious. Say 'ambition high' for the deep mode (classify, mental models, three approaches, leverage). Not for quick one-liners or mechanical changes."
+description: "Do a task, or rewrite a prompt, at a higher level of ambition on seven axes, each with a 0-3 ladder: Altitude (the goal behind the goal), Depth (an expert's raw data, real instruments and an outside judge), Range (methods from other fields), Speed (a clock tight enough to change the method), Reach (the whole class, not the instance), Horizon (lasts and makes the next task cheaper) and Proof (evidence a sceptic accepts). Use when the user says be ambitious, think bigger, aim higher, go deeper, 10x this, what would the best in the field do, or asks to make a prompt more ambitious. Say 'ambition high' for the deep mode (classify, mental models, three approaches, leverage). Not for quick one-liners or mechanical changes."
 argument-hint: "[high | rewrite] <task or prompt>"
 ---
 
@@ -10,6 +10,8 @@ Based on Felix Rieseberg, [*How to be more ambitious: a tutorial for humans with
 models*](https://felixrieseberg.com/how-to-be-more-ambitious-a-tutorial-for-humans-with-models/) (2026-10).
 Models can do more than people ask of them. This skill asks for more, and it keeps
 the result honest. Hard goals without a fixed judge make agents fake success.
+The post names four types of ambition: Speed, Altitude, Depth and Range. This skill
+adds three that its examples already use: Reach, Horizon and Proof.
 
 ## Modes
 
@@ -21,21 +23,44 @@ Read the mode from the first word of the arguments, or from the user's words:
 | `/ambition high <task>`, "ambition high", "go all out" | High: normal plus the steps in "Mode: high" |
 | `/ambition rewrite <prompt>`, "make this prompt more ambitious" | Rewrite: see "Mode: rewrite a prompt" |
 
-## The three axes
+## The seven axes
 
 | Axis | Question | Use when | Weak for |
 |------|----------|----------|----------|
 | **Altitude** | What should happen *after* this task? | An outcome matters more than the artifact. People will hold meetings about it. The task keeps coming back. | Creative work. Lean on Range there. |
 | **Depth** | What would the best expert do, from which raw material, with which instruments? | You want this one thing done really well. | |
 | **Range** | Which other fields would do this differently? | The task is creative, or the obvious field is stuck. | |
+| **Speed** | If this had to land in a tenth of the time, what would you stop doing? | The loop is slow: a build, a review cycle, a weekly report, a judge that takes hours. The task repeats. | One-off quality work. Never buy speed by weakening the judge. |
+| **Reach** | How many other cases share this cause? | The task is one instance of a pattern: a bug class, a question people keep asking, every page with the same flaw. | A truly one-off case. |
+| **Horizon** | Will this still work in a year, and will it make the next task cheaper? | The same kind of work comes back, or the result decays (data, docs, config). | Throwaway exploration. |
+| **Proof** | What would convince a sceptic who never sees the transcript? | The result drives a decision, or success is easy to fake (a green suite, "it's faster now"). | |
 
-Doing the same work faster is not ambition here. That is normal work.
+**Speed** is how fast the work reaches its outcome, not how fast the code runs. A
+runtime target is a Depth target. Typing the same steps faster is rung 0, normal work.
+Speed is ambition when the tighter clock changes the method: Lindbergh and Hall built
+the Spirit of St. Louis in 60 days and estimated its range with a globe and a piece of
+string (Collison's [Fast](https://patrickcollison.com/fast) list).
+
+Each axis has a ladder. Rung 0 is what a plain run does.
+
+| Axis | 0 | 1 | 2 | 3 |
+|------|---|---|---|---|
+| Altitude | the artifact asked for | the question behind it | the decision it serves | the outcome, kept true without the user |
+| Depth | summaries and the field's vocabulary | the raw data | the field's instruments on the raw data | new knowledge an expert would learn from, shown on unseen data |
+| Range | one field | one borrowed method | 3–5 fields from the verbs, each with a receipt | plus a red team that tries to break the result |
+| Speed | the same steps, faster | no waiting: batch, run in parallel | a feedback loop of seconds, so you try many more times | a 10x tighter clock that removes steps instead of shortening them |
+| Reach | this instance | count the class: how many cases share the cause | fix the cause for the whole class | make the class impossible: a type, a lint rule, a guard, a blocking test |
+| Horizon | done once, in a transcript | repeatable: a script or command, not prose | leaves an asset that makes the next task cheaper: a test, a dataset, a tool | improves with each run, with its running cost in the Runs line |
+| Proof | your own reading | tests you wrote | an outside judge that already exists: a suite, a source-system total | held-out data, a real device, a production number or an independent second source |
+
+The contract already needs Proof rung 2, or a check labelled `self-built`. Picking
+Proof means aiming at rung 3.
 
 ## Process
 
 0. **Skip trivia.** If the task needs one tool call or has one right answer, just do it.
 1. **Look first, read-only.** Read the code, data or current numbers. Measure the baseline. Make no changes yet.
-2. **Pick the axes.** Use the table. When the signal is unclear, use all three.
+2. **Pick the axes.** Use the table. Pick the two or three whose signals you see, never all seven. When the signal is unclear, use Altitude, Depth and Range. For each axis, write the rung a plain run would reach and the rung you aim at. On a small change (one file, under about 10 lines), Proof comes before Reach: spend the effort on the strongest check you can run, such as an exhaustive or differential test, and only count the class.
 3. **Write the brief** (format below) to `BRIEF.md` and show it to the user, before your first edit to a project file. Step 1's read-only look and baseline come first and are fine; what must come before the work is the Judge and Target, because a pass line chosen after you see the result can always be set to pass. If you fixed them late, say so in Deviations. Never write that the brief was locked earlier than the file shows.
 4. **Wait for approval**, unless the user already gave it. Approval locks the contract. Asking for the task is not approving the brief. Only these count as approval:
    - an explicit "go ahead", "no need to wait" or the like;
@@ -56,6 +81,7 @@ often the highest rung you can deliver today.
 - **Raw material:** the data an expert starts from, not a summary of it.
 - **Instruments:** the methods and tools the best in the field use. Examples: a database, not a markdown table; a statistical model, not eyeballing; a profiler; a real device.
 - **Fields:** describe the task with verbs. A QBR is not "a deck". It is "make busy people believe a cause-and-effect story and decide in 30 minutes". Name 3–5 fields that are good at those verbs, each with the method it brings.
+- **Axes:** one line per chosen axis: `<axis>: rung <plain> → <aim> — <what reaching it looks like>`. Reach and Horizon above rung 1 usually add files or behavior. They go in Scope only when the request covers them; otherwise they go to "Next rung". Horizon rung 3 adds a Runs line.
 
 **Contract.** Approval locks it.
 
@@ -66,6 +92,15 @@ often the highest rung you can deliver today.
 | Stop line | The effort you spend before a miss is allowed, for example "3 real approaches". |
 | Scope | The approved deliverables and files, one per row. |
 | Runs | `<what> · owner: <who reads it> · kill when: <condition>`, or "nothing new". |
+
+## Goals that work
+
+From Locke and Latham's [35 years of goal-setting research](https://med.stanford.edu/content/dam/sm/s-spire/documents/PD.locke-and-latham-retrospective_Paper.pdf), which the post cites:
+
+- **A number, not "do your best".** Specific hard goals beat "do your best" (effect sizes .42–.80), because "do your best" has no outside referent. That is why the Target is a number.
+- **Goal plus feedback.** Goals work better with progress feedback than alone. Run the judge early and often. A judge that runs only at the end is a verdict, not feedback.
+- **Give the reason.** Commitment to a hard goal grows when the reason is given. Keep the goal question in the brief.
+- **New and complex: learning goal first.** On a novel, complex task, a hard performance target can make results worse. Set a learning goal first ("find and measure three approaches"), plus near sub-targets on the way to the far one. Then set the performance target.
 
 ## Honest misses
 
@@ -94,6 +129,7 @@ The post's self-efficacy lessons, turned into rules:
 | Target | `<n>` (`<state>`) | reached, or missed by `<gap>` |
 | Instrument: `<name>` | what it was for | the tool call that ran it, or "struck: `<why>`" |
 | Field: `<name>` | its method | done, or "struck: `<why>`" |
+| Axis: `<name>` | the aim, in plain words | what you did and what it showed (a file, a count, a number). Name a rung only when it reached 2 or higher |
 | Scope: `<row>` | approved | done / not done |
 
 Then three lines:
@@ -156,5 +192,5 @@ Under the block, add at most one optional line: `Bigger version: <the higher-alt
 
 ## Guardrails
 
-- **Ambition is not scope creep.** The contract's Scope rows are the limit. Anything else goes in "Next rung" or "Unapproved". A behavior change nobody asked for (a new error, new validation, a changed default) is scope too, even inside an approved file.
+- **Ambition is not scope creep.** The contract's Scope rows are the limit. Anything else goes in "Next rung" or "Unapproved". A behavior change nobody asked for (a new error, new validation, a changed default) is scope too, even inside an approved file. Reach is the axis most likely to creep: counting the class is always in scope, but fixing the rest of the class needs a Scope row.
 - **Tools are a requirement.** Depth and the judge need a real computer, data access and runnable checks. Without them, say which parts became words instead of actions.

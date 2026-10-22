@@ -10,7 +10,7 @@ other, and pressure-test a decision.
 | `heavy-think` | Classifies a hard problem (brainstorm, perspectives, solve, decompose, unstick, debate) and runs parallel agents on it, then synthesizes | Several, in parallel |
 | `council` | Collaborative brainstorm where perspectives build on each other ("yes, and…"); live teammates or a file-based session of 5–12 agents dealt lens and technique cards | 2–12 |
 | `debate` | Live debate between named teammates who argue through messages; you moderate and keep what survived | 2–4 teammates |
-| `ambition` | Does a task, or rewrites a prompt, at a higher level: the goal behind the goal (Altitude), an expert's raw data, real instruments and an outside judge (Depth), and methods from other fields (Range). Writes a brief with a contract and waits for your OK; `/ambition high` adds mental-model cards and three approaches | One (Range can fan out) |
+| `ambition` | Does a task, or rewrites a prompt, at a higher level on seven axes, each with a 0-3 ladder: the goal behind the goal (Altitude), an expert's raw data, real instruments and an outside judge (Depth), methods from other fields (Range), a clock tight enough to change the method (Speed), the whole class instead of one case (Reach), a result that lasts and makes the next task cheaper (Horizon), and evidence a sceptic accepts (Proof). Writes a brief with a contract and waits for your OK; `/ambition high` adds mental-model cards and three approaches | One (Range can fan out) |
 
 `heavy-think` is the core: `council`, `debate` and `creative` read its files (the
 perspective deck, the scoring rubric, the team protocols). Install them side by side.
