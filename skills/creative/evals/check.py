@@ -14,7 +14,22 @@ import re
 import sys
 import unicodedata
 
-WEIGHTS = {"novelty": 3, "value": 3, "feasibility": 2, "specificity": 1, "emergence": 1}
+def creative_weights():
+    """The creative profile's weights, read from the rubric copy so there is no second list."""
+    ref = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "references", "rubric.md"), encoding="utf-8").read()
+    row = re.search(r"^\| `creative` \|[^\n]*\| ([^|\n]+) \|$", ref, re.M).group(1)
+    out = {}
+    for part in row.split(","):
+        m = re.fullmatch(r"\s*([a-z][a-z ]*?)\s+(\d+)\s*", part, re.I)
+        if not m:
+            sys.exit(f"rubric.md: can't parse creative weight {part!r}")
+        out[m.group(1).lower().replace(" ", "_")] = int(m.group(2)) / 10
+    if abs(sum(out.values()) - 10) > 1e-9:
+        sys.exit(f"rubric.md: creative weights sum to {sum(out.values()) * 10:g}, not 100")
+    return out
+
+
+WEIGHTS = creative_weights()
 FORBIDDEN = {6: [r"30[- ]day", r"influencer"]}
 WRITING = {5: (150, 250)}  # eval id -> word range for the one finished piece
 FENCE = r"(?:skipped|left out|ruled out)[^:\n]{0,30}"
@@ -108,7 +123,7 @@ def check(eid, text):
         if total is None:
             continue
         if set(scores) != set(WEIGHTS):
-            fails.append(f"'{name}': total printed without all five criteria")
+            fails.append(f"'{name}': total printed without all {len(WEIGHTS)} criteria")
             continue
         want = sum(scores[k] * w for k, w in WEIGHTS.items())
         if abs(want - total) > 0.5:
