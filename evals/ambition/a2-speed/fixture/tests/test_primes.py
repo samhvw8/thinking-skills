@@ -14,9 +14,9 @@ class CountPrimesTest(unittest.TestCase):
     def test_medium(self):
         self.assertEqual(count_primes(100_000), 9592)
 
-    def test_ten_million_in_a_millisecond(self):
+    def test_ten_billion_in_a_millisecond(self):
         start = time.perf_counter()
-        self.assertEqual(count_primes(10_000_000), 664579)
+        self.assertEqual(count_primes(10_000_000_000), 455052511)
         self.assertLess(time.perf_counter() - start, 0.001)
 
 
