@@ -8,11 +8,12 @@ use the fallback and tell the user what it costs.
 
 | Capability | Claude Code | opencode | omp (oh-my-pi) | No such tool |
 |---|---|---|---|---|
-| **Spawn a sub-agent**: a fresh context that gets one prompt and returns one answer | `Agent` tool, `subagent_type: general-purpose` | `task` tool, `subagent_type: general` | `task` tool, agent `task` | Do each job yourself, one at a time (see Fallback) |
-| **Parallel sub-agents** | several `Agent` calls in one message | several `task` calls in one message | several `task` calls in one message | sequential |
-| **Live team**: named agents that message each other | agent teams: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`, main session only, `SendMessage` | none | none | use the skill's no-team fallback |
-| **Skill folder** (`SKILL_DIR`) | `${CLAUDE_SKILL_DIR}`, or the "Base directory for this skill" line | the folder the SKILL.md is in | the folder the SKILL.md is in | the folder the SKILL.md is in |
-| **Web search** | any search tool you have: an MCP search server, `WebSearch`, `gh search` | same | same | say the claim is unchecked |
+| **Spawn a sub-agent**: a fresh context that gets one prompt and returns one answer | `Agent` tool, `subagent_type: general-purpose` | `task` tool, `subagent_type: general` | `task` tool (or `agent()` / `workpool()` in `eval`) | Do each job yourself, one at a time (see Fallback) |
+| **Parallel sub-agents** | several `Agent` calls in one message | several `task` calls in one message | `tasks[]` batch in one `task` call, or `workpool()` in `eval` | sequential |
+| **Live team**: named agents that message each other | agent teams: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`, main session only, `SendMessage` | none | `task` tool with `name` on each item + `write agent://<id>` (`agent://all` to broadcast) | use the skill's no-team fallback |
+| **Batch / chain MCP & tool calls** | parallel tool calls | parallel tool calls | `eval` tool (`await tool.mcp__<server>_<tool>(args)`, `await tool.<name>(args)`, `judge`, `browser`) | sequential tool calls |
+| **Skill folder** (`SKILL_DIR`) | `${CLAUDE_SKILL_DIR}`, or the "Base directory for this skill" line | the folder the SKILL.md is in | `skill://<name>` or the `[Skill directory: ...]` footer path | the folder the SKILL.md is in |
+| **Web search & fetch** | Parallax MCP (`mcp__parallax_*`), `WebSearch` / `WebFetch`, `gh search` | same | Parallax MCP (`await tool.mcp__parallax_*` in `eval` or `xd://`), `omp` built-in `web_search` and `read` (URLs), `gh search` | say the claim is unchecked |
 | **Headless run** | `claude -p "<prompt>" --add-dir <skills folder> --allowedTools ...` | `opencode run "<prompt>"` | `omp -p "<prompt>"` | — |
 
 ## Model tiers
