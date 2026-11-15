@@ -8,12 +8,12 @@ other, and pressure-test a decision.
 |-------|--------------|--------|
 | `creative` | Gets past the model's first, most typical answer on names, ideas, campaign angles, hooks and story premises: fences off the obvious answers, generates from several methods, checks names and prior art outside the model | One |
 | `heavy-think` | Classifies a hard problem (brainstorm, perspectives, solve, decompose, unstick, debate) and runs parallel agents on it, then synthesizes | Several, in parallel |
-| `council` | Collaborative brainstorm where perspectives build on each other ("yes, and…"); live teammates or a file-based session of 5–12 agents dealt lens and technique cards | 2–12 |
-| `debate` | Live debate between named teammates who argue through messages; you moderate and keep what survived | 2–4 teammates |
+| `council` | Collaborative brainstorm where perspectives build on each other ("yes, and…"); a live team or a file-based session of 5–12 agents dealt lens and technique cards | 2–12 |
+| `debate` | Live debate between named debaters who argue on a shared board and in direct duels; you moderate and keep what survived | 2–4 debaters |
 | `ambition` | Does a task, or rewrites a prompt, at a higher level on seven axes, each with a 0-3 ladder: the goal behind the goal (Altitude), an expert's raw data, real instruments and an outside judge (Depth), methods from other fields (Range), a clock tight enough to change the method (Speed), the whole class instead of one case (Reach), a result that lasts and makes the next task cheaper (Horizon), and evidence a sceptic accepts (Proof). Writes a brief with a contract and waits for your OK; `/ambition high` adds mental-model cards and three approaches | One (Range can fan out) |
 
 `heavy-think` is the core: `council`, `debate` and `creative` read its files (the
-perspective deck, the scoring rubric, the team protocols). Install them side by side.
+perspective deck, the scoring rubric, the live protocol). Install them side by side.
 `ambition` stands alone; it hands multi-field work to `heavy-think` or `council` when
 they are installed.
 
@@ -33,11 +33,16 @@ they are installed.
   [`heavy-think/references/harness.md`](skills/heavy-think/references/harness.md) maps them
   to Claude Code, opencode and omp, with a fallback for a harness that has no sub-agents.
   `heavy-think/tests/test_harness.py` fails when a vendor name appears unlabelled.
-- **Live modes need live teams.** `debate`, and the live modes of `council` and
-  `heavy-think`, need agents that message each other. Today only Claude Code has them: set
-  `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` and run from the main session. Elsewhere these
-  modes run written rounds of sub-agents and say so. `council full` is file-based and runs
-  in any harness with sub-agents.
+- **Live modes need a live-team transport.** `debate`, and the live modes of `council` and
+  `heavy-think`, need agents that take turns and talk to each other. They all run one protocol
+  (a shared board, lead-run turns, short duels:
+  [`live-protocol.md`](skills/heavy-think/references/live-protocol.md)) on any of three
+  transports: harness-ops sessions through the [`agent-ops` skill](https://github.com/samhvw8/dotfiles/tree/main/home/.ccp/hub/skills/agent-ops)
+  ([termctl](https://github.com/samhvw8/termctl); any harness and model, one visible terminal
+  session per member, and the only one that mixes model families), Claude Code agent teams
+  (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`, main session only, not together with Code Mode),
+  or omp named tasks. Without one, these modes run written rounds of sub-agents and say so.
+  `council full` is file-based and runs in any harness with sub-agents.
 - **Multi-agent runs cost more.** A `council full` session runs 5–12 agents; `creative`
   is one agent and about the cost of a normal answer.
 - **The deck can use an outside ranker, optionally.** `heavy-think/deck.py` fits the

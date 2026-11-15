@@ -1,6 +1,6 @@
 ---
 name: heavy-think
-description: "Multi-agent thinking orchestrator: classifies a hard problem and runs parallel sub-agents (or live teammates) on it, then synthesizes. Modes: brainstorm, perspectives (look at anything through several lenses to understand, evaluate, advise, explain or review it), solve (verifiable answers), decompose, unstick (reframe when stuck), debate (live team debate, or written rounds where the harness has no teams). Use when the user asks for heavy thinking, a deep brainstorm, multiple perspectives or opinions on something, a review or critique, a decomposition, a pressure-test, or says they're stuck — strategic decisions, hard technical problems, high-stakes calls. Not for simple lookups, mechanical tasks, clear next steps, or implementation work."
+description: "Multi-agent thinking orchestrator: classifies a hard problem and runs parallel sub-agents (or a live team) on it, then synthesizes. Modes: brainstorm, perspectives (look at anything through several lenses to understand, evaluate, advise, explain or review it), solve (verifiable answers), decompose, unstick (reframe when stuck), debate (live, on a live-team transport from the harness map, or written rounds without one). Use when the user asks for heavy thinking, a deep brainstorm, multiple perspectives or opinions on something, a review or critique, a decomposition, a pressure-test, or says they're stuck — strategic decisions, hard technical problems, high-stakes calls. Not for simple lookups, mechanical tasks, clear next steps, or implementation work."
 ---
 
 # Heavy Think
@@ -12,10 +12,11 @@ synthesis: change what the agents explore, and the same engine gives a different
 `strong`), not one harness's tools. `references/harness.md` maps each to Claude Code, opencode and
 omp, and gives the fallback when your harness lacks one.
 
-**Teammates vs subagents.** Use a live team when the agents need to talk to each other: debate,
-collaborative brainstorm, hand-offs. Use parallel sub-agents when they don't. Teammates compound
-through live cross-talk but cost more, and only some harnesses have them (Claude Code agent teams,
-main session only); sub-agents are cheaper and collide only once, in your synthesis.
+**Live team vs subagents.** Use a live team when the agents need to talk to each other: debate,
+collaborative brainstorm, hand-offs. Use parallel sub-agents when they don't. A live team compounds
+through turns on a shared board but costs more, and needs a live-team transport (`references/harness.md`,
+Live-team transports; the protocol is `references/live-protocol.md`); sub-agents are cheaper and
+collide only once, in your synthesis.
 
 ## Dispatch
 
@@ -29,7 +30,7 @@ plain answer would get wrong or thin: if you can answer it well in 30 seconds, a
 | Verifiable answer exists (math, logic, algorithm) | **Solve** | Parallel solution paths → deliberate → verify | about K+1 times one solve |
 | "How do we break this down" / too big to tackle | **Decompose** | Parallel decomposition strategies → best structure | about 5–9x (3 agents) |
 | "I'm stuck" / every option feels wrong / going in circles | **Unstick** | Parallel reframes → the frame that unlocks movement | about 5–9x (3 agents) |
-| "Debate this" / "pressure-test" / "argue both sides" / high stakes needing adversarial rigor | **Debate** | Named teammates argue live → you moderate → synthesize | the most: live teammates over several rounds |
+| "Debate this" / "pressure-test" / "argue both sides" / high stakes needing adversarial rigor | **Debate** | Named debaters argue live → you moderate → synthesize | the most: a live team over several rounds |
 | Needs one careful line of reasoning, not several perspectives | **Analyze** | Reason it through yourself, no agents | 1x |
 
 The 5–9x figure is measured: a Perspectives review cost $1.86 against $0.39 for a plain answer, and
@@ -38,7 +39,7 @@ modes have the same shape (3–5 `strong` agents plus your synthesis), so expect
 that use their tools (web search, reading files) cost more than ones that reason alone.
 
 When the signal is **Debate**, go straight to [Escalation: Agent Debate](#escalation-agent-debate);
-don't simulate it inline. A live debate needs a harness with live teams, run from the main session; without one, use the written-round fallback. Debate is
+don't simulate it inline. A live debate needs a live-team transport (`references/harness.md`); without one, use the written-round fallback. Debate is
 also where synthesis goes when positions are irreconcilable.
 
 When you are unsure which mode fits, ask the user rather than guess. Modes chain: decompose first,
@@ -188,14 +189,19 @@ pre-mortem ("a year later this failed: what happened?"). Templates in
 
 When the question deserves real range (5–12 perspectives, several rounds of building on each other,
 a shortlist picked by blind judges rather than by you, and a record on disk), run **`/council full`**.
-It is this mode scaled up and made resumable, with no agent-teams flag needed. See
+It is this mode scaled up and made resumable, with no live-team transport needed. See
 `../council/SKILL.md` (council deals from this skill's deck, so it needs heavy-think linked beside it).
 
-### Escalation: Team Brainstorm (collaborative teammates)
+### Escalation: Team Brainstorm (a live team)
 
-When you want ideas to compound live, escalate to a collaborative council: named teammates that
-cross-pollinate by messaging each other, then you harvest the expanded set. Protocol, spawn template,
-anti-groupthink rules and variants: **`references/team-brainstorm.md`**.
+When you want ideas to compound live, escalate to a collaborative council: named members that build
+on each other's ideas on a shared board, in turns, then you harvest the expanded set. Playbook, spawn
+template, anti-groupthink rules and variants: **`references/team-brainstorm.md`**.
+
+For many cheap directions steered by a strong model, run a **swarm** instead: you as `director` write
+direction cards, an `other-family` manager checks each worker's output against its card, and `fast`
+workers take one card each. It needs a live-team transport that supports it (harness-ops sessions;
+the agent-ops skill's Swarm section).
 
 ---
 
@@ -360,10 +366,10 @@ Escalate when parallel → synthesize isn't deep enough: positions that genuinel
 confidence, high stakes, or the user asks to debate or pressure-test. Say so: "Escalating to debate
 because [reason]."
 
-- **Preferred: team debate.** Named teammates argue with each other live; you moderate and
-  synthesize what survived. Needs a live team (`references/harness.md`) and the main session. Run it with **`/debate`**, or follow **`references/team-debate.md`** (protocol, spawn
+- **Preferred: team debate.** Named debaters argue with each other live; you moderate and
+  synthesize what survived. Needs a live-team transport (`references/harness.md`). Run it with **`/debate`**, or follow **`references/team-debate.md`** (protocol, spawn
   template, moderation, variants). `DECK debates` lists the formats and the evidence-backed rules.
-- **Fallback** (no live team, or you are inside a sub-agent): the round protocol in
+- **Fallback** (no live-team transport): the round protocol in
   `references/team-debate.md` (Fallback). In short: run the mode for positions, then spawn
   challengers that each attack one position with all of them in view, optionally send the
   challenges back for defenses, and you relay between rounds.
@@ -403,7 +409,8 @@ State the chain up front: "I'll decompose first, then brainstorm on the hardest 
 
 ## References
 
-- `references/harness.md`: capabilities and model tiers mapped to Claude Code, opencode and omp, and the no-sub-agent fallback
+- `references/harness.md`: capabilities, model tiers, diversity and live-team transports mapped to Claude Code, opencode and omp, and the no-sub-agent fallback
+- `references/live-protocol.md`: the one protocol every live mode runs: board, lead turns, duels, shape by size, the member protocol block
 - `references/deck.md`: the deck: card fields, the `deck.py` commands, how the fit and the dealer seat lenses, custom lenses, adding entries
 - `references/perspectives.json`: the deck itself (dealt and listed by `deck.py`)
 - `references/brainstorm-agent-prompt.md`: brainstorm, cross-pollinate and stress-test agent prompts
@@ -411,7 +418,7 @@ State the chain up front: "I'll decompose first, then brainstorm on the hardest 
 - `references/decompose-prompt.md`: the decomposition agent prompt and the synthesis reply shape
 - `references/unstick-prompt.md`: the reframe agent prompt
 - `references/solve.md`: Solve mode in full
-- `references/team-brainstorm.md`: live-team council, named teammates building on each other's ideas
+- `references/team-brainstorm.md`: live-team council, named members building on each other's ideas
 - `references/team-debate.md`: live-team debate, and the subagent fallback round protocol
 - `references/rubric.md`: creative, decision and review profiles with criteria anchors
 - `references/compute.md`: cost analysis, K selection, non-monotonic performance

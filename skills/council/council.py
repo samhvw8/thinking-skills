@@ -2,7 +2,7 @@
 """council.py: the state machine behind /council full mode.
 
 A full council runs a creative session as rounds of file-based sub-agents, so it
-scales past the 2 to 4 live teammates of a live council, needs no agent-teams flag,
+scales past the 2 to 4 live members of a live council, needs no live-team transport,
 and survives a context compaction: everything lives in council.json.
 
     python3 council.py plan [--members 8 --cross 2 --judges 3 --shortlist 4]   # calls per phase. Writes nothing.

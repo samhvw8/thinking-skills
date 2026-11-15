@@ -1,6 +1,6 @@
 ---
 name: council
-description: "Collaborative brainstorm where perspectives build on each other ('yes, and…'), then you synthesize. Two modes: live (2-4 named teammates cross-pollinating by message, where the harness has live teams) and full (a file-based session of 5-12 sub-agents dealt lens + technique cards from heavy-think's perspective deck: diverge, cross-pollinate rounds, cluster, blind scoring on a creative or decision rubric, develop and stress-test the shortlist). Use when the user types /council, wants an open question ('how might we…', 'what could we build') explored by compounding perspectives, or asks for a full / creative / big brainstorm. Not for a quick idea list (heavy-think Brainstorm), choosing between options (/debate), finding the single best answer to a task (/arena), or mechanical tasks."
+description: "Collaborative brainstorm where perspectives build on each other ('yes, and…'), then you synthesize. Two modes: live (2-4 named members building on a shared board in turns, where there is a live-team transport) and full (a file-based session of 5-12 sub-agents dealt lens + technique cards from heavy-think's perspective deck: diverge, cross-pollinate rounds, cluster, blind scoring on a creative or decision rubric, develop and stress-test the shortlist). Use when the user types /council, wants an open question ('how might we…', 'what could we build') explored by compounding perspectives, or asks for a full / creative / big brainstorm. Not for a quick idea list (heavy-think Brainstorm), choosing between options (/debate), finding the single best answer to a task (/arena), or mechanical tasks."
 argument-hint: "[full] [--quick | --members N] [--preset P] [--rubric creative|decision] [--seed S] <question>"
 ---
 
@@ -18,9 +18,9 @@ What the user typed after `/council`: `$ARGUMENTS`
 | | Live | Full |
 |---|---|---|
 | Trigger | `/council <question>` | `/council full <question>`, or "full / creative / big brainstorm" |
-| Who | 2-4 named teammates | 5-12 sub-agents (default 8) |
-| How they meet | messages, live | each other's files, across rounds |
-| Needs | main session + a harness with live teams (Claude Code agent teams) | read access to this skill folder and heavy-think beside it, permission to run `python3`, write access to `.council/` in the working directory |
+| Who | 2-4 named members | 5-12 sub-agents (default 8) |
+| How they meet | a shared board, in turns and short duels | each other's files, across rounds |
+| Needs | a live-team transport (`../heavy-think/references/harness.md`) | read access to this skill folder and heavy-think beside it, permission to run `python3`, write access to `.council/` in the working directory |
 | Picks the shortlist | you, in synthesis | judges on a written rubric, blind |
 | Survives compaction | no | yes, the state is on disk |
 | Cost | ~3-5x one pass | `council.py plan` prints the calls |
@@ -70,11 +70,12 @@ COUNCIL deal --members 4 --preset greenfield --question "<the question>"   # car
 
 ## Live mode
 
-The protocol, spawn template and anti-groupthink rules are in
-`../heavy-think/references/team-brainstorm.md`. Read it before spawning. What the deck adds:
+The playbook, spawn template and anti-groupthink rules are in
+`../heavy-think/references/team-brainstorm.md`, on the shared live protocol in
+`../heavy-think/references/live-protocol.md`. Read both before starting anyone. What the deck adds:
 
 1. Run `COUNCIL deal --members N --question "<the question>"` (with `--preset` if one fits) and give
-   each teammate its lens (name, asks, sees, instruments) and its technique in the spawn prompt. Name
+   each member its lens (name, asks, sees, instruments) and its technique in the spawn prompt. Name
    the wildcard.
 2. Use the dealt provocations as your Phase 2 sparks, one at a time, when the room goes quiet or
    agrees too fast. That keeps you a facilitator: the spark is the deck's, not yours.
