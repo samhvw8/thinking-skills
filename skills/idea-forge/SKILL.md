@@ -139,14 +139,18 @@ no novelty search and no kill-test unless the owner asks for one on a kept idea.
 
 - Write every variant as a row of the schema's Mutations table: operator,
   variant, role fit, novelty link, kill test, Owner verdict, origin (`owner` or
-  `claude`). In a reading session the table goes in the reading's `# Mutations`
+  `claude`), lens (the perspective it was made through). In a reading session the table goes in the reading's `# Mutations`
   and the run in `# Kill test`; outside a session, in the card's `# Mutations`.
 - Every kill-test result goes in the brick's `kill_tests` (survived, killed,
   inconclusive, with a note), so the bank remembers what was tried.
 - A variant that survives its kill-test becomes a `Move` file (`move_type`,
   `parent`, `child`, `role`, `from_brick`, `to_brick`; for a brick migration
-  `move_type: migrate-brick` with `brick`, `from_field`, `to_field`), and any new
-  brick gets its own file with its signature and a migration row.
+  `move_type: migrate-brick` with `brick`, `from_field`, `to_field`), with
+  `lens`, and any new brick gets its own file with its signature and a migration row.
+- A surviving combination may also be filed beside its Move as a bigger brick:
+  `parts` with `how: join` (each part keeps its job) or `fuse` (a new job, named
+  in `note`), same `lens`. A multi-step recipe that made it may be saved as an
+  Operation (schema, Perspective and Operation).
 - Update `me/progress.md`: Owner-unique mutations, skips.
 - Commit through `idea-bank`.
 

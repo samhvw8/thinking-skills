@@ -6,6 +6,13 @@ the operator that combines them, the bet, and the constraints of its time. The
 `migrate-brick` (keep the brick, change its field or role, with `brick`,
 `from_field`, `to_field`); `transfer` keeps the bet and lets the bricks change.
 
+These operators, with split, join and fuse, are seeds, including but not
+limited to (`../idea-bank/references/seeds.md`). Any other operation is
+fine; record its name in the Mutations `Operator` column. Every variant runs
+through a perspective: the owner's question, a seed perspective, or one you
+invent. Record it in the `Lens` column, and in the Move's `lens` when the
+variant survives.
+
 ## Walk them all
 
 For each role in the recipe, ask every operator's question. Then ask the
