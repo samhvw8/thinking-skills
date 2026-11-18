@@ -1,0 +1,17 @@
+[
+  {
+    "id": "cost",
+    "name": "Cost",
+    "how": "Decompose by where the cost goes: compute, data, money, time or attention. Each part is a place a budget is spent; the biggest share is usually the part a cheaper substitute would change most."
+  },
+  {
+    "id": "causal-chain",
+    "name": "Causal chain",
+    "how": "Decompose by cause and effect: which step changes which, in order, from the intervention to the outcome. Each part is one link; a link the source does not explain is a part too, marked as a gap."
+  },
+  {
+    "id": "evidence-role",
+    "name": "Evidence role",
+    "how": "Decompose by what each part does for the claim: what is measured, what is assumed, what is compared against, and what is left unexplained. The claim is only as strong as its weakest load-bearing part."
+  }
+]

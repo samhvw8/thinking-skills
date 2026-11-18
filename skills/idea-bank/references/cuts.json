@@ -1,0 +1,92 @@
+{
+  "about": "The cut registry for the idea skills: the kinds of cut (scissors) a brick can be split by, and a bound brick held together by. A `cut` label in a bank's `parts` is one of these ids when one fits. Decompositions are heavy-think's ways to break a problem down; cuts are kinds the idea bank needs on top of them. Ids are unique across both lists. Built by tools/build_decks.py from decks/decompositions.json and decks/cuts.json; edit decks/, not this file.",
+  "decompositions": [
+    {
+      "id": "functional",
+      "name": "Functional",
+      "how": "Decompose by capability or responsibility. Each component owns one coherent set of behaviours."
+    },
+    {
+      "id": "temporal",
+      "name": "Temporal",
+      "how": "Decompose by sequence and dependency: what must happen first, second, third. Focus on ordering, prerequisites and the critical path."
+    },
+    {
+      "id": "risk",
+      "name": "Risk",
+      "how": "Decompose by uncertainty and difficulty. Separate known from unknown and easy from hard; group by confidence."
+    },
+    {
+      "id": "data-flow",
+      "name": "Data flow",
+      "how": "Decompose by information movement: where data originates, where it flows, how it transforms. Boundaries are where data changes shape."
+    },
+    {
+      "id": "user-journey",
+      "name": "User journey",
+      "how": "Decompose by what the user does, step by step. Each component is a stage in their journey."
+    },
+    {
+      "id": "failure-mode",
+      "name": "Failure mode",
+      "how": "Decompose by what can go wrong. Each component groups the failure modes that share a domain."
+    },
+    {
+      "id": "interface-first",
+      "name": "Interface first",
+      "how": "Define the contracts between pieces before the pieces. Let the components emerge from what lives on each side of each interface."
+    },
+    {
+      "id": "ownership",
+      "name": "Ownership",
+      "how": "Decompose by who will build, own and be paged for each piece. Boundaries follow teams, so the seams are where handoffs and misunderstandings happen."
+    },
+    {
+      "id": "reversibility",
+      "name": "Reversibility",
+      "how": "Split the decisions into one-way doors (expensive to undo) and two-way doors (cheap to undo). Sequence the one-way doors carefully and move fast through the rest."
+    },
+    {
+      "id": "constraint",
+      "name": "Constraint",
+      "how": "Find the one constraint that limits the whole system. Exploit it, make everything else serve it, then raise it, and look for the next one."
+    },
+    {
+      "id": "is-is-not",
+      "name": "Is / is not",
+      "how": "State what, where, when and how much the problem IS, and what it IS NOT though it could be. Any cause must explain that difference."
+    },
+    {
+      "id": "value-chain",
+      "name": "Value chain",
+      "how": "Start from the user need, list the components that serve it and their dependencies, and mark each as novel, custom, product or commodity. Build only the novel and custom parts."
+    },
+    {
+      "id": "ecocycle",
+      "name": "Ecocycle",
+      "how": "Place every activity in birth, maturity, creative destruction or renewal. Look for the phase where things pile up, and what should be let go."
+    },
+    {
+      "id": "issue-tree",
+      "name": "Issue tree",
+      "how": "Break the question into sub-questions that do not overlap and together cover it, down to questions a single piece of evidence can answer. Each leaf names that evidence."
+    }
+  ],
+  "cuts": [
+    {
+      "id": "cost",
+      "name": "Cost",
+      "how": "Decompose by where the cost goes: compute, data, money, time or attention. Each part is a place a budget is spent; the biggest share is usually the part a cheaper substitute would change most."
+    },
+    {
+      "id": "causal-chain",
+      "name": "Causal chain",
+      "how": "Decompose by cause and effect: which step changes which, in order, from the intervention to the outcome. Each part is one link; a link the source does not explain is a part too, marked as a gap."
+    },
+    {
+      "id": "evidence-role",
+      "name": "Evidence role",
+      "how": "Decompose by what each part does for the claim: what is measured, what is assumed, what is compared against, and what is left unexplained. The claim is only as strong as its weakest load-bearing part."
+    }
+  ]
+}

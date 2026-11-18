@@ -68,6 +68,13 @@
         "$ref": "#/$defs/decomposition_set"
       }
     },
+    "cuts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/decomposition"
+      }
+    },
     "debates": {
       "type": "array",
       "minItems": 1,

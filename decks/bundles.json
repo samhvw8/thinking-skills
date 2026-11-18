@@ -170,6 +170,39 @@
           }
         ]
       ]
+    },
+    "cut-registry": {
+      "indent": 2,
+      "keys": [
+        [
+          "about",
+          {
+            "value": "The cut registry for the idea skills: the kinds of cut (scissors) a brick can be split by, and a bound brick held together by. A `cut` label in a bank's `parts` is one of these ids when one fits. Decompositions are heavy-think's ways to break a problem down; cuts are kinds the idea bank needs on top of them. Ids are unique across both lists. Built by tools/build_decks.py from decks/decompositions.json and decks/cuts.json; edit decks/, not this file."
+          }
+        ],
+        [
+          "decompositions",
+          {
+            "deck": "decompositions",
+            "fields": [
+              "id",
+              "name",
+              "how"
+            ]
+          }
+        ],
+        [
+          "cuts",
+          {
+            "deck": "cuts",
+            "fields": [
+              "id",
+              "name",
+              "how"
+            ]
+          }
+        ]
+      ]
     }
   },
   "skills": {
@@ -217,6 +250,11 @@
       },
       "references/rubric.md": {
         "copy": "rubric.md"
+      }
+    },
+    "idea-bank": {
+      "references/cuts.json": {
+        "bundle": "cut-registry"
       }
     }
   }

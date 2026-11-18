@@ -11,7 +11,8 @@ what each skill needs into that skill's folder.
 | `provocations.json` | sparks for a quiet room | heavy-think, council, debate |
 | `presets.json`, `composition_rules.json` | lens sets by scenario, and the rules a set must meet | heavy-think, council |
 | `reframes.json`, `reframe_sets.json` | ways out when stuck | heavy-think |
-| `decompositions.json`, `decomposition_sets.json` | ways to break a problem down | heavy-think |
+| `decompositions.json`, `decomposition_sets.json` | ways to break a problem down | heavy-think; idea-bank (decompositions, as cut kinds) |
+| `cuts.json` | cut kinds the idea bank adds to the decompositions (cost, causal chain, evidence role) | idea-bank |
 | `debates.json`, `debate_rules.json` | debate formats and the evidence-backed rules | heavy-think, debate |
 | `rubrics.json`, `rubric.md` | scoring weights, and their anchors | heavy-think, council, creative |
 | `models.json`, `patterns.json` | 88 mental models with a move and a receipt; patterns that route a problem to them | ambition |
