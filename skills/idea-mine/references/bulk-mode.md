@@ -72,9 +72,9 @@ what you could not get.
    Run `idea_search.py <bank> index` first, then one `search ... --type brick
    --rerank` per proposed brick, and read at least its top 10.
 2. Rewrite card `bricks` and `method` to the merged slugs, then write or update the
-   Brick files in the bank. Write each method brick's `parts` from the reply, with its cut;
-   check the cut with `idea_index.py <bank> --cuts` and fold a near-duplicate label into the
-   existing one.
+   Brick files in the bank. Write each method brick's `parts` from the reply, with its cut,
+   and list the card in its `cards`. Check each cut with `idea_index.py <bank> --cuts` and
+   fold a near-duplicate label into the existing one.
 3. **Normalize role tags and tensions** (schema "Bulk staging", step 2): run
    `idea_index.py <staging> --suggest-merges`, decide each pair by meaning, and
    rewrite the losing tag everywhere. Keep the tag the bank already uses.

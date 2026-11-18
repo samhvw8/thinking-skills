@@ -174,7 +174,8 @@ Operator: <sequence | loop | gate | nesting | adversarial | distill | ensemble |
 ```
 
 **The method brick holds the cuts.** File the source's method as a brick named
-by its job and set `method` to it. Every split of the method, the first one
+by its job, set `method` to it, and list the card in that brick's `cards` (the
+index counts `method` as one of the card's bricks). Every split of the method, the first one
 included, goes in that brick's `parts` with a `cut` (Parts and links). The
 Recipe table is a view of one of those cuts: its `Cut:` line names it, and its
 Brick column lists the same slugs, one plain slug per cell. The card adds what

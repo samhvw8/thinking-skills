@@ -63,7 +63,8 @@ That is useless for recombination, for three reasons this skill fixes:
    `match_confidence` (`high`, `medium`, `low`). Create a new brick only when no
    signature matches.
    List the recipe's bricks in the method brick's `parts` (`how: split`, the
-   table's `cut`). A later split adds a cut beside it (schema, Parts and links).
+   table's `cut`). A later split adds a cut beside it. Pick each cut from
+   `idea_index.py --cuts` (schema, Parts and links).
 6. **Lenses and people.** When the view model already exists as a Lens, link it
    and add this card; when you see it a second time across sources, create the
    Lens. A Person file is optional, for authors whose bets recur.

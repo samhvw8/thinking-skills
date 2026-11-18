@@ -45,7 +45,8 @@ criterion moved after the result.
    harness.
 4. Report the real number against the criterion. A miss with the real output is
    a full result.
-5. Write back: brick `kill_tests` row; a `Move` file when the variant survives;
+5. Write back: brick `kill_tests` row; when the variant survives, a `Move` file
+   and a brick bound from the bricks it combines (SKILL.md, Writing back);
    `me/progress.md` updated.
 
 ## Result values
