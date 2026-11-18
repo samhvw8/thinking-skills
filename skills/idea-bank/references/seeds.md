@@ -1,4 +1,6 @@
 ---
+# Seeds, including but not limited to. Read "How to offer them" below the lists before you offer any:
+# the owner's question comes first, and you show a question, never a title or id.
 perspectives:
   - id: fault-tree
     title: "Fault tree"

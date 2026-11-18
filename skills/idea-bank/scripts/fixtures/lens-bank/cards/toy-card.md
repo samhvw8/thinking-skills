@@ -13,7 +13,7 @@ moves: [invert-the-check]
 | answer-question | answer-a-question | question -> answer | (inferred) |
 Operator: sequence
 
-## Lens: fault-tree -- what has to go wrong for a wrong answer
+## Lens: fault-tree — what has to go wrong for a wrong answer
 | What must happen | What the source says | Pieces |
 |------------------|----------------------|--------|
 | Step c passes a bad draft | "c is never checked" (Methods) | step-c |

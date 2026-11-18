@@ -151,7 +151,7 @@ If <X is the real bottleneck>, then <Y> should work. (inferred)
 |------|-------------|----------------------------------------|-----------------------------------------------|
 Operator: <sequence | loop | gate | nesting | adversarial | distill | ensemble | tree | other: ...>
 
-## <lens label>: <the angle in plain words>      (one section per later angle; see "A new angle on the card")
+## Lens: <lens label> — <the angle in plain words>      (one per later angle; "A new angle on the card")
 | <the angle's question, step, cost or failure> | What the source says (section) | Pieces (slugs, old or new) |
 |------------------------------------------------|--------------------------------|----------------------------|
 What this angle shows that the others do not: <one line>
@@ -200,8 +200,8 @@ When a later session looks at a banked source from a new angle (a re-cut, or
   disk search for its file name, then `resource`. Add the `Re-read for` line and
   the new quotes to `# Raw`.
 - **Give the angle its own section** at the end of the Recipe, after the
-  `Operator:` line and any earlier angle sections: `## <lens label>: <the angle
-  in plain words>`. Organise its table by the angle: a row per question, step,
+  `Operator:` line and any earlier angle sections: `## Lens: <lens label> —
+  <the angle in plain words>`. Organise its table by the angle: a row per question, step,
   cost or failure the angle names; a column for what the source says (with its
   section); a column for the pieces that answer it. Close with `What this angle
   shows that the others do not:`.

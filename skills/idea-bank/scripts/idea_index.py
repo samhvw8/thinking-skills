@@ -104,16 +104,22 @@ def unit_graph(concepts: list[dict], seeds: dict | None = None) -> dict:
     seeds = load_seeds() if seeds is None else seeds
     live = {f"{k}:{c['slug']}": c for c in concepts for k, t in UNIT_TYPES.items()
             if c["fm"]["type"] == t and c["fm"].get("status") != "deprecated"}
-    known = set(live) | {f"{k}:{s}" for k in SEEDED for s in seeds[k]}
+    seeded = {f"{k}:{s}" for k in SEEDED for s in seeds[k]}
 
     def resolve(ref, home: str = "") -> str | None:
+        """A seed id resolves only with its prefix (`operation:split`) or inside a unit of its own kind,
+        so a missing brick named like a seed (`remove`, `bottleneck`) still shows as broken."""
         ref = str(ref)
         if ":" in ref:
-            return ref if ref in known else None
-        kinds = list(UNIT_TYPES)
+            return ref if ref in live or ref in seeded else None
         if home in SEEDED:  # a recipe's steps are operations; a perspective's parts are perspectives
-            kinds = [home] + [k for k in kinds if k != home]
-        return next((f"{k}:{ref}" for k in kinds if f"{k}:{ref}" in known), None)
+            kinds = [home] + [k for k in UNIT_TYPES if k != home]
+            hit = f"{home}:{ref}"
+            if hit not in live and hit in seeded:
+                return hit
+        else:
+            kinds = list(UNIT_TYPES)
+        return next((f"{k}:{ref}" for k in kinds if f"{k}:{ref}" in live), None)
 
     parts: dict[str, list[str]] = {}  # whole -> distinct parts over all lenses (depth uses this)
     part_lenses: dict[str, dict[str, list[str]]] = {}  # whole -> lens -> parts, in frontmatter order
@@ -539,10 +545,11 @@ def render_catalog(ix: dict, kind: str, heading: str, joiner: str) -> list[str]:
                                                for s in steps))
         return f"{it['id']} ({', '.join(t for t in tags if t)})"
 
-    shown = [it for it in items if it["uses"] or it["file"]]  # every bank file gets a row; unused seeds share one
+    shown = [it for it in items if it["uses"] or it["file"]]  # every bank file gets a row
     unused = [it["id"] for it in items if not it["uses"] and not it["file"]]
     rows = [f"- {name(it)}: {where(it['uses']) or 'not used yet'}" for it in shown]
-    rows += [f"- Not used yet ({len(unused)}): {', '.join(unused)}"] if unused else []
+    # unused seeds only as a count: a list of ids read before looking would act as a registry (`--json` has them)
+    rows += [f"- {len(unused)} more seeds not used yet: their questions are in references/seeds.md"] if unused else []
     out = [f"## {heading}"] + (rows or ["- none"]) + [""]
     label = "Free perspective labels" if kind == "perspective" else "Free operation labels"
     out += [f"## {label} (no seed or file; give one a file when it recurs)"]

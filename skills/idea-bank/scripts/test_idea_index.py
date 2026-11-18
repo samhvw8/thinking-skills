@@ -442,3 +442,25 @@ def test_views_for_new_types_write_twice_then_check(tmp_path):
     assert "- Parts by lens `default`: `fault-tree` (split: a narrower form of it)." in per
     q = (bank / "bricks" / "answer-a-question.md").read_text()
     assert "- Parts by lens `data-path`: [Step a](/bricks/step-a.md) (split), [Step b](/bricks/step-b.md) (split)." in q
+
+
+def test_seed_ids_resolve_only_in_their_own_kind_or_with_a_prefix(tmp_path):
+    bank = tmp_path / "seedname"
+    (bank / "bricks").mkdir(parents=True)
+    (bank / "bricks" / "whole.md").write_text(
+        "---\ntype: Brick\ntitle: Whole\nparts:\n  - remove\n  - operation:split\n"
+        "links:\n  - { to: bottleneck }\n---\n")
+    ix = ix_mod.build(ix_mod.load(bank))
+    # a missing brick named like a seed (`remove`, `bottleneck`) is broken, not a seed
+    assert {"from": "brick:whole", "to": "part:remove"} in ix["broken_links"]
+    assert {"from": "brick:whole", "to": "link:bottleneck"} in ix["broken_links"]
+    # an explicit prefix still names the seed
+    assert ix["parts"]["brick:whole"] == ["operation:split"]
+
+
+def test_report_counts_unused_seeds_without_listing_their_ids(lx):
+    text = ix_mod.render(lx)
+    assert "more seeds not used yet: their questions are in references/seeds.md" in text
+    assert "four-causes" not in text and "control-loop" not in text
+    # the JSON keeps every seed
+    assert any(p["id"] == "four-causes" and not p["uses"] for p in lx["perspectives"])

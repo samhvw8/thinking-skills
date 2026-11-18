@@ -11,7 +11,7 @@ what goes in a batch. Keep that split, so one schema change reaches every caller
 
 ## What a brick is
 
-Every idea skill works with bricks. Read this before you split, bind, name or
+Every idea skill works with bricks. Read this before you split, join, name or
 match one.
 
 A **brick** is any piece of an idea that does one job you can name: it takes
@@ -19,7 +19,7 @@ something in, gives something out, and keeps to a constraint. "Filters bad
 samples" is a brick. "A cheap check before a strong one" is a brick. A whole
 method seen as one block is a brick too.
 
-- **No fixed size.** A brick can be cut into smaller bricks, and bricks bind into
+- **No fixed size.** A brick can be cut into smaller bricks, and bricks join into
   a bigger brick. No brick is the smallest piece: never call a brick atomic or
   final. Today's split goes only as far as today's view can see.
 - **Scissors and tape are tools, not facts.** Every operation (split, join,
