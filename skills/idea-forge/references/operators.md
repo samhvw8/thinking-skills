@@ -1,7 +1,8 @@
 # Operators
 
-Each operator acts on the recipe of a card: its roles, the brick in each role,
-the operator that combines them, the bet, and the constraints of its time. The
+Each operator acts on one cut of a method brick (the card's Recipe table is one
+such cut): its roles, the brick in each role, the operator that combines them,
+the bet, and the constraints of its time. The
 `move_type` names come from the idea-bank schema. Brick migration is
 `migrate-brick` (keep the brick, change its field or role, with `brick`,
 `from_field`, `to_field`); `transfer` keeps the bet and lets the bricks change.
@@ -26,6 +27,17 @@ sit.
 | `resolve-contradiction` | Where does the recipe trade X against not-X? Separate them in time, space, scale or condition | The card's layer 1 shows a trade-off and layer 2 says "not resolved" |
 | `lens-transfer` | How would person or field X see this problem? What bottleneck would they name? | The bank has a lens or person file with a strong picture |
 | `lens-inversion` | Assume the dominant lens of the field is wrong. Which solution appears? | One view dominates and nobody stands in the empty region |
+
+## Scissors and tape
+
+Two more moves work on the bricks themselves. They are not `move_type`s: a
+re-cut is recorded as a new cut, a bind as a bound brick (idea-bank schema,
+"Parts and links").
+
+| Move | Question to ask | Productive when |
+|------|-----------------|-----------------|
+| `re-cut` | Cut this brick another way (`idea_index.py <bank> --cuts` lists the kinds: by cost, causal chain, evidence role, failure mode, ...). Then walk the operators over the new parts | The recipe's roles give only shallow swaps, or the interesting part sits inside one brick |
+| `bind` | Which bricks, from this card or others, make one job together? File the combination as a bigger brick and forge with it as one piece | A combination survived its kill test, or the same arrangement recurs across sources |
 
 ## Contradiction separation (TRIZ)
 

@@ -1,6 +1,6 @@
 ---
 name: idea-forge
-description: "Makes new ideas by recombining bricks, then designs the cheapest test that could kill each one: combine bricks from several sources, swap one piece of a method for a piece from another field, change how the pieces fit together (sequence, loop, gate), remove, invert or move a piece. Starts from an idea card, the owner's seed (\"what if we swap C for D\"), bricks a session just found, or a hand dealt from the bank (deal mode, present mode only: both write rough ideas from dealt bricks, lenses or moves, then read a few together). By default Claude does all of it; after the owner types /idea-present, they write first. Use when the owner asks what new ideas come from mixing sources or parts, how to combine, swap or rearrange pieces, what to build or try next from a source, whether a piece from one field works in another, or asks to deal some bricks. Not for breaking a source into bricks (idea-mine), reading a source with the owner (co-read) or finding sources (idea-scout)."
+description: "Makes new ideas by recombining bricks, then designs the cheapest test that could kill each one: combine bricks from several sources, swap one piece of a method for a piece from another field, change how the pieces fit together (sequence, loop, gate), remove, invert or move a piece. Starts from an idea card, the owner's seed (\"what if we swap C for D\"), bricks a session just found, or a hand dealt from the bank (deal mode, present mode only: both write rough ideas from a dealt hand, then read a few together). By default Claude does all of it; after /idea-present, the owner writes first. Use when the owner asks what new ideas come from mixing sources or parts, how to combine, swap or rearrange pieces, what to build or try next from a source, whether a piece from one field works in another, or asks to deal some bricks. Not for breaking a source into bricks (idea-mine), reading a source together (co-read) or finding sources (idea-scout)."
 ---
 
 # Idea forge
@@ -145,8 +145,9 @@ no novelty search and no kill-test unless the owner asks for one on a kept idea.
   inconclusive, with a note), so the bank remembers what was tried.
 - A variant that survives its kill-test becomes a `Move` file (`move_type`,
   `parent`, `child`, `role`, `from_brick`, `to_brick`; for a brick migration
-  `move_type: migrate-brick` with `brick`, `from_field`, `to_field`), and any new
-  brick gets its own file with its signature and a migration row.
+  `move_type: migrate-brick` with `brick`, `from_field`, `to_field`), and a
+  new brick bound from the bricks it combines (`how: bind`; schema, Parts and
+  links). Any new brick gets its own file with a signature and a migration row.
 - Update `me/progress.md`: Owner-unique mutations, skips.
 - Commit through `idea-bank`.
 
