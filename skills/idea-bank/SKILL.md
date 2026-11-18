@@ -28,8 +28,8 @@ whole method seen as one block.
   to cut, not a lens file; `lenses/` holds authors' view models.
 - **Keep every cut.** A new cut goes beside the old ones and never replaces
   one. Never rename, move or relabel a brick for it. A re-cut re-reads the
-  source, cuts from it, draws a new boundary, is labelled, and pastes the
-  `--write` `# Cuts compared` table in the reply: `references/recut.md`.
+  source (local copy first), adds a `## Cut:` table to the card and answers with
+  it: `references/recut.md`.
 - **The method is a brick.** A card records the source and points to its method
   brick (`method`). Every split of the method, the first included, is a cut on
   that brick; the card's Recipe table renders one named cut.

@@ -31,20 +31,21 @@ That is useless for recombination, for three reasons this skill fixes:
 
 ## Re-cut
 
-Asked to look at a banked source by a new angle? That is a re-cut: do these
-steps, not the workflow.
+A banked source asked for by a new angle is a re-cut: do these steps, not the
+workflow.
 
-1. Re-read the source sections the angle needs before you cut (the local copy
-   or `resource` in the card's `# Raw`). If you cannot reach it, say so in the
-   reply.
-2. Cut from the source first, then compare with the old parts. The new cut must
-   split an old piece, merge pieces into one job, or add a piece the old cuts
-   lack; if it cannot, add a `notes` entry on the brick, not a cut.
-3. Label: a registry id (`idea_index.py <bank> --cuts`) or a new label, its
-   question in each part's `note`.
-4. Never change an old cut's entries.
-5. Run `idea_index.py <bank> --write`; paste the generated `# Cuts compared`
-   table into the reply, with plain-word titles.
+1. Re-read the source sections the angle needs: the local copy in `# Raw`, else
+   search the disk for its file name, else `resource`. If all fail, say so.
+2. Cut from the source, then compare with the old parts: regroup them by the
+   angle, split one only where the source shows two jobs, or add a piece. A
+   rename is a `notes` entry.
+3. Label: a registry id (`idea_index.py <bank> --cuts`) or a new label with
+   its question in `note`.
+4. Never edit earlier lines; add beside them. End the Recipe with `## Cut:
+   <label> — <angle>`: a row per question, cost or failure; what the
+   source says; the pieces; then "What this cut shows that the others do not".
+   Record it in `parts`; run `idea_index.py <bank> --write`.
+5. Reply: what the angle shows, then that table.
 
 Detail: `../idea-bank/references/recut.md`.
 
@@ -54,7 +55,8 @@ Detail: `../idea-bank/references/recut.md`.
    arXiv, PMC or publisher URL (read the outline, then sections). If it returns
    "abstract only", get the PDF or TeX with `paper-download` (`paperhunt get`,
    `paperhunt bundle`). Set `read_basis` honestly; an abstract-only card is
-   allowed, and says so.
+   allowed, and says so. `# Raw` opens with the URL and the absolute path of
+   any local file you read (schema).
 2. **Search where intent leaks.** Spend a few calls on the places in
    `references/intent-sources.md`: OpenReview reviews and rebuttals, the arXiv
    v1 → v2 diff, author talks and threads before the paper, the code repo's

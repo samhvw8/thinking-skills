@@ -51,8 +51,10 @@ technique or one field's name.
 4. Name roles as verb phrases about the job, not the technique.
 5. For each brick, give its signature (input, output, objective, constraint) in the
    Recipe table's "Signature" column, so the merger can match it.
-6. Put every quote the layers rest on in the Raw section, verbatim. Write the bet
-   without quote marks and mark it (inferred), unless it is verbatim.
+6. Open the Raw section with `Source: <URL>. Local copy: <absolute path of the
+   file you read, or none>`. Put every quote the layers rest on in it, verbatim.
+   Write the bet without quote marks and mark it (inferred), unless it is
+   verbatim.
 7. Split limits: `constraints` for limits that forced the method (costs, trial
    length, missing tools); `evidence_limits` for what the evidence cannot show
    (observational only, no control group, self-report only).

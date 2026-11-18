@@ -11,7 +11,8 @@ The Cuts report checks every `cut` label against the cut registry (references/cu
 repo's decks) and the labels already in the bank, and lists near-duplicate labels. The Re-cuts report shows,
 per unit with two or more cuts, the parts each cut shares with the others and flags a later cut that only
 re-tags an earlier one.
---write also puts a `# Cuts compared` table on every card whose method brick has two or more cuts.
+--write also puts a `# Cuts compared` table on every method brick with two or more cuts (and removes the table
+older versions put on cards).
 --write regenerates the views made from frontmatter (including `parts` and `links`): a `# Related` section in every
 brick, card, lens and move, and `bricks/index.md`. It also moves a frontmatter
 `signature` into the body. --check exits 1 when any of these is out of date.
@@ -281,13 +282,16 @@ def recipe(body: str) -> tuple[str | None, list[str]]:
 
 
 def recipe_roles(body: str) -> tuple[str | None, dict[str, str]]:
-    """The `Cut:` label and {brick slug: Role cell} of a card's `# Recipe ...` section, in table order."""
+    """The `Cut:` label and {brick slug: Role cell} of a card's `# Recipe ...` section, in table order.
+
+    The Recipe ends at the next heading of any level, so a `## Cut: ...` section inside it is not read as Recipe rows.
+    """
     text, inside = [], False
     for line in body.splitlines():
-        if line.startswith("# "):
+        if line.startswith("#"):
             if inside:
                 break
-            inside = line[2:].strip().lower().startswith("recipe")
+            inside = line.startswith("# ") and line[2:].strip().lower().startswith("recipe")
             continue
         if inside:
             text.append(line)
@@ -348,15 +352,28 @@ def recut_report(g: dict) -> list[dict]:
     """Per whole with two or more cuts: the parts each cut shares with every other cut, and re-tags.
 
     Cuts are taken in the order they first appear in `parts`. A later cut draws a new boundary when it
-    has a part no earlier cut has (a split piece, a bound whole, an added piece) or cuts one of its parts
-    again under the same label. A later cut whose parts are all parts of one earlier cut, with neither of
-    those, only re-tags that cut: flag it (record the angle as a note on the brick, not as a cut).
+    has a part no earlier cut has (a split piece, a bound whole, an added piece), cuts one of its parts
+    again under the same label, or regroups the parts it shares with an earlier cut: its `group`s put
+    together two parts that cut keeps apart, or keep apart two parts that cut puts together (a part with
+    no `group` is a group of its own). A later cut whose parts are all parts of one earlier cut and whose
+    groups match it only re-tags that cut: flag it (record the angle as a note on the brick, not as a cut).
     """
     out = []
+    groups = g.get("cut_group", {})
     for whole, cuts in g["part_cuts"].items():
         if len(cuts) < 2:
             continue
         names, rows = list(cuts), []
+
+        def regroups(c: str, o: str) -> bool:
+            """True when cut `c` and cut `o` group the parts they share differently."""
+            def place(cut: str, p: str) -> tuple[str, str]:
+                gm = groups.get(whole, {}).get(cut, {})
+                return ("group", gm[p]) if p in gm else ("part", p)
+            shared = [p for p in cuts[c] if p in cuts[o]]
+            return any((place(c, a) == place(c, b)) != (place(o, a) == place(o, b))
+                       for k, a in enumerate(shared) for b in shared[k + 1:])
+
         for i, c in enumerate(names):
             mine = cuts[c]
             overlap = {}
@@ -367,9 +384,11 @@ def recut_report(g: dict) -> list[dict]:
             earlier = {p for o in names[:i] for p in cuts[o]}
             new = [p for p in mine if p not in earlier] if i else []
             recut = [p for p in mine if c in g["part_cuts"].get(p, {})] if i else []
-            retag = [o for o in names[:i] if set(mine) <= set(cuts[o])] if not (new or recut) else []
+            regroup = [o for o in names[:i] if regroups(c, o)]
+            retag = [o for o in names[:i] if set(mine) <= set(cuts[o]) and o not in regroup] if not (new or recut) else []
             rows.append({"cut": c, "parts": len(mine), "new_parts": new, "parts_cut_again": recut,
-                         "overlap": overlap, "retag_of": retag, "no_new_boundary": bool(i) and not (new or recut)})
+                         "regroups": regroup, "overlap": overlap, "retag_of": retag,
+                         "no_new_boundary": bool(i) and not (new or recut) and (bool(retag) or not regroup)})
         out.append({"whole": whole, "cuts": rows})
     return out
 
@@ -588,7 +607,7 @@ def render(ix: dict) -> str:
 
 
 def render_recuts(recuts: list[dict]) -> list[str]:
-    out = ["## Re-cuts (a later cut must draw a new boundary: split, bind or add a piece)"]
+    out = ["## Re-cuts (a later cut must draw a new boundary: split, bind, add a piece or regroup pieces)"]
     for w in recuts:
         for r in w["cuts"]:
             share = "; ".join(f"shares {o['shared']}/{o['of']} ({o['pct']}%) with `{c}`" for c, o in r["overlap"].items())
@@ -597,6 +616,8 @@ def render_recuts(recuts: list[dict]) -> list[str]:
                 line += f", new: {', '.join(p.split(':', 1)[1] for p in r['new_parts'])}"
             if r["parts_cut_again"]:
                 line += f", cut again: {', '.join(p.split(':', 1)[1] for p in r['parts_cut_again'])}"
+            if r.get("regroups"):
+                line += f", regroups: {', '.join(f'`{c}`' for c in r['regroups'])}"
             line += f"): {share}"
             if r["retag_of"]:
                 line += f". RE-TAG of {', '.join(f'`{c}`' for c in r['retag_of'])}: all its parts are parts of that cut"
@@ -762,7 +783,10 @@ CUTS_RE = re.compile(r"\n*<!-- cuts:begin.*?<!-- cuts:end -->\n*", re.S)
 
 
 def cut_tables(concepts: list[dict], prefix: str) -> dict[str, str]:
-    """`# Cuts compared` per card whose method brick holds two or more cuts: a row per piece, a column per cut.
+    """`# Cuts compared` per method brick that holds two or more cuts: a row per piece, a column per cut.
+
+    Keyed `bricks/<slug>`. The Recipe column and its Role cells come from the first card (in path order) that names
+    the brick as its `method`.
 
     A cell names the piece's place in that cut: its `group` (for the Recipe's cut, the Recipe's Role cell),
     `inside X` (the cut keeps the piece within its part X), `spans X, Y` (the piece joins parts the cut
@@ -794,7 +818,7 @@ def cut_tables(concepts: list[dict], prefix: str) -> dict[str, str]:
         method = c["fm"].get("method") if c["fm"]["type"] == "Idea Card" else None
         whole = f"brick:{method}"
         cuts = g["part_cuts"].get(whole, {})
-        if len(cuts) < 2:
+        if len(cuts) < 2 or whole not in units or f"bricks/{method}" in out:
             continue
         rcut, roles = recipe_roles(c["body"])
         groups = g["cut_group"].get(whole, {})
@@ -827,7 +851,7 @@ def cut_tables(concepts: list[dict], prefix: str) -> dict[str, str]:
                 shows.append(f"- {head(n)}{asked}: {m['shows']}")
             elif i:
                 shows.append(f"- {head(n)}{asked}: not written yet (add `shows` to this cut in the method brick's `cuts`)")
-        out[f"cards/{c['slug']}"] = "\n".join(
+        out[f"bricks/{method}"] = "\n".join(
             [CUTS_BEGIN, "# Cuts compared", "",
              "Each row is a piece of the method; each column is one cut and names the piece's place in it. "
              "`inside X`: the cut keeps the piece within X. `spans X`: the piece joins parts the cut keeps apart. "
@@ -837,7 +861,7 @@ def cut_tables(concepts: list[dict], prefix: str) -> dict[str, str]:
 
 
 def with_cuts(body: str, block: str) -> str:
-    """Put the generated `# Cuts compared` block right after the card's Recipe section (or drop it)."""
+    """Put the generated `# Cuts compared` block right after a Recipe section, else before `# Related` (or drop it)."""
     lines = CUTS_RE.sub("\n\n", body).split("\n")
     if not block:
         return "\n".join(lines)
@@ -921,8 +945,8 @@ def sync_views(root: Path, write: bool) -> list[str]:
         fm_text, body = m.group(1), m.group(2)
         if t == "Brick" and c["fm"].get("signature") is not None:
             fm_text, body = lift_signature(fm_text, body, c["fm"]["signature"])
-        if t == "Idea Card":
-            body = with_cuts(body, tables.get(f"cards/{c['slug']}", ""))
+        if t in ("Idea Card", "Brick"):  # cards lose the table older versions put there; method bricks get it
+            body = with_cuts(body, tables.get(f"{DIRS[t]}/{c['slug']}", ""))
         new = f"---\n{fm_text}\n---\n\n" + with_related(body.lstrip("\n"), rel.get(f"{DIRS[t]}/{c['slug']}", ""))
         if new != text:
             changed.append(c["path"])

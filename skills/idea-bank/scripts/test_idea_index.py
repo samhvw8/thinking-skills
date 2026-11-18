@@ -542,12 +542,23 @@ def _question_cut(root):
         "cuts:\n  - { cut: question, angle: what question each part answers, shows: only the check needs a reference }\n")
 
 
-def test_card_gets_one_table_comparing_the_cuts(cuts_copy):
+METHOD = ("bricks", "self-improve-from-own-samples.md")
+CUT_SECTION = """
+## Cut: question — what question each part answers
+| Question | Pieces | What the source says |
+|----------|--------|----------------------|
+| Is it good? | compare-to-reference | a reference decides |
+| What must hold? | samples-match-target | not estimated |
+What this cut shows that the others do not: only the check needs a reference.
+"""
+
+
+def test_method_brick_gets_one_table_comparing_the_cuts(cuts_copy):
     _question_cut(cuts_copy)
     assert ix_mod.main([str(cuts_copy), "--write"]) == 0
     assert ix_mod.main([str(cuts_copy), "--check"]) == 0
-    card = (cuts_copy / "cards" / "self-training-card.md").read_text()
-    rows = [l for l in card.splitlines() if l.startswith("| ") and "Signature" not in l and "(inferred)" not in l]
+    whole = (cuts_copy / METHOD[0] / METHOD[1]).read_text()
+    rows = [l for l in whole.splitlines() if l.startswith("| ")]
     gtf = "Generate, then keep the good ones"
     assert rows == [
         "| Piece | `data-flow` (Recipe) | `cost` | `question` |",
@@ -559,31 +570,66 @@ def test_card_gets_one_table_comparing_the_cuts(cuts_copy):
         "| spans generate-candidates, filter-bad-samples | what do we keep? |",
         "| [samples-match-target](/bricks/samples-match-target.md) | - | - | what must hold? \\| assumed |",
     ]
-    assert "- `question` (asked: what question each part answers): only the check needs a reference" in card
-    assert "- `cost`: not written yet" in card
-    # the table sits right after the Recipe section, before the next section and the Related block
-    assert card.index("Operator: sequence") < card.index("# Cuts compared") < card.index("# Related")
-    assert card.count("self-improve-from-own-samples.md") == 1  # the table does not link the method again
+    assert "- `question` (asked: what question each part answers): only the check needs a reference" in whole
+    assert "- `cost`: not written yet" in whole
+    # on the brick, after its Signature and before the Related block; the card gets no generated table
+    assert whole.index("# Signature") < whole.index("# Cuts compared") < whole.index("# Related")
+    assert "Cuts compared" not in (cuts_copy / "cards" / "self-training-card.md").read_text()
 
 
-def test_cut_table_is_idempotent_and_leaves_hand_text(cuts_copy):
+def test_cut_table_is_idempotent_and_card_cut_sections_are_kept(cuts_copy):
     p = cuts_copy / "cards" / "self-training-card.md"
-    p.write_text(p.read_text() + "\n# Raw\nRe-read for cut question: Methods 2.1\n")
+    p.write_text(p.read_text() + CUT_SECTION + "\n# Raw\nRe-read for cut question: Methods 2.1\n")
     _question_cut(cuts_copy)
     ix_mod.main([str(cuts_copy), "--write"])
-    once = p.read_text()
+    b = cuts_copy / METHOD[0] / METHOD[1]
+    once, whole = p.read_text(), b.read_text()
     ix_mod.main([str(cuts_copy), "--write"])
-    assert p.read_text() == once
-    assert once.index("# Cuts compared") < once.index("# Raw") < once.index("# Related")
+    assert p.read_text() == once and b.read_text() == whole
+    assert once.index("Operator: sequence") < once.index("## Cut: question") < once.index("# Raw") < once.index("# Related")
     assert "Re-read for cut question: Methods 2.1" in once
+    # the hand-written cut section sits inside the Recipe but is not read as Recipe rows
+    assert ix_mod.build(ix_mod.load(cuts_copy))["recipe_drift"] == []
+    assert list(ix_mod.recipe_roles(once)[1]) == ["generate-candidates", "score-samples", "filter-bad-samples"]
 
 
 def test_cut_table_needs_two_cuts(cuts_copy):
     ix_mod.main([str(cuts_copy), "--write"])
-    p = cuts_copy / "cards" / "self-training-card.md"
-    assert "# Cuts compared" in p.read_text()  # the fixture's method has a cost and a data-flow cut
-    b = cuts_copy / "bricks" / "self-improve-from-own-samples.md"
+    b = cuts_copy / METHOD[0] / METHOD[1]
+    assert "# Cuts compared" in b.read_text()  # the fixture's method has a cost and a data-flow cut
     b.write_text("".join(l for l in b.read_text().splitlines(True) if "cut: cost" not in l))
     ix_mod.main([str(cuts_copy), "--write"])
+    text = b.read_text()
+    assert "# Cuts compared" not in text and "cuts:begin" not in text
+
+
+def test_old_card_table_is_removed(cuts_copy):
+    p = cuts_copy / "cards" / "self-training-card.md"
+    p.write_text(p.read_text() + "\n" + ix_mod.CUTS_BEGIN + "\n# Cuts compared\n\nold\n" + ix_mod.CUTS_END + "\n")
+    ix_mod.main([str(cuts_copy), "--write"])
     text = p.read_text()
-    assert "# Cuts compared" not in text and "cuts:begin" not in text and "Operator: sequence\n\n<!-- related" in text
+    assert "Cuts compared" not in text and "cuts:begin" not in text and "Operator: sequence\n\n<!-- related" in text
+
+
+def test_recut_that_regroups_old_parts_is_a_new_boundary(cuts_copy, capsys):
+    # both old pieces answer one question: the question cut puts together what `cost` and `data-flow` keep apart
+    _add_parts(cuts_copy, "self-improve-from-own-samples", [
+        "{ to: generate-candidates, how: split, cut: question, group: 'what do we keep?' }",
+        "{ to: filter-bad-samples, how: split, cut: question, group: 'what do we keep?' }"])
+    q = ix_mod.build(ix_mod.load(cuts_copy))["recuts"][0]["cuts"][-1]
+    assert q["regroups"] == ["cost", "data-flow"] and q["retag_of"] == [] and not q["no_new_boundary"]
+    ix_mod.main([str(cuts_copy), "--recuts"])
+    out = capsys.readouterr().out
+    assert "regroups: `cost`, `data-flow`" in out and "RE-TAG" not in out and "NO NEW BOUNDARY" not in out
+
+
+def test_renamed_groups_are_still_a_retag(cuts_copy):
+    # an earlier cut with groups; a later cut that only renames them keeps every pair as it was
+    _add_parts(cuts_copy, "self-improve-from-own-samples", [
+        "{ to: generate-candidates, how: split, cut: stage, group: early }",
+        "{ to: filter-bad-samples, how: split, cut: stage, group: late }",
+        "{ to: generate-candidates, how: split, cut: question, group: 'what can we try?' }",
+        "{ to: filter-bad-samples, how: split, cut: question, group: 'what do we keep?' }"])
+    q = ix_mod.build(ix_mod.load(cuts_copy))["recuts"][0]["cuts"][-1]
+    assert q["cut"] == "question" and q["regroups"] == [] and q["no_new_boundary"]
+    assert q["retag_of"] == ["cost", "data-flow", "stage"]
