@@ -64,11 +64,11 @@ Not checked: no talks or drafts read for this illustration.
 (illustration: a real card lists each verbatim quote with its section here)
 
 # Mutations
-| Operator | Variant | Role fit | Novelty link | Kill test | Owner verdict | Origin |
-|----------|---------|----------|--------------|-----------|-------------|--------|
-| lift-constraint | Learn on whole images or video; patch size and compute limits are gone | Same role, larger input | not searched | Train on full frames; does the basis stay localised? | | claude |
-| transfer | The same bet on sound | Same bet, new bricks per modality | later work did this (cochlear-like filters) | — | | claude |
-| migrate-brick | The same brick on a network's activations | Role becomes decompose-activations | later: sparse autoencoders for interpretability | — | | claude |
+| Operator | Variant | Role fit | Novelty link | Kill test | Owner verdict | Origin | Lens |
+|----------|---------|----------|--------------|-----------|-------------|--------|------|
+| lift-constraint | Learn on whole images or video; patch size and compute limits are gone | Same role, larger input | not searched | Train on full frames; does the basis stay localised? | | claude | what-limits-forced |
+| transfer | The same bet on sound | Same bet, new bricks per modality | later work did this (cochlear-like filters) | — | | claude | same-bet-other-senses |
+| migrate-brick | The same brick on a network's activations | Role becomes decompose-activations | later: sparse autoencoders for interpretability | — | | claude | who-else-needs-this-job |
 ```
 
 What makes this card useful later:

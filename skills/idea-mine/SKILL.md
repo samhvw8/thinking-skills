@@ -31,7 +31,13 @@ That is useless for recombination, for three reasons this skill fixes:
 - **Look again at the source, not the card.** Asked to see a banked source from
   a new angle, re-read the sections that angle needs: the local copy named in
   `Raw` first, then search the disk for its file name, then the URL. Work from
-  the bank alone only when all three fail, and say so.
+  the bank alone only when all three fail, and say so. Never edit lines an
+  earlier session wrote; add beside them. Give the angle its own card section
+  with a table organised by it (rows: its questions, steps, costs or failures;
+  columns: what the source says, the pieces), and open the reply with what the
+  angle shows (schema, "A new angle on the card"). If the owner gives no angle,
+  you may offer a few seed questions (`../idea-bank/references/seeds.md`),
+  starting with what could go wrong.
 
 ## Workflow (one source)
 
@@ -66,10 +72,9 @@ That is useless for recombination, for three reasons this skill fixes:
    field's name and a migration row when the field or role is new, with
    `match_confidence` (`high`, `medium`, `low`). Create a new brick only when no
    signature matches.
-   When you split a brick into smaller bricks, list them in its `parts` with
-   `cut: <lens>` on each entry: the lens you split through (schema, "Parts and
-   links"). A second split through another lens adds a cut beside the first;
-   never replace or relabel the first cut.
+   When you split a brick, list the parts in its `parts` with `lens: <label>`
+   on each entry: the perspective you split through, labelled from the question
+   asked (schema, "Parts and links"). A later split goes beside it.
 6. **Lenses and people.** When the view model already exists as a Lens, link it
    and add this card; when you see it a second time across sources, create the
    Lens. A Person file is optional, for authors whose bets recur.
