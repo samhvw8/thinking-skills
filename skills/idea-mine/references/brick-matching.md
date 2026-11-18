@@ -33,7 +33,7 @@ embedding of it.
      it is often the most valuable line on the card.
 5. When unsure, link, set `match_confidence: low` on the migration row, and
    write "(match uncertain: <what differs>)" in the brick's `# Migrations`
-   paragraph. The index lists low-confidence rows for review. A wrong split is harder to find later than a
+   paragraph. The index lists low-confidence rows for review. A missed match is harder to find later than a
    flagged merge.
 
 ## Naming a new brick

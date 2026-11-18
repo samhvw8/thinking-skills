@@ -12,7 +12,8 @@ description: A learned, overcomplete basis with a sparsity cost on its coefficie
 tags: [ideas, card, vision]
 resource: https://doi.org/10.1038/381607a0
 field: neuroscience
-bricks: [sparse-overcomplete-code]
+method: learn-sparse-code-from-images
+bricks: [sparse-overcomplete-code, gradient-learned-basis]
 lenses: [efficient-coding]
 roles: [sparse-represent-signal, learn-basis-from-data]
 tensions: []
@@ -45,10 +46,11 @@ Separation by scale: an overcomplete basis (more basis functions than pixels) le
 "If V1 is optimized for sparse codes of natural images, then learning such a code should reproduce its receptive fields." (paraphrase of the paper's framing)
 
 # Recipe (layer 4)
+Cut: functional
 | Role | Brick (slug) | Signature (input -> output, objective) | Why this brick |
 |------|-------------|----------------------------------------|---------------|
 | sparse-represent-signal | sparse-overcomplete-code | image patch -> sparse coefficients; reconstruction error + sparsity penalty; basis larger than input | The sparsity term encodes the efficient-coding bet (inferred) |
-| learn-basis-from-data | (new) gradient-learned basis | image patches -> basis functions; minimise the same cost | Fixed bases (Fourier, wavelets) assume the answer; learning tests the bet (inferred) |
+| learn-basis-from-data | gradient-learned-basis | image patches -> basis functions; minimise the same cost | Fixed bases (Fourier, wavelets) assume the answer; learning tests the bet (inferred) |
 Operator: loop (alternate inferring coefficients and updating the basis)
 
 # Diff and constraints (layer 5)
@@ -70,6 +72,11 @@ Not checked: no talks or drafts read for this illustration.
 | transfer | The same bet on sound | Same bet, new bricks per modality | later work did this (cochlear-like filters) | — | | claude |
 | migrate-brick | The same brick on a network's activations | Role becomes decompose-activations | later: sparse autoencoders for interpretability | — | | claude |
 ```
+
+The method brick `learn-sparse-code-from-images` lists both bricks in its `parts`
+with `how: split, cut: functional`. A later reader who cuts the same method by
+`cost` (where the compute goes) adds a second cut beside the first; this table
+stays a view of the `functional` cut.
 
 What makes this card useful later:
 

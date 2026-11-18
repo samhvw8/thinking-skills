@@ -1,6 +1,6 @@
 ---
 name: idea-mine
-description: "Break a source (paper, article, talk, repo, social thread) into its idea bricks and file them in the owner's idea bank, best effort and without asking them: what the author believed and bet on, the bricks named by the job each one does, how the bricks are put together, what changed from the source it built on, and the gems. Reads the full text, not the abstract. Use when someone asks how a source's idea is composed or built (\"what lego pieces is this method made of, and how do they fit\"), to break a paper, post or method into parts or building blocks, to split or mine sources into the bank (one or in bulk), or to prepare a source before reading it with the owner. Not for reading a source together with the owner (co-read), combining bricks into new ideas (idea-forge), or judging whether a claim is true (paper-appraisal)."
+description: "Break a source (paper, article, talk, repo, social thread) into its idea bricks and file them in the owner's idea bank, best effort, without asking: what the author believed and bet on, the bricks named by the job each one does, how the bricks are put together, what changed from the source it built on, and the gems. Reads the full text, not the abstract. Use when someone asks how a source's idea is composed or built (\"what lego pieces is this method made of\"), to break a paper, post or method into parts or building blocks, to mine sources into the bank (one or in bulk), or to prepare a source before reading it with the owner. Not for reading a source together with the owner (co-read), combining bricks into new ideas (idea-forge), or judging whether a claim is true (paper-appraisal)."
 ---
 
 # Idea mine
@@ -53,18 +53,17 @@ That is useless for recombination, for three reasons this skill fixes:
 4. **Fill the six layers** in schema order (view model, contradiction,
    resolution principle, bet, recipe, diff and constraints), then "Story told vs
    real thinking", `Raw`, and optional `Mutations` (the schema's table, origin
-   `claude`). The recipe table keeps the brick slug, its signature and the
-   author's reason in separate columns. New cards get `status: draft`.
+   `claude`). File the method as a brick and set `method`; the Recipe table
+   renders one cut of it (`Cut:` line), slug, signature and the author's reason
+   in separate columns. New cards get `status: draft`.
 5. **Match bricks before you create them.** For each recipe role, search the bank
    for a brick with the same structural signature under another field's name, as
    `references/brick-matching.md` describes. Link the existing brick, add the new
    field's name and a migration row when the field or role is new, with
    `match_confidence` (`high`, `medium`, `low`). Create a new brick only when no
    signature matches.
-   When you split a brick into smaller bricks, list them in its `parts` with
-   `cut: <lens>` on each entry: the lens you split through (schema, "Parts and
-   links"). A second split through another lens adds a cut beside the first;
-   never replace or relabel the first cut.
+   List the recipe's bricks in the method brick's `parts` (`how: split`, the
+   table's `cut`). A later split adds a cut beside it (schema, Parts and links).
 6. **Lenses and people.** When the view model already exists as a Lens, link it
    and add this card; when you see it a second time across sources, create the
    Lens. A Person file is optional, for authors whose bets recur.
@@ -101,8 +100,8 @@ For many sources (a cluster, a reading list, 50 papers):
    Count running agents from real completion notices only, never from your own
    text. Use the
    brief in `references/bulk-mode.md`; it carries the schema path, the bank root,
-   the slugs from the index, and the quote rule, because subagents do not load
-   this skill.
+   the slugs and cut kinds from the index, the brick definition and the quote
+   rule, because subagents do not load these skills.
 3. Have each subagent write its card to a staging folder outside the bank (for
    example `$TMPDIR/idea-mine-<date>/`, schema "Bulk staging"). You merge:
    match bricks across the batch (two subagents may create the same brick under
