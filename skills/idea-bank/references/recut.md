@@ -50,16 +50,17 @@ least one new boundary:
 | Boundary | What it looks like | How to write it |
 |----------|--------------------|-----------------|
 | Regroup | The angle's groups cut across the old cut's: one group holds parts an old cut keeps apart, or two groups split parts an old cut keeps together | The old bricks in the new cut, each with its `group`. No new brick |
-| Split | The source shows one old part doing two jobs under this angle | Two new bricks. List them in the new cut, and add them to the old part's `parts` with the same `cut` |
+| Split | The source shows one old part doing two jobs under this angle | Two new bricks, each titled by the job that differs from its parent. List them in the new cut, and add them to the old part's `parts` with the same `cut`. A child whose description would restate the parent is not filed: keep the parent in the cut and name the second job in its entry's `note` |
 | Merge | Several old parts do one job under this angle | One new brick bound from them (`how: bind`, same `cut`) |
 | Add | A piece no old cut has: a hidden term the result depends on, an assumption nobody estimated, an arrangement at a hand-off (where one part's output becomes another's input), a rival placement (where else a part could sit) | A new brick, matched against the bank first. A rival placement also gets a row in the card's `# Mutations` (the move that puts the part there) |
 
-Reuse before you make. Split an old brick only when the source shows it doing
-two jobs; otherwise place it in a group. Before you file a split part, compare
-it with its parent: a part whose description repeats the parent is not a split.
+Reuse before you make. A regroup is a full boundary: most angles need no new
+brick. Split an old brick only when the source shows it doing two jobs;
+otherwise place it in a group.
 
 **No new boundary, no cut.** When the angle's groups only rename an old cut's
-groups, write no `parts`. Add a `notes` entry on the brick
+groups, write no `parts`. Never split a brick to make the cut count. Add a
+`notes` entry on the brick
 (`{ at, note: "angle <...>: no new boundary; it re-tags cut <label>" }`) and
 tell the asker in one line.
 

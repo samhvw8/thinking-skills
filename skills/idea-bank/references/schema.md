@@ -306,7 +306,8 @@ links:                               # connect without merging
   together parts an old cut keeps apart, or keep apart parts it puts together),
   splits an old part, binds old parts into one, or adds a piece the old cuts
   lack. Split a brick only when the source shows it doing two jobs; otherwise
-  reuse it in a group. A cut whose groups only rename an old cut's is a `notes`
+  reuse it in a group. Title each child by the job that differs from its
+  parent; a child that would restate the parent is not filed. A cut whose groups only rename an old cut's is a `notes`
   entry on the brick, not a cut; `idea_index.py --recuts` flags it.
   Procedure: `recut.md`.
 
