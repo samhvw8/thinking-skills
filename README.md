@@ -64,7 +64,9 @@ cases; they are judged by a blind LLM judge in both orders, not by a script.
 approval gate, auto mode) with graders, a receipts check against the transcript, a
 blind judge pass and `run-all.sh` to run them headless; see
 [evals/ambition/README.md](evals/ambition/README.md). `python3 -m unittest discover -s
-skills/ambition/tests` checks ambition's dealer and deck. 
+skills/ambition/tests` checks ambition's dealer and deck. `evals/agent-ops-split/` is the blind
+eval that split the agent-ops skill into a core and reference files (2026-11-18); its result is in
+[evals/agent-ops-split/RESULT.md](evals/agent-ops-split/RESULT.md).
 
 ## Shared decks
 
