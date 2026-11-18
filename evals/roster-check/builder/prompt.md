@@ -1,0 +1,1 @@
+Make the tests in test_duration.py pass by implementing parse_duration in duration.py. Do not edit the tests. Check with: python3 -m unittest -q. Change only duration.py. When the tests pass, stop and say done.
