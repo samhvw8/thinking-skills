@@ -16,7 +16,7 @@ the list fields below, so keep those fields as plain slugs (file name without
 
 **Frontmatter lists are the source of truth; the link views are generated.**
 `idea_index.py --write` adds a `# Related` section at the end of every brick,
-card, lens and move (real markdown links, each with its relation in words), and
+card, lens, move, perspective and operation (real markdown links, each with its relation in words), and
 rewrites `bricks/index.md` (shared roles first, then all bricks). The section sits
 between `<!-- related:begin ... -->` and `<!-- related:end -->` markers. Never
 edit inside them: change the frontmatter list and run `--write` again.
@@ -151,6 +151,11 @@ If <X is the real bottleneck>, then <Y> should work. (inferred)
 |------|-------------|----------------------------------------|-----------------------------------------------|
 Operator: <sequence | loop | gate | nesting | adversarial | distill | ensemble | tree | other: ...>
 
+## <lens label>: <the angle in plain words>      (one section per later angle; see "A new angle on the card")
+| <the angle's question, step, cost or failure> | What the source says (section) | Pieces (slugs, old or new) |
+|------------------------------------------------|--------------------------------|----------------------------|
+What this angle shows that the others do not: <one line>
+
 # Diff and constraints (layer 5)
 - Parent: <what the source mutated>
 - Move: <move type, link to moves/>
@@ -166,18 +171,43 @@ Operator: <sequence | loop | gate | nesting | adversarial | distill | ensemble |
 # Raw
 Source: <resource URL>. Local copy: <absolute path of the file read, or none>
 <the quotes the layers rest on, each with its section>
+Re-read for <lens label>: <sections read>      (one line per later angle, then its new quotes)
 
 # Mutations
-| Operator | Variant | Role fit | Novelty link | Kill test | Owner verdict | Origin |
-|----------|---------|----------|--------------|-----------|-------------|--------|
+| Operator | Variant | Role fit | Novelty link | Kill test | Owner verdict | Origin | Lens |
+|----------|---------|----------|--------------|-----------|-------------|--------|------|
 ```
 
-Mutations columns: `Operator` is a `move_type`; `Role fit` says whether the new
+Mutations columns: `Operator` is a `move_type` (or another operation, "Perspective
+and Operation" below); `Role fit` says whether the new
 brick does the role and what breaks; `Novelty link` is the closest prior work
 found, or `none found (<query>)`; `Kill test` is the cheapest test or its result;
-`Owner verdict` is `keep`, `kill (<reason>)` or empty; `Origin` is `owner` or `claude`.
+`Owner verdict` is `keep`, `kill (<reason>)` or empty; `Origin` is `owner` or `claude`;
+`Lens` is the perspective the variant was made through (Parts and links, `lens`).
+Older tables have no `Lens` column; they still parse.
 Older banks may carry the owner's handle where this schema says `owner` (`Origin`,
 `how`, the owner's column headers); read it as `owner`.
+
+### A new angle on the card
+
+When a later session looks at a banked source from a new angle (a re-cut, or
+"look at it again by ..."):
+
+- **Never edit lines an earlier session wrote,** on the card or on a brick. Add
+  beside them. A correction is a dated line next to the line it corrects. (The
+  owner's own corrections are the exception: "Best effort", Parts and links.)
+- **Re-read the source,** not the card: the local copy in `# Raw` first, then a
+  disk search for its file name, then `resource`. Add the `Re-read for` line and
+  the new quotes to `# Raw`.
+- **Give the angle its own section** at the end of the Recipe, after the
+  `Operator:` line and any earlier angle sections: `## <lens label>: <the angle
+  in plain words>`. Organise its table by the angle: a row per question, step,
+  cost or failure the angle names; a column for what the source says (with its
+  section); a column for the pieces that answer it. Close with `What this angle
+  shows that the others do not:`.
+- **Record the pieces** in `parts` with the same `lens` (Parts and links), and
+  any new brick as usual. Run `idea_index.py --write`.
+- **The reply opens with what the angle shows,** in plain words, then the table.
 
 ## Brick (`bricks/<role-slug>.md`)
 
@@ -227,37 +257,54 @@ list in the body, not frontmatter, followed by the structure in words:
 A brick written with a frontmatter `signature:` still parses; `--write` moves
 it into this list.
 
-## Parts and links (any brick, lens or card)
+## Parts and links (any unit)
 
-A unit is whatever can be split, bound or linked: a brick, a lens, a card, or an
-arrangement pattern written as a brick. There are no fixed levels. Split as far as
+A unit is whatever can be split, joined, fused or linked: a brick, a lens, a
+card, a perspective, an operation, or an arrangement pattern written as a brick.
+There are no fixed levels. Split as far as
 you can judge today and keep that layer; a later pass may split a part again, or
 find that a brick is really a whole made of others. Nothing is relabelled or
 moved when that happens: only `parts` grows.
 
 ```yaml
-parts:                               # split / bind: this unit is made of these
+parts:                               # this unit is made of these
   - <slug>                           # a part you are sure of
-  - { to: <slug>, how: split | judge | owner, cut: <lens>, note: <optional> }   # how it was found, through which lens
+  - { to: <slug>, how: split | join | fuse | judge | owner, lens: <label>, note: <optional> }
+  - { to: <operation>, order: <n>, lens: <label> }   # a recipe step (Operation files)
 links:                               # connect without merging
   - { to: <slug>, via: <slug>, note: <one line> }
 ```
 
-- **Cuts.** `cut` names the lens a split was made through: a slug from
-  `lenses/` when one fits, else a short hyphenated phrase (`cost-flow`,
-  `data-path`, `energy-terms`). Entries with the same `cut` form one way of
-  splitting the unit. A unit may hold several cuts at once, and they may overlap
-  or disagree; that is the point. An entry with no `cut` belongs to the
-  `default` cut. When you split a unit that already has parts, ask first whether
-  your lens differs from the cuts it has: if it does, add a new cut beside them;
-  if it is the same lens, extend that cut.
+- **`how` names the operation or who found it.** `split`: cut out of this
+  unit. `join`: taped into this bigger unit, each part keeping its own job
+  (older files say `bind`; read it as `join`). `fuse`: melted into this new
+  unit, which does a job none of its parts did alone; its `note` names that
+  job. `judge`: an LLM judge said this unit contains the part. `owner`: the
+  owner's call.
+- **`lens` names the perspective** the operation ran through: the owner's
+  question, a seed (`seeds.md`), a `perspectives/` file, or a free label of a
+  few hyphenated words taken from the question asked (`cost-flow`,
+  `what-could-break`). Free labels are always valid; nothing is checked against
+  a list. Entries with the same `lens` form one way of splitting or combining
+  the unit. A unit may hold several at once, and they may overlap or disagree;
+  that is the point. An entry with no `lens` belongs to `default`. Older files
+  say `cut` for `lens`: read both, write `lens`, and when an entry has both,
+  `lens` wins. In a view, a label links to the `perspectives/` file of that
+  name, else to an older `lenses/` file of that name, else it is printed as
+  written.
+- **Every operation records its lens, not only cutting.** A Move has `lens`;
+  a Mutations row has a `Lens` column; a recipe step has `lens`. The index
+  lists each perspective and operation with where it was used.
 
-- **Refs:** a bare slug resolves as brick, then lens, then card; write
-  `card:<slug>` or `lens:<slug>` when it must be one of those.
+- **Refs:** a bare slug resolves as brick, then lens, then card, then
+  perspective, then operation (a seed id counts as a file of its kind). Inside
+  a Perspective or Operation, its own kind comes first. Write `card:<slug>`,
+  `operation:<slug>` and so on when it must be one of those.
 - **Depth is computed, never stored.** A unit with no `parts` has depth 0; a
-  whole has 1 + its deepest part over all its cuts. The index reports depth,
+  whole has 1 + its deepest part over all its lenses. The index reports depth,
   `part_of` (the reverse list) and cycles (an error: a unit cannot contain
-  itself). The `# Related` view shows one line per cut, with the lens named.
+  itself). The `# Related` view shows one line per lens, and a recipe's steps
+  in order.
 - **Arrangements are units too.** How parts combine (a gate before a loop, a
   cheap step before a strong check) may be its own brick, listed in `parts` like
   any other, or named as the `via` of a link.
@@ -272,7 +319,9 @@ links:                               # connect without merging
 
 ## Lens (`lenses/<slug>.md`)
 
-A view model as a reusable node. It migrates like a brick.
+An author's view model (how they picture the problem) as a reusable node. It
+migrates like a brick. It is not a perspective for operating on bricks: those
+are in `perspectives/`.
 
 ```yaml
 ---
@@ -296,6 +345,43 @@ picture in plain words, the card that holds it), so the second sighting finds it
 Body: `# Picture`, `# What it predicts`, `# What it ignores`, `# Inverse lens`
 (the opposite assumption, for lens inversion).
 
+## Perspective and Operation (`perspectives/<slug>.md`, `operations/<slug>.md`)
+
+Perspectives and operations are bricks of another kind: a perspective is a way
+of looking (a question), an operation is something done to bricks (split, join,
+fuse, swap, invert, transfer, any other). They can be split, joined and fused
+like any unit, and several operations can be combined into one bigger operation:
+a recipe of steps. The skill ships seeds in `seeds.md`, including but not
+limited to; the bank holds only the ones that recur or were invented. A bank
+file with a seed's id overrides the seed.
+
+```yaml
+---
+type: Perspective                    # or Operation
+title: <e.g. "What goes unchecked">
+description: <one sentence>
+tags: [ideas, perspective]           # or operation
+question: <the question to ask>      # Perspective
+verbs: [<operation>, ...]            # Perspective, optional: the operations it suits
+origin: seed | invented
+source: <card slug, session, or URL where it came from>
+parts:                               # Operation that is a recipe: its steps
+  - { to: <operation>, order: 1, lens: <label> }
+links: [...]
+generated: { by: ..., at: ... }
+---
+```
+
+- **A free label gets a file only when it recurs**, the second time it is used
+  (`idea_index.py` lists free labels and flags those used in two or more files).
+  This is the second-sighting rule for lenses, applied to perspectives and
+  operations.
+- **A recipe** lists its steps in `parts` with `order` (a number) and an
+  optional `lens` per step. Steps may repeat and may name seed operations. The
+  index keeps them in order.
+- Body: `# Question` (Perspective) or `# Steps` (Operation), then what it turned
+  up where it was used, then the generated `# Related`.
+
 ## Move (`moves/<slug>.md`)
 
 The diff between a child source and its parent: the reusable unit of an idea.
@@ -307,6 +393,7 @@ title: <e.g. "Human-written steps -> self-generated steps + filter">
 description: <one sentence>
 tags: [ideas, move]
 move_type: substitute-brick | substitute-operator | remove | lift-constraint | invert | migrate-brick | transfer | cross-card | resolve-contradiction | lens-transfer | lens-inversion | correct-parameter | relabel | retarget
+lens: <label>                      # the perspective the move was made through (Parts and links)
 parent: <card slug or URL>
 child: <card slug or URL>
 card: <card slug of the child, when it exists>
@@ -456,6 +543,9 @@ Use these values in `gem_types` and in `[gem: ...]` margin tags.
 | Lives in another language community | Yes |
 
 ## Mutation operators
+
+These, with `split`, `join` and `fuse`, are the seed operations (`seeds.md`),
+including but not limited to.
 
 | Operator (`move_type`) | Move |
 |------------------------|------|

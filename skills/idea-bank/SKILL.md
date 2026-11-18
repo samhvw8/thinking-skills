@@ -22,20 +22,22 @@ method seen as one block is a brick too.
 - **No fixed size.** A brick can be cut into smaller bricks, and bricks bind into
   a bigger brick. No brick is the smallest piece: never call a brick atomic or
   final. Today's split goes only as far as today's view can see.
-- **Scissors and tape are tools, not facts.** Cutting and binding are operations
-  you apply through a lens: a way of looking, such as "where does the cost go" or
-  "what does the data pass through". Different lenses cut the same brick in
-  different places. Keep every cut, each with its lens in `cut`
-  (`references/schema.md`, Parts and links). A new cut never replaces an old one.
-- **A later view may cut again.** When a new lens shows more structure inside a
-  brick, add a cut. Do not rename, move or relabel the brick.
+- **Scissors and tape are tools, not facts.** Every operation (split, join,
+  fuse, swap, invert, transfer, any other) runs through a perspective: a way of
+  looking, such as "where does the cost go" or "what could make the answer
+  wrong". Record it in `lens`: the owner's question, a seed, or your own label
+  (`references/schema.md`, Parts and links). A new result never replaces an old one.
+- **A later view may cut again.** Add it beside the old (schema, "A new angle
+  on the card"); never edit lines an earlier session wrote or relabel the brick.
+- **Perspectives and operations are bricks too.** They split, join and combine
+  into recipes. Seeds: `references/seeds.md`, including but not limited to.
 - **Name by job, not by identity.** "filters bad samples", not "reward model".
   The same structure in two fields is one brick with two names.
 - **Same brick means same structure.** Match input, output, objective,
   constraint and math form. Names and embeddings mislead.
 
 Bricks live in `bricks/`, one per file (`type: Brick`). A card records one
-source and the bricks its recipe uses. A lens records a way of seeing. A move
+source and the bricks its recipe uses. A lens records an author's view model. A move
 records how one source changed another source's bricks.
 
 ## The owner
@@ -67,7 +69,9 @@ because a second copy splits the links.
 | Path | Holds | Type (`schema.md`) |
 |------|-------|--------------------|
 | `bricks/` | One brick per file, named by its role-level slug | `Brick` |
-| `lenses/` | One view model per file | `Lens` |
+| `lenses/` | One author's view model per file | `Lens` |
+| `perspectives/` | One recurring way of looking per file | `Perspective` |
+| `operations/` | One operation or recipe of steps per file | `Operation` |
 | `moves/` | One move (diff between a source and its parent) per file | `Move` |
 | `cards/` | One six-layer card per source | `Idea Card` |
 | `people/` | Optional profiles | `Person` |
@@ -180,7 +184,9 @@ It is deterministic and offline. It reports:
 - low-confidence migration matches, for review;
 - cards by constraint of the time (input for a later price tracker);
 - level-3 hints per reading;
-- known-bricks coverage (`me/known-bricks.md`).
+- known-bricks coverage (`me/known-bricks.md`);
+- perspectives and operations (seeds and bank files), where each was used, by
+  verb, and free labels that recur.
 
 Gap candidates are a list for judgement, not findings. Open each candidate and
 judge by structure whether the brick could fill the role in that field before you
@@ -212,6 +218,7 @@ create a repo yourself.
 
 - `references/schema.md`: every type's frontmatter and body template, the gem
   taxonomy, the unpopularity diagnosis and the mutation operators.
+- `references/seeds.md`: seed perspectives and operations, and how to offer them.
 - `scripts/idea_search.py`: hybrid search; `scripts/test_idea_search.py`
   tests it without a model. The numbers above were measured on the author's bank.
 - `scripts/idea_deal.py`: deals a hand (bricks, lenses, moves) for idea-forge's
