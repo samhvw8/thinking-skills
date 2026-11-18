@@ -164,7 +164,8 @@ Operator: <sequence | loop | gate | nesting | adversarial | distill | ensemble |
 <where the paper's framing differs from talks, posts, rebuttals or v1 drafts>
 
 # Raw
-<the quotes the layers rest on, each with its section, plus the source pointer>
+Source: <resource URL>. Local copy: <absolute path of the file read, or none>
+<the quotes the layers rest on, each with its section>
 
 # Mutations
 | Operator | Variant | Role fit | Novelty link | Kill test | Owner verdict | Origin |

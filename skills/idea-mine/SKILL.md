@@ -28,6 +28,10 @@ That is useless for recombination, for three reasons this skill fixes:
   early drafts and "we tried X but" passages. Go there.
 - **A summary drops the raw.** Extracted facts lose nuance that later questions
   need. Keep the quotes each layer rests on in the card's `Raw` section.
+- **Look again at the source, not the card.** Asked to see a banked source from
+  a new angle, re-read the sections that angle needs: the local copy named in
+  `Raw` first, then search the disk for its file name, then the URL. Work from
+  the bank alone only when all three fail, and say so.
 
 ## Workflow (one source)
 
@@ -36,6 +40,7 @@ That is useless for recombination, for three reasons this skill fixes:
    "abstract only", get the PDF or TeX with `paper-download` (`paperhunt get`,
    `paperhunt bundle`). Set `read_basis` honestly; an abstract-only card is
    allowed, and says so.
+   Start `Raw` with the URL and the absolute path of any local copy you read.
 2. **Search where intent leaks.** Spend a few calls on the places in
    `references/intent-sources.md`: OpenReview reviews and rebuttals, the arXiv
    v1 → v2 diff, author talks and threads before the paper, the code repo's
