@@ -122,3 +122,11 @@ def test_rerank_prompt_hides_fused_order(bank):
     idx = S.Index(bank)
     p = S.rerank_prompt(idx, "q", ["sparse-overcomplete-code", "fixed-basis-transform"])
     assert "`sparse-overcomplete-code`" in p and "- Input: signal" in p and '{"ranked"' in p
+
+
+def test_perspectives_and_operations_are_searchable(tmp_path):
+    ch = S.chunks(S.ix.load(HERE / "fixtures" / "lens-bank"))
+    whole = {c["slug"]: c for c in ch if c["view"] == "whole"}
+    assert whole["what-goes-unchecked"]["type"] == "Perspective"
+    assert "Which steps does no check cover" in whole["what-goes-unchecked"]["text"]  # the question is indexed
+    assert whole["check-then-fuse"]["type"] == "Operation"

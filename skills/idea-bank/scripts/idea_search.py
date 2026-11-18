@@ -7,7 +7,7 @@ Optional: Personalized PageRank over the bank's links (--graph).
 
 Usage:
   uv run idea_search.py <bank-root> index                     # embed new or changed chunks
-  uv run idea_search.py <bank-root> search "<text>" [-k 30] [--type brick|card|lens|move] [--graph] [--rerank] [--json]
+  uv run idea_search.py <bank-root> search "<text>" [-k 30] [--type brick|card|lens|move|perspective|operation] [--graph] [--rerank] [--json]
   uv run idea_search.py <bank-root> like <brick-slug> [-k 10] [--other-fields] [--json]
 
 Chunks: a brick gives a signature view, a gloss view (title, description, the prose), one
@@ -61,7 +61,8 @@ QUERY = "task: search result | query: {}"
 DOC = "title: {} | text: {}"
 SYM = "task: sentence similarity | query: {}"
 CACHE = Path(".index") / "eg2.npz"
-TYPES = {"brick": "Brick", "card": "Idea Card", "lens": "Lens", "move": "Move"}
+TYPES = {"brick": "Brick", "card": "Idea Card", "lens": "Lens", "move": "Move",
+         "perspective": "Perspective", "operation": "Operation"}
 REL_RE = ix.REL_RE
 
 
@@ -147,8 +148,9 @@ def chunks(concepts: list[dict]) -> list[dict]:
                         add(c, h.lower(), it, field=fm.get("field"))
                 elif text:
                     add(c, "layer", f"{h}: {text}", field=fm.get("field"))
-        elif t in ("Lens", "Move"):
-            add(c, "whole", head + " " + " ".join(f"{h}: {x}" for h, x in secs))
+        elif t in ("Lens", "Move", "Perspective", "Operation"):
+            q = f" {fm['question']}" if fm.get("question") else ""
+            add(c, "whole", head + q + " " + " ".join(f"{h}: {x}" for h, x in secs))
     return out
 
 

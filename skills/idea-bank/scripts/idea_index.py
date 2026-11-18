@@ -2,13 +2,14 @@
 # requires-python = ">=3.10"
 # dependencies = ["pyyaml>=6"]
 # ///
-"""Index an idea bank: links, convergence, migration-gap candidates, known-bricks coverage.
+"""Index an idea bank: links, convergence, migration-gap candidates, known-bricks coverage,
+and perspectives and operations (the skill's seeds plus the bank's files) with where each was used.
 
 Usage: uv run idea_index.py <bank-root> [--json out.json] [--suggest-merges] [--write | --check]
 
 Deterministic and offline. Gap candidates are a list for judgement, not findings.
 --write regenerates the views made from frontmatter (including `parts` and `links`): a `# Related` section in every
-brick, card, lens and move, and `bricks/index.md`. It also moves a frontmatter
+brick, card, lens, move, perspective and operation, and `bricks/index.md`. It also moves a frontmatter
 `signature` into the body. --check exits 1 when any of these is out of date.
 """
 from __future__ import annotations
@@ -60,55 +61,96 @@ def load(root: Path) -> list[dict]:
     return concepts
 
 
-UNIT_TYPES = {"brick": "Brick", "lens": "Lens", "card": "Idea Card"}  # bare slugs resolve in this order
-DEFAULT_CUT = "default"  # the cut of a `parts` entry that names no lens
+UNIT_TYPES = {"brick": "Brick", "lens": "Lens", "card": "Idea Card",
+              "perspective": "Perspective", "operation": "Operation"}  # bare slugs resolve in this order
+SEEDED = ("perspective", "operation")  # unit kinds that also have seeds in references/seeds.md
+DEFAULT_LENS = "default"  # the lens of a `parts` entry that names none
+SEEDS = Path(__file__).resolve().parent.parent / "references" / "seeds.md"
+HOW_ALIASES = {"bind": "join"}  # older files say `bind` for `join`
+PROVENANCE = {"judge", "owner"}  # `how` values that say who found a part, not which operation made it
 
 
-def unit_graph(concepts: list[dict]) -> dict:
-    """`parts` (split / bind) and `links` (connect without merging) across bricks, lenses and cards.
+def load_seeds(path: Path = SEEDS) -> dict[str, dict[str, dict]]:
+    """The seed perspectives and operations that ship with the skill: {"perspective": {id: entry}, "operation": ...}."""
+    m = FM_RE.match(path.read_text(encoding="utf-8")) if path.is_file() else None
+    if not m:
+        raise SystemExit(f"idea_index: cannot read the seed file {path}")
+    fm = yaml.safe_load(m.group(1)) or {}
+    return {"perspective": {str(e["id"]): e for e in as_list(fm.get("perspectives"))},
+            "operation": {str(e["id"]): e for e in as_list(fm.get("operations"))}}
 
-    Each `parts` entry belongs to a cut: the lens it was split through (`cut`, else `default`).
-    A unit may hold several cuts side by side. Depth is relative and computed: a unit with no
-    parts is 0, a whole is 1 + its deepest part over all cuts. Nothing stores a level name, so a
-    unit split further later needs no relabelling.
+
+def entry_lens(entry: dict) -> str:
+    """The perspective a `parts` entry was made through: `lens`, else the older `cut`, else `default`."""
+    return str(entry.get("lens") or entry.get("cut") or DEFAULT_LENS)
+
+
+def entry_order(entry: dict, where: str) -> float:
+    try:
+        return float(entry["order"])
+    except (TypeError, ValueError):
+        raise SystemExit(f"idea_index: {where}: `order` must be a number, got {entry['order']!r}")
+
+
+def unit_graph(concepts: list[dict], seeds: dict | None = None) -> dict:
+    """`parts` (split / join / fuse) and `links` (connect without merging) across every unit kind.
+
+    Each `parts` entry belongs to a lens: the perspective it was made through (`lens`, older files `cut`,
+    else `default`). A unit may hold several lenses side by side. Entries with `order` are the steps of a
+    recipe: kept in that order, repeats included, and not grouped by lens. A step may name a seed
+    operation (`split`) that has no file. Depth is relative and computed: a unit with no parts is 0, a
+    whole is 1 + its deepest part. Nothing stores a level name, so a unit split further needs no relabelling.
     """
+    seeds = load_seeds() if seeds is None else seeds
     live = {f"{k}:{c['slug']}": c for c in concepts for k, t in UNIT_TYPES.items()
             if c["fm"]["type"] == t and c["fm"].get("status") != "deprecated"}
+    known = set(live) | {f"{k}:{s}" for k in SEEDED for s in seeds[k]}
 
-    def resolve(ref) -> str | None:
+    def resolve(ref, home: str = "") -> str | None:
         ref = str(ref)
         if ":" in ref:
-            return ref if ref in live else None
-        return next((f"{k}:{ref}" for k in UNIT_TYPES if f"{k}:{ref}" in live), None)
+            return ref if ref in known else None
+        kinds = list(UNIT_TYPES)
+        if home in SEEDED:  # a recipe's steps are operations; a perspective's parts are perspectives
+            kinds = [home] + [k for k in kinds if k != home]
+        return next((f"{k}:{ref}" for k in kinds if f"{k}:{ref}" in known), None)
 
-    parts: dict[str, list[str]] = {}  # whole -> distinct parts over all cuts (depth uses this)
-    part_cuts: dict[str, dict[str, list[str]]] = {}  # whole -> cut (lens) -> parts, in frontmatter order
-    cut_how: dict[str, dict[tuple[str, str], str]] = {}  # whole -> (cut, part) -> "how: note"
+    parts: dict[str, list[str]] = {}  # whole -> distinct parts over all lenses (depth uses this)
+    part_lenses: dict[str, dict[str, list[str]]] = {}  # whole -> lens -> parts, in frontmatter order
+    lens_how: dict[str, dict[tuple[str, str], str]] = {}  # whole -> (lens, part) -> "how: note"
     part_how: dict[str, dict[str, str]] = {}  # whole -> part -> "how: note", for parts that say how they were found
+    steps: dict[str, list[dict]] = {}  # recipe -> [{order, step, lens}], sorted by order, repeats kept
     part_of: dict[str, set[str]] = defaultdict(set)
     links, broken = [], []
     for key, c in sorted(live.items()):
-        ps, cuts = [], {}
-        for entry in as_list(c["fm"].get("parts")):
+        ps, lenses, ordered = [], {}, []
+        for i, entry in enumerate(as_list(c["fm"].get("parts"))):
             entry = entry if isinstance(entry, dict) else {"to": entry}
             ref = entry.get("to", "")
-            cut = str(entry.get("cut") or DEFAULT_CUT)
-            r = resolve(ref)
-            if r:
-                if r not in ps:
-                    ps.append(r)
-                if r not in cuts.setdefault(cut, []):
-                    cuts[cut].append(r)
-                part_of[r].add(key)
-                if entry.get("how"):
-                    how = str(entry["how"]) + (f": {entry['note']}" if entry.get("note") else "")
-                    cut_how.setdefault(key, {})[(cut, r)] = how
-                    part_how.setdefault(key, {}).setdefault(r, how)
-            else:
+            lens = entry_lens(entry)
+            r = resolve(ref, key.split(":", 1)[0])
+            if not r:
                 broken.append({"from": key, "to": f"part:{ref}"})
+                continue
+            if r not in ps:
+                ps.append(r)
+            part_of[r].add(key)
+            if entry.get("order") is not None:
+                ordered.append((entry_order(entry, c["path"]), i,
+                                {"order": entry["order"], "step": r, "lens": None if lens == DEFAULT_LENS else lens}))
+                continue
+            if r not in lenses.setdefault(lens, []):
+                lenses[lens].append(r)
+            if entry.get("how"):
+                how = str(entry["how"]) + (f": {entry['note']}" if entry.get("note") else "")
+                lens_how.setdefault(key, {})[(lens, r)] = how
+                part_how.setdefault(key, {}).setdefault(r, how)
         if ps:
             parts[key] = ps
-            part_cuts[key] = cuts
+        if lenses:
+            part_lenses[key] = lenses
+        if ordered:
+            steps[key] = [s for _, _, s in sorted(ordered, key=lambda t: (t[0], t[1]))]
         for l in as_list(c["fm"].get("links")):
             l = l if isinstance(l, dict) else {"to": l}
             to = resolve(l.get("to", ""))
@@ -142,7 +184,7 @@ def unit_graph(concepts: list[dict]) -> dict:
 
     for k in sorted(set(parts) | set(part_of)):
         visit(k, [])
-    return {"parts": parts, "part_cuts": part_cuts, "cut_how": cut_how, "part_how": part_how,
+    return {"parts": parts, "part_lenses": part_lenses, "lens_how": lens_how, "part_how": part_how, "steps": steps,
             "part_of": {k: sorted(v) for k, v in sorted(part_of.items())},
             "depth": dict(sorted(depth.items())), "part_cycles": cycles, "unit_links": links, "broken": broken}
 
@@ -232,6 +274,80 @@ def suggest_merges(concepts: list[dict], min_jaccard: float = 0.5, min_ratio: fl
                 out.append({"a": a, "b": b, "jaccard": round(jac, 2), "ratio": round(ratio, 2),
                             "shared_bricks": shared, "uses_a": len(uses[a]), "uses_b": len(uses[b])})
     out.sort(key=lambda r: (-(len(r["shared_bricks"]) > 0), -r["jaccard"], -r["ratio"], r["a"], r["b"]))
+    return out
+
+
+def cell(value) -> str | None:
+    """A table cell or frontmatter value as a label: backticks and blanks removed, `-` is empty."""
+    s = str(value or "").strip().strip("`").strip()
+    return None if s in ("", "-") else s
+
+
+def uses_of(concepts: list[dict]) -> list[dict]:
+    """Every operation result that names a perspective (`lens`) or an operation (`verb`), and where it is.
+
+    Sources: `parts` entries (verb = `how`, `bind` read as `join`; a recipe step's verb is its operation),
+    a Move's `lens` and `move_type`, and the `Lens` and `Operator` columns of a Mutations table in a card
+    or reading.
+    """
+    out = []
+    for c in concepts:
+        fm, t, slug = c["fm"], c["fm"]["type"], c["slug"]
+        kind = next((k for k, v in UNIT_TYPES.items() if v == t), None)
+        if kind and fm.get("status") != "deprecated":
+            for entry in as_list(fm.get("parts")):
+                if not isinstance(entry, dict):
+                    continue
+                lens = entry_lens(entry)
+                how = cell(entry.get("how"))
+                verb = str(entry.get("to", "")).split(":")[-1] if entry.get("order") is not None else HOW_ALIASES.get(how, how)
+                out.append({"lens": None if lens == DEFAULT_LENS else lens, "verb": verb, "where": f"{kind}:{slug}"})
+        if t == "Move":
+            out.append({"lens": cell(fm.get("lens")), "verb": cell(fm.get("move_type")), "where": f"move:{slug}"})
+        if t in ("Idea Card", "Reading"):
+            for row in table_rows(c["body"], "Mutations"):
+                out.append({"lens": cell(row.get("lens")), "verb": cell(row.get("operator")),
+                            "where": f"{'card' if t == 'Idea Card' else 'reading'}:{slug}"})
+    return [u for u in out if u["lens"] or u["verb"]]
+
+
+def catalog(concepts: list[dict], seeds: dict) -> dict:
+    """Perspectives and operations, seeds and bank files together, each with where it was used.
+
+    A perspective's uses are grouped by verb (`part` when the entry names no operation); an operation's by
+    the lens it ran through (`no lens`). Labels with no seed and no file are free labels; one used in two or
+    more files recurs and is ready for a file of its own.
+    """
+    uses = uses_of(concepts)
+    lens_files = {c["slug"] for c in concepts if c["fm"]["type"] == "Lens"}
+    out = {}
+    for kind, key, other, blank in (("perspective", "lens", "verb", "part"), ("operation", "verb", "lens", "no lens")):
+        items: dict[str, dict] = {}
+        for s, e in seeds[kind].items():
+            items[s] = {"id": s, "seed": True, "file": False, "origin": e.get("origin", "seed"),
+                        "status": e.get("status"), "uses": {}}
+        for c in concepts:
+            if c["fm"]["type"] == UNIT_TYPES[kind] and c["fm"].get("status") != "deprecated":
+                it = items.setdefault(c["slug"], {"id": c["slug"], "seed": False, "status": None, "uses": {}})
+                it.update(file=True, origin=c["fm"].get("origin") or it.get("origin") or "invented")
+        free: dict[str, dict] = {}
+        for u in uses:
+            label = u[key]
+            if not label or (kind == "operation" and label in PROVENANCE):
+                continue
+            if label in items:
+                group = items[label]["uses"]
+            else:
+                group = free.setdefault(label, {"label": label, "uses": {}})["uses"]
+            where = group.setdefault(u[other] if u[other] and u[other] not in PROVENANCE else blank, [])
+            if u["where"] not in where:
+                where.append(u["where"])
+        for f in free.values():
+            f["files"] = len({w for ws in f["uses"].values() for w in ws})
+            f["recurs"] = f["files"] >= 2
+            if kind == "perspective":
+                f["lens_file"] = f["label"] in lens_files
+        out[kind] = {"items": list(items.values()), "free": [free[l] for l in sorted(free)]}  # seed order, then files
     return out
 
 
@@ -340,13 +456,16 @@ def build(concepts: list[dict]) -> dict:
         "owned_share": round(sum(1 for k, v in known.items() if v == "owned" and k in bricks) / len(bricks), 3) if bricks else 0.0,
     }
 
-    g = unit_graph(concepts)
+    seeds = load_seeds()
+    g = unit_graph(concepts, seeds)
     broken += g["broken"]
+    cat = catalog(concepts, seeds)
 
     return {
         "counts": {t: len(v) for t, v in sorted(by_type.items())},
         "parts": g["parts"],
-        "part_cuts": g["part_cuts"],
+        "part_lenses": g["part_lenses"],
+        "recipes": g["steps"],
         "part_how": {w: {p: h.split(":", 1)[0] for p, h in d.items()} for w, d in g["part_how"].items()},
         "part_of": g["part_of"],
         "depth": g["depth"],
@@ -366,6 +485,10 @@ def build(concepts: list[dict]) -> dict:
         "evidence_limits": dict(sorted(evidence_limits.items())),
         "reading_hints": hints,
         "known_bricks": coverage,
+        "perspectives": cat["perspective"]["items"],
+        "free_lenses": cat["perspective"]["free"],
+        "operations": cat["operation"]["items"],
+        "free_operations": cat["operation"]["free"],
     }
 
 
@@ -383,7 +506,7 @@ def render(ix: dict) -> str:
     out += ["## Low-confidence matches (review)"] + ([f"- {m['brick']} in {m['field']} ({m['source']})" for m in ix["low_confidence_matches"]] or ["- none"]) + [""]
     deep = sorted(ix["depth"].items(), key=lambda kv: (-kv[1], kv[0]))
     out += ["## Parts (depth is relative: 0 = no parts yet)"] + (
-        [f"- {k}: depth {d}, {len(ix['parts'].get(k, []))} parts in {len(ix['part_cuts'].get(k, {}))} cut(s), "
+        [f"- {k}: depth {d}, {len(ix['parts'].get(k, []))} parts in {len(ix['part_lenses'].get(k, {}))} lens(es), "
          f"part of {len(ix['part_of'].get(k, []))}" for k, d in deep[:15]]
         + ([f"- ... {len(deep) - 15} more"] if len(deep) > 15 else []) or ["- none"]) + [""]
     out += ["## Part cycles (fix: a unit cannot contain itself)"] + ([f"- {' -> '.join(c)}" for c in ix["part_cycles"]] or ["- none"]) + [""]
@@ -395,14 +518,45 @@ def render(ix: dict) -> str:
     out += ["## Known bricks", f"- owned {len(k['owned'])}, seen {len(k['seen'])}, bank bricks {k['bank_bricks']}, owned share {k['owned_share']}"]
     if k["unknown_slugs"]:
         out.append(f"- slugs not in bank: {', '.join(k['unknown_slugs'])}")
-    return "\n".join(out) + "\n"
+    out.append("")
+    out += render_catalog(ix, "perspective", "Perspectives (seeds and bank files; where each was used, by verb)", "for")
+    out += render_catalog(ix, "operation", "Operations (seeds and bank files; where each was used, by lens)", "through")
+    return "\n".join(out).rstrip("\n") + "\n"
+
+
+def render_catalog(ix: dict, kind: str, heading: str, joiner: str) -> list[str]:
+    items, free = ix[f"{kind}s"], ix["free_lenses" if kind == "perspective" else "free_operations"]
+
+    def where(uses: dict) -> str:
+        return "; ".join(f"{joiner} {g}: {', '.join(ws)}" for g, ws in sorted(uses.items()))
+
+    def name(it: dict) -> str:
+        tags = ["seed" if it["seed"] else "", "bank file" if it["file"] else "", it.get("status") or "",
+                "invented" if it.get("origin") == "invented" else ""]
+        steps = ix["recipes"].get(f"{kind}:{it['id']}")
+        if steps:
+            tags.append("recipe: " + ", ".join(f"{s['step'].split(':', 1)[1]}" + (f" through {s['lens']}" if s["lens"] else "")
+                                               for s in steps))
+        return f"{it['id']} ({', '.join(t for t in tags if t)})"
+
+    shown = [it for it in items if it["uses"] or it["file"]]  # every bank file gets a row; unused seeds share one
+    unused = [it["id"] for it in items if not it["uses"] and not it["file"]]
+    rows = [f"- {name(it)}: {where(it['uses']) or 'not used yet'}" for it in shown]
+    rows += [f"- Not used yet ({len(unused)}): {', '.join(unused)}"] if unused else []
+    out = [f"## {heading}"] + (rows or ["- none"]) + [""]
+    label = "Free perspective labels" if kind == "perspective" else "Free operation labels"
+    out += [f"## {label} (no seed or file; give one a file when it recurs)"]
+    out += [f"- {f['label']}" + (" (a lens file has this name)" if f.get("lens_file") else "")
+            + f": {where(f['uses'])}" + (f" -- RECURS in {f['files']} files" if f["recurs"] else "") for f in free] or ["- none"]
+    return out + [""]
 
 
 REL_BEGIN = "<!-- related:begin (generated by idea_index.py --write; edit the frontmatter lists, not this section) -->"
 REL_END = "<!-- related:end -->"
 REL_RE = re.compile(r"\n*<!-- related:begin.*?<!-- related:end -->\n*", re.S)
 SIG_KEYS = ("input", "output", "objective", "constraint", "math")
-DIRS = {"Brick": "bricks", "Idea Card": "cards", "Lens": "lenses", "Move": "moves"}
+DIRS = {"Brick": "bricks", "Idea Card": "cards", "Lens": "lenses", "Move": "moves",
+        "Perspective": "perspectives", "Operation": "operations"}
 
 
 def link_prefix(root: Path) -> str:
@@ -508,7 +662,8 @@ def views(concepts: list[dict], prefix: str) -> dict[str, str]:
             if row and row not in lines:
                 lines.append(row)
 
-    g = unit_graph(concepts)
+    seeds = load_seeds()
+    g = unit_graph(concepts, seeds)
     kt = {k: t for k, t in UNIT_TYPES.items()}
 
     def at(key: str) -> str:
@@ -518,12 +673,30 @@ def views(concepts: list[dict], prefix: str) -> dict[str, str]:
     def lk(key: str) -> str:
         k, slug = key.split(":", 1)
         return ln(kt[k], slug) or f"`{slug}`"
-    for key, cuts in g["part_cuts"].items():
-        how = g["cut_how"].get(key, {})
-        for cut, ps in cuts.items():  # one line per cut, the lens named (linked when it is a lens file)
-            lens = ln("Lens", cut) or f"`{cut}`"
-            out[at(key)].append(f"- Parts by cut {lens}: " + ", ".join(
-                lk(p) + (f" ({how[(cut, p)]})" if (cut, p) in how else "") for p in ps) + ".")
+    def lens_link(label: str) -> str:  # a perspective file, else an older lens file of that name, else as written
+        return ln("Perspective", label) or ln("Lens", label) or f"`{label}`"
+
+    def where_link(w: str) -> str:
+        k, slug = w.split(":", 1)
+        t = kt.get(k) or {"move": "Move"}.get(k)
+        return (ln(t, slug) if t else None) or f"`{w}`"
+
+    for key, lenses in g["part_lenses"].items():
+        how = g["lens_how"].get(key, {})
+        for lens, ps in lenses.items():  # one line per lens, the perspective named (linked when it has a file)
+            out[at(key)].append(f"- Parts by lens {lens_link(lens)}: " + ", ".join(
+                lk(p) + (f" ({how[(lens, p)]})" if (lens, p) in how else "") for p in ps) + ".")
+    for key, ss in g["steps"].items():
+        out[at(key)].append("- Steps in order: " + "; ".join(
+            f"{i}. {lk(s['step'])}" + (f" through {lens_link(s['lens'])}" if s["lens"] else "")
+            for i, s in enumerate(ss, 1)) + ".")
+    cat = catalog(concepts, seeds)
+    for kind, phrase in (("perspective", "Used for"), ("operation", "Used through")):
+        for it in cat[kind]["items"]:
+            if it["file"]:
+                for group, ws in sorted(it["uses"].items()):
+                    out[f"{DIRS[UNIT_TYPES[kind]]}/{it['id']}"].append(
+                        f"- {phrase} `{group}` on " + ", ".join(where_link(w) for w in ws) + ".")
     for key, wholes in g["part_of"].items():
         out[at(key)] += [f"- Part of {lk(w)}." for w in wholes]
     for l in g["unit_links"]:

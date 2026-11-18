@@ -74,3 +74,10 @@ def test_cli_prints_seed_and_json(capsys):
     assert D.main([str(BANK), "deal", "move", "--seed", "42"]) == 0
     assert "(seed 42)" in capsys.readouterr().out
     assert D.main([str(BANK), "menu"]) == 0
+
+
+def test_bank_with_perspectives_and_operations_deals():
+    m = D.Bank(HERE / "fixtures" / "lens-bank").menu()
+    assert m["bank"]["bricks"] == 6
+    # the lens kind deals authors' view models (`lenses/`), never perspectives
+    assert m["lens"]["pool"] == 0

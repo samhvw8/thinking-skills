@@ -254,12 +254,12 @@ def test_unit_links_both_directions(layered):
 def test_views_show_parts_part_of_and_links(layered):
     ix_mod.main([str(layered), "--write"])
     whole = (layered / "bricks" / "sparse-overcomplete-code.md").read_text()
-    assert "- Parts by cut `default`: [quark-a](/bricks/quark-a.md), [quark-b](/bricks/quark-b.md)." in whole
+    assert "- Parts by lens `default`: [quark-a](/bricks/quark-a.md), [quark-b](/bricks/quark-b.md)." in whole
     assert "- Linked to [Fixed-basis transform" in whole and "via [quark-a](/bricks/quark-a.md): same split." in whole
     other = (layered / "bricks" / "fixed-basis-transform.md").read_text()
     assert "- Linked to [Sparse" in other
     mid = (layered / "bricks" / "quark-b.md").read_text()
-    assert "- Part of [" in mid and "- Parts by cut `default`: [string-c](/bricks/string-c.md)." in mid
+    assert "- Part of [" in mid and "- Parts by lens `default`: [string-c](/bricks/string-c.md)." in mid
 
 
 def test_part_entries_carry_how_in_frontmatter(layered):
@@ -269,7 +269,7 @@ def test_part_entries_carry_how_in_frontmatter(layered):
     assert ix["part_how"]["brick:pattern-z"] == {"brick:quark-b": "judge"}
     ix_mod.main([str(layered), "--write"])
     text = (layered / "bricks" / "pattern-z.md").read_text()
-    assert "- Parts by cut `default`: [quark-a](/bricks/quark-a.md), [quark-b](/bricks/quark-b.md) (judge: sits inside)." in text
+    assert "- Parts by lens `default`: [quark-a](/bricks/quark-a.md), [quark-b](/bricks/quark-b.md) (judge: sits inside)." in text
 
 
 # --- cuts: one unit split through several lenses ---
@@ -278,9 +278,9 @@ CUTS = HERE / "fixtures" / "cuts-bank"
 WHOLE = "brick:self-improve-from-own-samples"
 
 
-def test_parts_grouped_by_cut():
+def test_parts_grouped_by_lens_old_cut_files():
     ix = ix_mod.build(ix_mod.load(CUTS))
-    assert ix["part_cuts"][WHOLE] == {
+    assert ix["part_lenses"][WHOLE] == {
         "cost-flow": ["brick:generate-candidates", "brick:filter-bad-samples"],
         "data-path": ["brick:generate-candidates", "brick:score-samples", "brick:filter-bad-samples"],
     }
@@ -290,9 +290,9 @@ def test_parts_grouped_by_cut():
     assert ix["part_of"]["brick:generate-candidates"] == [WHOLE]
 
 
-def test_missing_cut_is_default(layered):
+def test_missing_lens_is_default(layered):
     ix = ix_mod.build(ix_mod.load(layered))
-    assert ix["part_cuts"]["brick:sparse-overcomplete-code"] == {"default": ["brick:quark-a", "brick:quark-b"]}
+    assert ix["part_lenses"]["brick:sparse-overcomplete-code"] == {"default": ["brick:quark-a", "brick:quark-b"]}
 
 
 def test_depth_takes_deepest_part_over_all_cuts():
@@ -302,21 +302,143 @@ def test_depth_takes_deepest_part_over_all_cuts():
     assert ix["depth"][WHOLE] == 2
 
 
-def test_view_has_one_line_per_cut_with_lens_named(tmp_path):
+def test_view_has_one_line_per_lens_with_lens_named(tmp_path):
     bank = tmp_path / "cuts"
     shutil.copytree(CUTS, bank)
     assert ix_mod.main([str(bank), "--write"]) == 0
     assert ix_mod.main([str(bank), "--check"]) == 0
     text = (bank / "bricks" / "self-improve-from-own-samples.md").read_text()
-    lines = [l for l in text.splitlines() if l.startswith("- Parts by cut ")]
+    lines = [l for l in text.splitlines() if l.startswith("- Parts by lens ")]
     assert lines == [
         # a cut that is a lens file links the lens
-        "- Parts by cut [Where does the cost go](/lenses/cost-flow.md): "
+        "- Parts by lens [Where does the cost go](/lenses/cost-flow.md): "
         "[generate-candidates](/bricks/generate-candidates.md) (split: most of the compute), "
         "[filter-bad-samples](/bricks/filter-bad-samples.md) (split).",
         # a cut with no lens file is named as written
-        "- Parts by cut `data-path`: [generate-candidates](/bricks/generate-candidates.md) (judge), "
+        "- Parts by lens `data-path`: [generate-candidates](/bricks/generate-candidates.md) (judge), "
         "[score-samples](/bricks/score-samples.md) (split), [filter-bad-samples](/bricks/filter-bad-samples.md).",
     ]
     part = (bank / "bricks" / "generate-candidates.md").read_text()
     assert part.count("- Part of [Self-improve from own samples]") == 1
+
+
+# --- lens on every operation; perspectives and operations (seeds + bank files); recipes ---
+
+LENSB = HERE / "fixtures" / "lens-bank"
+Q = "brick:answer-a-question"
+
+
+@pytest.fixture(scope="module")
+def lx():
+    return ix_mod.build(ix_mod.load(LENSB))
+
+
+def test_old_cut_and_new_lens_form_one_group(lx):
+    # step-a says `cut: data-path`, step-b says `lens: data-path`: one group
+    assert lx["part_lenses"][Q]["data-path"] == ["brick:step-a", "brick:step-b"]
+
+
+def test_lens_wins_over_cut(lx):
+    # step-c says both `lens: fault-tree` and `cut: data-path`
+    assert lx["part_lenses"][Q]["fault-tree"] == ["brick:step-c"]
+    assert "brick:step-c" not in lx["part_lenses"][Q]["data-path"]
+
+
+def test_new_types_load_and_seed_refs_are_not_broken(lx):
+    assert lx["counts"]["Perspective"] == 1 and lx["counts"]["Operation"] == 1
+    # a recipe step names seed operations (split, fuse, invert) and a perspective's part names a seed perspective
+    assert lx["broken_links"] == []
+    assert lx["part_of"]["perspective:fault-tree"] == ["perspective:what-goes-unchecked"]
+    assert lx["depth"]["operation:check-then-fuse"] == 1
+
+
+def test_recipe_steps_sorted_by_order_with_repeats(lx):
+    steps = lx["recipes"]["operation:check-then-fuse"]
+    assert [(s["step"], s["lens"]) for s in steps] == [
+        ("operation:split", "fault-tree"), ("operation:split", "what-goes-unchecked"),
+        ("operation:fuse", None), ("operation:invert", "fault-tree")]
+    # ordered steps are a recipe, not a lens group
+    assert "operation:check-then-fuse" not in lx["part_lenses"]
+
+
+def test_order_must_be_a_number(tmp_path):
+    bank = tmp_path / "bad"
+    (bank / "operations").mkdir(parents=True)
+    (bank / "operations" / "x.md").write_text("---\ntype: Operation\ntitle: X\nparts:\n  - { to: split, order: first }\n---\n")
+    with pytest.raises(SystemExit, match="order"):
+        ix_mod.build(ix_mod.load(bank))
+
+
+def by_id(rows):
+    return {r["id"]: r for r in rows}
+
+
+def test_perspective_uses_by_verb(lx):
+    p = by_id(lx["perspectives"])
+    # parts (split), a recipe step (split, invert) and a Mutations row (substitute-brick)
+    assert p["fault-tree"]["uses"] == {
+        "split": [Q, "operation:check-then-fuse"],
+        "invert": ["operation:check-then-fuse"],
+        "substitute-brick": ["card:toy-card"]}
+    assert p["fault-tree"]["seed"] and p["fault-tree"]["status"] == "tested"
+    assert p["guarantee-chain"]["uses"] == {"fuse": ["brick:fused-check"]}
+    assert p["what-goes-unchecked"]["file"] and not p["what-goes-unchecked"]["seed"]
+    # seeds come first, in the seed file's order; the owner's fear-first seed leads
+    assert lx["perspectives"][0]["id"] == "fault-tree"
+
+
+def test_join_and_old_bind_are_one_verb(lx):
+    o = by_id(lx["operations"])
+    assert o["join"]["uses"] == {"cost-share": ["brick:joined-pipeline"]}
+    assert "bind" not in o
+
+
+def test_fuse_records_lens(lx):
+    o = by_id(lx["operations"])
+    assert o["fuse"]["uses"] == {"guarantee-chain": ["brick:fused-check"], "no lens": ["operation:check-then-fuse"]}
+
+
+def test_move_and_mutation_rows_carry_lens(lx):
+    o = by_id(lx["operations"])
+    assert o["invert"]["uses"] == {"fault-tree": ["operation:check-then-fuse"], "what-could-break": ["move:invert-the-check"]}
+    # a backticked operator and a `-` lens cell are read as plain values
+    assert o["remove"]["uses"] == {"no lens": ["card:toy-card"]}
+    # judge and owner say who found a part, not which operation made it
+    assert "judge" not in o and not any(f["label"] == "judge" for f in lx["free_operations"])
+
+
+def test_free_labels_and_recurrence(lx):
+    free = {f["label"]: f for f in lx["free_lenses"]}
+    assert set(free) == {"cost-share", "data-path", "what-could-break"}
+    assert free["what-could-break"]["recurs"] and free["what-could-break"]["files"] == 2
+    assert free["what-could-break"]["uses"] == {"part": [Q], "invert": ["move:invert-the-check"]}
+    assert not free["cost-share"]["recurs"]
+    assert [f["label"] for f in lx["free_operations"]] == ["merge-sideways"]
+
+
+def test_report_lists_seeds_and_bank_files_together():
+    text = ix_mod.render(ix_mod.build(ix_mod.load(LENSB)))
+    assert "## Perspectives (seeds and bank files" in text
+    assert "- what-goes-unchecked (bank file, invented): for split: operation:check-then-fuse" in text
+    assert ("- check-then-fuse (bank file, invented, recipe: split through fault-tree, split through "
+            "what-goes-unchecked, fuse, invert through fault-tree): not used yet") in text
+    assert "- what-could-break: for invert: move:invert-the-check; for part: brick:answer-a-question -- RECURS in 2 files" in text
+
+
+def test_views_for_new_types_write_twice_then_check(tmp_path):
+    bank = tmp_path / "lens"
+    shutil.copytree(LENSB, bank)
+    assert ix_mod.main([str(bank), "--write"]) == 0
+    first = {p: p.read_text() for p in bank.rglob("*.md")}
+    assert ix_mod.main([str(bank), "--write"]) == 0
+    assert {p: p.read_text() for p in bank.rglob("*.md")} == first
+    assert ix_mod.main([str(bank), "--check"]) == 0
+    op = (bank / "operations" / "check-then-fuse.md").read_text()
+    assert ("- Steps in order: 1. `split` through `fault-tree`; 2. `split` through "
+            "[What goes unchecked](/perspectives/what-goes-unchecked.md); 3. `fuse`; 4. `invert` through `fault-tree`.") in op
+    per = (bank / "perspectives" / "what-goes-unchecked.md").read_text()
+    assert "- Used for `split` on [Check then fuse](/operations/check-then-fuse.md)." in per
+    # a part that is a seed perspective has no file, so it is named, not linked
+    assert "- Parts by lens `default`: `fault-tree` (split: a narrower form of it)." in per
+    q = (bank / "bricks" / "answer-a-question.md").read_text()
+    assert "- Parts by lens `data-path`: [Step a](/bricks/step-a.md) (split), [Step b](/bricks/step-b.md) (split)." in q
