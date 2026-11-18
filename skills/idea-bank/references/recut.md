@@ -4,19 +4,21 @@ Use this when someone asks to look at a brick again through a new angle: "by
 what question each part answers", "by where it can fail", "by who pays". The
 brick is most often a card's method brick, and the ask often comes in a later
 session. Formats are in `schema.md` (Parts and links); this file is the
-procedure.
+procedure. Its short form, five steps, is the Re-cut section of idea-mine's
+`SKILL.md`; this file adds the detail and works without idea-mine.
 
 ## 1. Find the whole and its cuts
 
 Find the card (`idea_search.py`, or the card titles) and open its method brick.
 Its `# Related` lists every cut it has; `idea_index.py <bank> --recuts` shows how
-they overlap. Never rewrite or relabel an old cut.
+they overlap.
 
 ## 2. The angle sets the cut; the registry only names it
 
 Write the angle in the asker's words. Cut where the angle says. Only then look
 for a label: a registry id from `idea_index.py <bank> --cuts` when one names this
-angle, else a new label checked against the labels in use. Never move a boundary
+angle, else a new label checked against the labels in use, with its question in
+each part entry's `note`. Never move a boundary
 to fit a registry kind: a generic cut (`functional`, `temporal`) is not the
 angle that was asked.
 
@@ -56,13 +58,13 @@ tell the asker in one line.
 
 ## 5. Write it
 
-- Each part entry: `{ to, how, cut, group }`. `group` names the piece's place
+- Each part entry: `{ to, how, cut, group }`, plus `note` for a new label. `group` names the piece's place
   under this angle in a few words: the question it answers, the stage, the risk.
 - On the method brick, add a `cuts` entry: `{ cut, angle, shows }`. `shows` is
   one line: what this cut shows that the other cuts do not.
 - Run `idea_index.py <bank> --write`. It puts a `# Cuts compared` table on the
   card, after the Recipe: a row per piece, a column per cut. Then run
-  `--recuts`. A `RE-TAG` or `NO NEW BOUNDARY` flag means step 4 failed: fix the
+  `--recuts`. A `RE-TAG` or `NO NEW BOUNDARY` flag means section 4 failed: fix the
   cut, or turn it into a note.
 
 ## 6. Reply

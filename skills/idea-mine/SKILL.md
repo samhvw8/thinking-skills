@@ -29,10 +29,26 @@ That is useless for recombination, for three reasons this skill fixes:
 - **A summary drops the raw.** Extracted facts lose nuance that later questions
   need. Keep the quotes each layer rests on in the card's `Raw` section.
 
-## Workflow (one source)
+## Re-cut
 
-Asked to see a method already in the bank another way? That is a re-cut:
-follow `../idea-bank/references/recut.md`, not these steps.
+Asked to look at a banked source by a new angle? That is a re-cut: do these
+steps, not the workflow.
+
+1. Re-read the source sections the angle needs before you cut (the local copy
+   or `resource` in the card's `# Raw`). If you cannot reach it, say so in the
+   reply.
+2. Cut from the source first, then compare with the old parts. The new cut must
+   split an old piece, merge pieces into one job, or add a piece the old cuts
+   lack; if it cannot, add a `notes` entry on the brick, not a cut.
+3. Label: a registry id (`idea_index.py <bank> --cuts`) or a new label, its
+   question in each part's `note`.
+4. Never change an old cut's entries.
+5. Run `idea_index.py <bank> --write`; paste the generated `# Cuts compared`
+   table into the reply, with plain-word titles.
+
+Detail: `../idea-bank/references/recut.md`.
+
+## Workflow (one source)
 
 1. **Get the raw material.** Full text first: Parallax `fetch_page` on the DOI,
    arXiv, PMC or publisher URL (read the outline, then sections). If it returns
