@@ -254,69 +254,224 @@ def test_unit_links_both_directions(layered):
 def test_views_show_parts_part_of_and_links(layered):
     ix_mod.main([str(layered), "--write"])
     whole = (layered / "bricks" / "sparse-overcomplete-code.md").read_text()
-    assert "- Parts by cut `default`: [quark-a](/bricks/quark-a.md), [quark-b](/bricks/quark-b.md)." in whole
+    assert "- Parts (no cut recorded): [quark-a](/bricks/quark-a.md), [quark-b](/bricks/quark-b.md)." in whole
     assert "- Linked to [Fixed-basis transform" in whole and "via [quark-a](/bricks/quark-a.md): same split." in whole
     other = (layered / "bricks" / "fixed-basis-transform.md").read_text()
     assert "- Linked to [Sparse" in other
     mid = (layered / "bricks" / "quark-b.md").read_text()
-    assert "- Part of [" in mid and "- Parts by cut `default`: [string-c](/bricks/string-c.md)." in mid
+    assert "- Part of [" in mid and "- Parts (no cut recorded): [string-c](/bricks/string-c.md)." in mid
+    assert "- Part of [Sparse" in mid and "(cut" not in mid  # an unlabelled part names no cut
 
 
 def test_part_entries_carry_how_in_frontmatter(layered):
     _brick(layered, "pattern-z", "parts:\n- quark-a\n- {to: quark-b, how: judge, note: sits inside}\n")
     ix = ix_mod.build(ix_mod.load(layered))
     assert ix["parts"]["brick:pattern-z"] == ["brick:quark-a", "brick:quark-b"]
-    assert ix["part_how"]["brick:pattern-z"] == {"brick:quark-b": "judge"}
+    assert ix["cut_how"]["brick:pattern-z"] == {"unlabelled": {"brick:quark-b": "judge"}}
     ix_mod.main([str(layered), "--write"])
     text = (layered / "bricks" / "pattern-z.md").read_text()
-    assert "- Parts by cut `default`: [quark-a](/bricks/quark-a.md), [quark-b](/bricks/quark-b.md) (judge: sits inside)." in text
+    assert "- Parts (no cut recorded): [quark-a](/bricks/quark-a.md), [quark-b](/bricks/quark-b.md) (judge: sits inside)." in text
 
 
-# --- cuts: one unit split through several lenses ---
+# --- cuts: one unit split by several kinds of cut (scissors), and bound (tape) ---
 
 CUTS = HERE / "fixtures" / "cuts-bank"
 WHOLE = "brick:self-improve-from-own-samples"
 
 
+@pytest.fixture
+def cuts_copy(tmp_path):
+    dst = tmp_path / "cuts"
+    shutil.copytree(CUTS, dst)
+    return dst
+
+
 def test_parts_grouped_by_cut():
     ix = ix_mod.build(ix_mod.load(CUTS))
     assert ix["part_cuts"][WHOLE] == {
-        "cost-flow": ["brick:generate-candidates", "brick:filter-bad-samples"],
-        "data-path": ["brick:generate-candidates", "brick:score-samples", "brick:filter-bad-samples"],
+        "cost": ["brick:generate-candidates", "brick:filter-bad-samples"],
+        "data-flow": ["brick:generate-candidates", "brick:score-samples", "brick:filter-bad-samples"],
     }
     # the distinct parts over all cuts, each once
     assert ix["parts"][WHOLE] == ["brick:generate-candidates", "brick:filter-bad-samples", "brick:score-samples"]
-    # a part in two cuts of one whole is part of it once
-    assert ix["part_of"]["brick:generate-candidates"] == [WHOLE]
+    # a part in two cuts of one whole is part of it once, and the cuts are named
+    assert ix["part_of_cuts"]["brick:generate-candidates"][WHOLE] == ["cost", "data-flow"]
 
 
-def test_missing_cut_is_default(layered):
+def test_how_is_kept_per_cut_in_json():
+    ix = ix_mod.build(ix_mod.load(CUTS))
+    # found by splitting under one cut and by a judge under another: both kept
+    assert ix["cut_how"][WHOLE]["cost"]["brick:generate-candidates"] == "split"
+    assert ix["cut_how"][WHOLE]["data-flow"]["brick:generate-candidates"] == "judge"
+    assert "brick:filter-bad-samples" not in ix["cut_how"][WHOLE]["data-flow"]  # no how written
+    assert "part_how" not in ix
+
+
+def test_missing_cut_is_unlabelled(layered):
     ix = ix_mod.build(ix_mod.load(layered))
-    assert ix["part_cuts"]["brick:sparse-overcomplete-code"] == {"default": ["brick:quark-a", "brick:quark-b"]}
+    assert ix["part_cuts"]["brick:sparse-overcomplete-code"] == {"unlabelled": ["brick:quark-a", "brick:quark-b"]}
+    assert ix["cuts"]["unlabelled_wholes"] == ["brick:quark-b", "brick:sparse-overcomplete-code"]
+    assert ix["cuts"]["labels"] == {}  # unlabelled is not a label
 
 
 def test_depth_takes_deepest_part_over_all_cuts():
     ix = ix_mod.build(ix_mod.load(CUTS))
-    # score-samples (depth 1) is only in the data-path cut; the cost-flow cut alone would give depth 1
+    # score-samples (depth 1) is only in the data-flow cut; the cost cut alone would give depth 1
     assert ix["depth"]["brick:score-samples"] == 1
     assert ix["depth"][WHOLE] == 2
 
 
-def test_view_has_one_line_per_cut_with_lens_named(tmp_path):
-    bank = tmp_path / "cuts"
-    shutil.copytree(CUTS, bank)
-    assert ix_mod.main([str(bank), "--write"]) == 0
-    assert ix_mod.main([str(bank), "--check"]) == 0
-    text = (bank / "bricks" / "self-improve-from-own-samples.md").read_text()
+def test_view_has_one_line_per_cut_with_cut_named(cuts_copy):
+    assert ix_mod.main([str(cuts_copy), "--write"]) == 0
+    assert ix_mod.main([str(cuts_copy), "--check"]) == 0
+    text = (cuts_copy / "bricks" / "self-improve-from-own-samples.md").read_text()
     lines = [l for l in text.splitlines() if l.startswith("- Parts by cut ")]
     assert lines == [
-        # a cut that is a lens file links the lens
-        "- Parts by cut [Where does the cost go](/lenses/cost-flow.md): "
-        "[generate-candidates](/bricks/generate-candidates.md) (split: most of the compute), "
+        "- Parts by cut `cost`: [generate-candidates](/bricks/generate-candidates.md) (split: most of the compute), "
         "[filter-bad-samples](/bricks/filter-bad-samples.md) (split).",
-        # a cut with no lens file is named as written
-        "- Parts by cut `data-path`: [generate-candidates](/bricks/generate-candidates.md) (judge), "
+        "- Parts by cut `data-flow`: [generate-candidates](/bricks/generate-candidates.md) (judge), "
         "[score-samples](/bricks/score-samples.md) (split), [filter-bad-samples](/bricks/filter-bad-samples.md).",
     ]
-    part = (bank / "bricks" / "generate-candidates.md").read_text()
-    assert part.count("- Part of [Self-improve from own samples]") == 1
+    part = (cuts_copy / "bricks" / "generate-candidates.md").read_text()
+    # "Part of" names the cuts the part belongs under
+    assert "- Part of [Self-improve from own samples](/bricks/self-improve-from-own-samples.md) (cuts `cost`, `data-flow`)." in part
+    assert "- Part of [Generate, then keep the good ones](/bricks/generate-then-filter.md) (cut `functional`)." in part
+
+
+# --- the cut registry and the Cuts report ---
+
+def test_registry_holds_decompositions_and_idea_cuts():
+    reg = ix_mod.load_registry()
+    for i in ("functional", "temporal", "data-flow", "risk", "failure-mode", "constraint", "value-chain",
+              "cost", "causal-chain", "evidence-role"):
+        assert i in reg
+    assert ix_mod.CUTS_FILE.parent.name == "references"  # read from this skill's own built copy
+
+
+def test_registry_id_clash_crashes(tmp_path):
+    f = tmp_path / "cuts.json"
+    f.write_text(json.dumps({"decompositions": [{"id": "cost", "name": "A", "how": "x"}],
+                             "cuts": [{"id": "cost", "name": "B", "how": "y"}]}))
+    with pytest.raises(SystemExit):
+        ix_mod.load_registry(f)
+    with pytest.raises(SystemExit):
+        ix_mod.load_registry(tmp_path / "missing.json")
+
+
+def test_cuts_report_counts_registry_labels():
+    cu = ix_mod.build(ix_mod.load(CUTS))["cuts"]
+    assert cu["labels"] == {"cost": {"wholes": 1, "parts": 2, "registry": True},
+                            "data-flow": {"wholes": 1, "parts": 3, "registry": True},
+                            "functional": {"wholes": 1, "parts": 2, "registry": True}}
+    assert cu["unregistered"] == [] and cu["near_duplicates"] == []
+
+
+# Labels the review found drifting in real runs: one view, several spellings.
+DRIFT = ["data-path", "goal-path", "measurement-path", "compute-cost", "cost-terms", "cost-flow", "causal",
+         "lens:cost-flow", "score-samples"]
+
+
+def test_cuts_report_flags_drift_and_unregistered_labels(cuts_copy):
+    parts = "".join(f"  - {{ to: generate-candidates, how: split, cut: '{c}' }}\n" for c in DRIFT)
+    _brick(cuts_copy, "drifty", "parts:\n" + parts)
+    cu = ix_mod.build(ix_mod.load(cuts_copy))["cuts"]
+    pairs = {(n["a"], n["b"]) for n in cu["near_duplicates"]}
+    for pair in [("data-flow", "data-path"), ("data-path", "goal-path"), ("data-path", "measurement-path"),
+                 ("goal-path", "measurement-path"), ("compute-cost", "cost"), ("cost", "cost-terms"),
+                 ("cost", "cost-flow"), ("causal", "causal-chain")]:
+        assert pair in pairs, pair
+    # two registry kinds are never flagged against each other
+    assert ("cost", "value-chain") not in pairs
+    # a prefixed label and a label that names a brick are not cut kinds
+    assert {"lens:cost-flow", "score-samples", "data-path"} <= set(cu["unregistered"])
+    assert "cost" not in cu["unregistered"]
+
+
+def test_cli_cuts_lists_registry_with_questions(capsys):
+    assert ix_mod.main([str(CUTS), "--cuts"]) == 0
+    out = capsys.readouterr().out
+    assert "- cost: Decompose by where the cost goes" in out
+    assert "- data-flow (NOT" not in out and "- data-flow: 1 whole(s)" in out
+
+
+def test_cli_prints_cuts_report(capsys):
+    assert ix_mod.main([str(CUTS)]) == 0
+    out = capsys.readouterr().out
+    assert "## Cuts" in out and "- registry: " in out and "causal-chain" in out
+    assert "- in use: data-flow (registry): 1 whole(s), 3 part(s)" in out
+    assert "- bound (how: bind): brick:generate-then-filter under functional" in out
+
+
+# --- tape: a bigger brick bound from existing bricks ---
+
+def test_bind_records_a_whole_made_from_existing_bricks(cuts_copy):
+    ix = ix_mod.build(ix_mod.load(cuts_copy))
+    w = "brick:generate-then-filter"
+    assert ix["parts"][w] == ["brick:generate-candidates", "brick:filter-bad-samples"]
+    assert ix["cuts"]["binds"] == {w: ["functional"]}
+    assert ix["cut_how"][w]["functional"]["brick:filter-bad-samples"] == "bind"
+    assert w in ix["part_of"]["brick:generate-candidates"]
+    ix_mod.main([str(cuts_copy), "--write"])
+    text = (cuts_copy / "bricks" / "generate-then-filter.md").read_text()
+    assert ("- Parts by cut `functional`: [generate-candidates](/bricks/generate-candidates.md) (bind: recurs in two sources), "
+            "[filter-bad-samples](/bricks/filter-bad-samples.md) (bind).") in text
+
+
+# --- the card points to its method brick; its Recipe renders one cut ---
+
+def test_card_method_and_recipe_in_step(cuts_copy):
+    ix = ix_mod.build(ix_mod.load(cuts_copy))
+    assert ix["cards_without_method"] == []
+    assert ix["recipe_drift"] == []
+    assert "self-training-card" in ix["links"]["self-improve-from-own-samples"]  # method counts as a card brick
+    assert ix["one_way_links"] == [] and ix["broken_links"] == []
+    ix_mod.main([str(cuts_copy), "--write"])
+    card = (cuts_copy / "cards" / "self-training-card.md").read_text()
+    assert "- Method brick [Self-improve from own samples](/bricks/self-improve-from-own-samples.md)." in card
+    assert card.count("self-improve-from-own-samples.md") == 1  # not listed again as a plain brick
+    whole = (cuts_copy / "bricks" / "self-improve-from-own-samples.md").read_text()
+    assert "- Method of [Self-training card](/cards/self-training-card.md)." in whole
+
+
+def test_recipe_out_of_step_is_reported(cuts_copy):
+    p = cuts_copy / "cards" / "self-training-card.md"
+    p.write_text(p.read_text().replace("Cut: `data-flow`", "Cut: cost"))
+    d = ix_mod.build(ix_mod.load(cuts_copy))["recipe_drift"]
+    assert d == [{"card": "self-training-card", "method": "self-improve-from-own-samples", "cut": "cost",
+                  "only_in_recipe": ["score-samples"], "only_in_parts": []}]
+    p.write_text(p.read_text().replace("Cut: cost\n", ""))
+    assert ix_mod.build(ix_mod.load(cuts_copy))["recipe_drift"][0]["cut"] is None
+
+
+def test_missing_method_brick_is_a_broken_link(cuts_copy):
+    p = cuts_copy / "cards" / "self-training-card.md"
+    p.write_text(p.read_text().replace("method: self-improve-from-own-samples", "method: no-such-method"))
+    ix = ix_mod.build(ix_mod.load(cuts_copy))
+    assert {"from": "card:self-training-card", "to": "brick:no-such-method"} in ix["broken_links"]
+
+
+def test_older_cards_without_method_still_index(ix):
+    # the fixture bank keeps the older shape: no method, Recipe table with no Cut line
+    assert ix["cards_without_method"] == ["gene-programs", "jpeg", "ksvd-2006", "olshausen-field-1996",
+                                          "sae-features", "sleep-gate"]
+    assert ix["recipe_drift"] == []
+
+
+# --- edge cases the review listed ---
+
+def test_cycle_that_closes_only_across_two_cuts(cuts_copy):
+    # generate-candidates contains the whole under one cut; the whole contains it under another
+    p = cuts_copy / "bricks" / "generate-candidates.md"
+    p.write_text(p.read_text().replace("cards: [self-training-card]\n",
+                                       "cards: [self-training-card]\nparts:\n  - { to: self-improve-from-own-samples, cut: temporal }\n"))
+    cyc = ix_mod.build(ix_mod.load(cuts_copy))["part_cycles"]
+    assert any(set(c) == {WHOLE, "brick:generate-candidates"} for c in cyc)
+
+
+def test_same_part_twice_in_one_cut_counts_once(cuts_copy):
+    _brick(cuts_copy, "twice", "parts:\n  - { to: score-samples, how: split, cut: cost }\n"
+                               "  - { to: score-samples, how: judge, cut: cost }\n")
+    ix = ix_mod.build(ix_mod.load(cuts_copy))
+    assert ix["part_cuts"]["brick:twice"] == {"cost": ["brick:score-samples"]}
+    assert ix["cut_how"]["brick:twice"]["cost"] == {"brick:score-samples": "split"}  # the first entry wins
+    assert ix["cuts"]["labels"]["cost"]["parts"] == 3

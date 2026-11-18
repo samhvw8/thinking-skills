@@ -4,4 +4,5 @@ title: generate-candidates
 description: d
 roles: [r-generate-candidates]
 fields: [machine-learning]
+cards: [self-training-card]
 ---

@@ -2,11 +2,13 @@
 # requires-python = ">=3.10"
 # dependencies = ["pyyaml>=6"]
 # ///
-"""Index an idea bank: links, convergence, migration-gap candidates, known-bricks coverage.
+"""Index an idea bank: links, convergence, migration-gap candidates, cuts, known-bricks coverage.
 
-Usage: uv run idea_index.py <bank-root> [--json out.json] [--suggest-merges] [--write | --check]
+Usage: uv run idea_index.py <bank-root> [--json out.json] [--suggest-merges] [--write | --check | --cuts]
 
 Deterministic and offline. Gap candidates are a list for judgement, not findings.
+The Cuts report checks every `cut` label against the cut registry (references/cuts.json, built from the
+repo's decks) and the labels already in the bank, and lists near-duplicate labels.
 --write regenerates the views made from frontmatter (including `parts` and `links`): a `# Related` section in every
 brick, card, lens and move, and `bricks/index.md`. It also moves a frontmatter
 `signature` into the body. --check exits 1 when any of these is out of date.
@@ -61,16 +63,35 @@ def load(root: Path) -> list[dict]:
 
 
 UNIT_TYPES = {"brick": "Brick", "lens": "Lens", "card": "Idea Card"}  # bare slugs resolve in this order
-DEFAULT_CUT = "default"  # the cut of a `parts` entry that names no lens
+UNLABELLED = "unlabelled"  # the cut of a `parts` entry that names none (older banks); not a preferred view
+CUTS_FILE = Path(__file__).resolve().parent.parent / "references" / "cuts.json"
+
+
+def load_registry(path: Path = CUTS_FILE) -> dict[str, str]:
+    """Cut kinds: {id: how to cut} from the built registry (decompositions + idea cuts). Missing or clashing ids crash."""
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as e:
+        raise SystemExit(f"idea_index: cannot read the cut registry {path}: {e}")
+    reg: dict[str, str] = {}
+    for key in ("decompositions", "cuts"):
+        for e in data.get(key) or []:
+            if e["id"] in reg:
+                raise SystemExit(f"idea_index: cut registry id '{e['id']}' appears twice")
+            reg[e["id"]] = e.get("how") or e.get("name") or e["id"]
+    if not reg:
+        raise SystemExit(f"idea_index: the cut registry {path} is empty")
+    return reg
 
 
 def unit_graph(concepts: list[dict]) -> dict:
     """`parts` (split / bind) and `links` (connect without merging) across bricks, lenses and cards.
 
-    Each `parts` entry belongs to a cut: the lens it was split through (`cut`, else `default`).
-    A unit may hold several cuts side by side. Depth is relative and computed: a unit with no
-    parts is 0, a whole is 1 + its deepest part over all cuts. Nothing stores a level name, so a
-    unit split further later needs no relabelling.
+    Each `parts` entry belongs to a cut: the kind of cut it was split by or bound under (`cut`, else
+    `unlabelled`). A unit may hold several cuts side by side. `how: bind` marks a whole made by
+    binding existing bricks (tape); `split` marks parts found by cutting (scissors): one record, two
+    directions. Depth is relative and computed: a unit with no parts is 0, a whole is 1 + its deepest
+    part over all cuts. Nothing stores a level name, so a unit split further later needs no relabelling.
     """
     live = {f"{k}:{c['slug']}": c for c in concepts for k, t in UNIT_TYPES.items()
             if c["fm"]["type"] == t and c["fm"].get("status") != "deprecated"}
@@ -82,28 +103,34 @@ def unit_graph(concepts: list[dict]) -> dict:
         return next((f"{k}:{ref}" for k in UNIT_TYPES if f"{k}:{ref}" in live), None)
 
     parts: dict[str, list[str]] = {}  # whole -> distinct parts over all cuts (depth uses this)
-    part_cuts: dict[str, dict[str, list[str]]] = {}  # whole -> cut (lens) -> parts, in frontmatter order
-    cut_how: dict[str, dict[tuple[str, str], str]] = {}  # whole -> (cut, part) -> "how: note"
-    part_how: dict[str, dict[str, str]] = {}  # whole -> part -> "how: note", for parts that say how they were found
+    part_cuts: dict[str, dict[str, list[str]]] = {}  # whole -> cut -> parts, in frontmatter order
+    cut_how: dict[str, dict[str, dict[str, str]]] = {}  # whole -> cut -> part -> "how: note"
     part_of: dict[str, set[str]] = defaultdict(set)
+    part_of_cuts: dict[str, dict[str, list[str]]] = defaultdict(dict)  # part -> whole -> cuts it is in
+    binds: dict[str, list[str]] = {}  # whole -> cuts that hold a `how: bind` entry
+    cut_entries: list[tuple[str, str]] = []  # (whole, cut) for every resolved entry, for the Cuts report
     links, broken = [], []
     for key, c in sorted(live.items()):
         ps, cuts = [], {}
         for entry in as_list(c["fm"].get("parts")):
             entry = entry if isinstance(entry, dict) else {"to": entry}
             ref = entry.get("to", "")
-            cut = str(entry.get("cut") or DEFAULT_CUT)
+            cut = str(entry.get("cut") or UNLABELLED)
             r = resolve(ref)
             if r:
                 if r not in ps:
                     ps.append(r)
-                if r not in cuts.setdefault(cut, []):
-                    cuts[cut].append(r)
+                if r in cuts.setdefault(cut, []):
+                    continue  # the same part twice in one cut counts once; the first entry wins
+                cuts[cut].append(r)
+                cut_entries.append((key, cut))
                 part_of[r].add(key)
+                part_of_cuts[r].setdefault(key, []).append(cut)
                 if entry.get("how"):
                     how = str(entry["how"]) + (f": {entry['note']}" if entry.get("note") else "")
-                    cut_how.setdefault(key, {})[(cut, r)] = how
-                    part_how.setdefault(key, {}).setdefault(r, how)
+                    cut_how.setdefault(key, {}).setdefault(cut, {})[r] = how
+                    if str(entry["how"]) == "bind" and cut not in binds.setdefault(key, []):
+                        binds[key].append(cut)
             else:
                 broken.append({"from": key, "to": f"part:{ref}"})
         if ps:
@@ -142,8 +169,10 @@ def unit_graph(concepts: list[dict]) -> dict:
 
     for k in sorted(set(parts) | set(part_of)):
         visit(k, [])
-    return {"parts": parts, "part_cuts": part_cuts, "cut_how": cut_how, "part_how": part_how,
+    return {"parts": parts, "part_cuts": part_cuts, "cut_how": cut_how, "binds": binds,
             "part_of": {k: sorted(v) for k, v in sorted(part_of.items())},
+            "part_of_cuts": {k: dict(sorted(v.items())) for k, v in sorted(part_of_cuts.items())},
+            "cut_entries": cut_entries,
             "depth": dict(sorted(depth.items())), "part_cycles": cycles, "unit_links": links, "broken": broken}
 
 
@@ -235,7 +264,75 @@ def suggest_merges(concepts: list[dict], min_jaccard: float = 0.5, min_ratio: fl
     return out
 
 
-def build(concepts: list[dict]) -> dict:
+SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+CUT_LINE_RE = re.compile(r"^Cut:\s*`?([^`\s]+)`?", re.M)
+
+
+def recipe(body: str) -> tuple[str | None, list[str]]:
+    """The `Cut:` label and the brick slugs of a card's `# Recipe ...` section (cells that are not slugs are skipped)."""
+    text, inside = [], False
+    for line in body.splitlines():
+        if line.startswith("# "):
+            if inside:
+                break
+            inside = line[2:].strip().lower().startswith("recipe")
+            continue
+        if inside:
+            text.append(line)
+    section = "\n".join(text)
+    m = CUT_LINE_RE.search(section)
+    slugs, header = [], None
+    for line in section.splitlines():
+        if not line.strip().startswith("|"):
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if header is None:
+            header = [c.lower() for c in cells]
+            continue
+        if set("".join(cells)) <= set("-: "):
+            continue
+        col = next((i for i, h in enumerate(header) if h.startswith("brick")), None)
+        cell = cells[col].strip("` ") if col is not None and col < len(cells) else ""
+        if SLUG_RE.match(cell) and cell not in slugs:
+            slugs.append(cell)
+    return (m.group(1) if m else None), slugs
+
+
+def cut_tokens(label: str) -> set[str]:
+    return {t for t in label.lower().split("-") if t and t not in STOP | {"vs", "by"}}
+
+
+def cut_report(g: dict, registry: dict[str, str]) -> dict:
+    """Cut labels in use, which are registry kinds, and near-duplicate labels (a list for judgement)."""
+    wholes: dict[str, set[str]] = defaultdict(set)
+    entries: dict[str, int] = defaultdict(int)
+    for whole, cut in g["cut_entries"]:
+        wholes[cut].add(whole)
+        entries[cut] += 1
+    unlabelled = sorted(wholes.pop(UNLABELLED, set()))
+    entries.pop(UNLABELLED, None)
+    labels = {c: {"wholes": len(ws), "parts": entries[c], "registry": c in registry}
+              for c, ws in sorted(wholes.items())}
+    near = []
+    pool = sorted(set(labels) | set(registry))
+    for i, a in enumerate(pool):
+        for b in pool[i + 1:]:
+            if a in registry and b in registry:
+                continue  # registry kinds are distinct on purpose
+            if a not in labels and b not in labels:
+                continue
+            shared = sorted(cut_tokens(a) & cut_tokens(b))
+            ratio = difflib.SequenceMatcher(None, a, b).ratio()
+            if shared or ratio >= 0.8:
+                near.append({"a": a, "b": b, "shared": shared, "ratio": round(ratio, 2)})
+    return {"registry": sorted(registry), "labels": labels,
+            "unregistered": sorted(c for c in labels if c not in registry),
+            "unlabelled_wholes": unlabelled, "near_duplicates": near,
+            "binds": {w: cs for w, cs in sorted(g["binds"].items())}}
+
+
+def build(concepts: list[dict], registry: dict[str, str] | None = None) -> dict:
+    registry = load_registry() if registry is None else registry
     by_type: dict[str, dict[str, dict]] = defaultdict(dict)
     for c in concepts:
         by_type[c["fm"]["type"]][c["slug"]] = c
@@ -255,9 +352,16 @@ def build(concepts: list[dict]) -> dict:
     def fields_of(slug: str) -> set[str]:
         return brick_fields(bricks[slug], moved, slug)
 
+    def card_bricks(fm: dict) -> list[str]:
+        """The card's `bricks` plus its `method` brick (the whole the cuts hang on), each once."""
+        out = list(dict.fromkeys(as_list(fm.get("bricks"))))
+        if fm.get("method") and fm["method"] not in out:
+            out.append(fm["method"])
+        return out
+
     broken, one_way = [], []
     for cs, fm in cards.items():
-        for a in as_list(fm.get("bricks")):
+        for a in card_bricks(fm):
             if a not in bricks:
                 broken.append({"from": f"card:{cs}", "to": f"brick:{a}"})
             elif cs not in as_list(bricks[a].get("cards")):
@@ -274,7 +378,7 @@ def build(concepts: list[dict]) -> dict:
             if fm.get(key) and fm[key] not in bricks:
                 broken.append({"from": f"move:{ms}", "to": f"brick:{fm[key]}"})
 
-    links = {a: sorted(set(as_list(fm.get("cards"))) | {cs for cs, cfm in cards.items() if a in as_list(cfm.get("bricks"))})
+    links = {a: sorted(set(as_list(fm.get("cards"))) | {cs for cs, cfm in cards.items() if a in card_bricks(cfm)})
              for a, fm in bricks.items()}
     by_field_count = sorted(({"brick": a, "fields": sorted(fields_of(a))} for a in bricks),
                             key=lambda r: (-len(r["fields"]), r["brick"]))
@@ -343,12 +447,33 @@ def build(concepts: list[dict]) -> dict:
     g = unit_graph(concepts)
     broken += g["broken"]
 
+    # The card points to its method brick; the Recipe table renders one named cut of it.
+    old_shape, recipe_drift = [], []
+    for cs, c in sorted(by_type["Idea Card"].items()):
+        method = c["fm"].get("method")
+        if not method:
+            old_shape.append(cs)
+            continue
+        if method not in bricks:
+            continue  # reported as a broken link above
+        cut, rows = recipe(c["body"])
+        have = [p.split(":", 1)[1] for p in g["part_cuts"].get(f"brick:{method}", {}).get(cut or "", [])]
+        if cut is None or set(rows) != set(have):
+            recipe_drift.append({"card": cs, "method": method, "cut": cut,
+                                 "only_in_recipe": sorted(set(rows) - set(have)),
+                                 "only_in_parts": sorted(set(have) - set(rows))})
+
     return {
         "counts": {t: len(v) for t, v in sorted(by_type.items())},
         "parts": g["parts"],
         "part_cuts": g["part_cuts"],
-        "part_how": {w: {p: h.split(":", 1)[0] for p, h in d.items()} for w, d in g["part_how"].items()},
+        "cut_how": {w: {c: {p: h.split(":", 1)[0] for p, h in d.items()} for c, d in cs.items()}
+                    for w, cs in g["cut_how"].items()},
         "part_of": g["part_of"],
+        "part_of_cuts": g["part_of_cuts"],
+        "cuts": cut_report(g, registry),
+        "cards_without_method": old_shape,
+        "recipe_drift": recipe_drift,
         "depth": g["depth"],
         "part_cycles": g["part_cycles"],
         "unit_links": g["unit_links"],
@@ -382,11 +507,30 @@ def render(ix: dict) -> str:
     out += ["## Migrate-brick moves"] + ([f"- {m['move']}: {m['brick']} {m['from_field']} -> {m['to_field']}" for m in ix["migrate_brick_moves"]] or ["- none"]) + [""]
     out += ["## Low-confidence matches (review)"] + ([f"- {m['brick']} in {m['field']} ({m['source']})" for m in ix["low_confidence_matches"]] or ["- none"]) + [""]
     deep = sorted(ix["depth"].items(), key=lambda kv: (-kv[1], kv[0]))
-    out += ["## Parts (depth is relative: 0 = no parts yet)"] + (
+    out += ["## Parts (depth is relative and taken over all cuts: 0 = no parts yet)"] + (
         [f"- {k}: depth {d}, {len(ix['parts'].get(k, []))} parts in {len(ix['part_cuts'].get(k, {}))} cut(s), "
          f"part of {len(ix['part_of'].get(k, []))}" for k, d in deep[:15]]
         + ([f"- ... {len(deep) - 15} more"] if len(deep) > 15 else []) or ["- none"]) + [""]
     out += ["## Part cycles (fix: a unit cannot contain itself)"] + ([f"- {' -> '.join(c)}" for c in ix["part_cycles"]] or ["- none"]) + [""]
+    cu = ix["cuts"]
+    out += ["## Cuts (check a new label against the registry and the labels in use)",
+            "- registry: " + ", ".join(cu["registry"])]
+    out += [f"- in use: {c} ({'registry' if r['registry'] else 'NOT in registry'}): {r['wholes']} whole(s), {r['parts']} part(s)"
+            for c, r in cu["labels"].items()] or ["- in use: none"]
+    if cu["unlabelled_wholes"]:
+        out.append(f"- unlabelled: {len(cu['unlabelled_wholes'])} whole(s) have parts that name no cut (older shape)")
+    out += [f"- near-duplicate: {n['a']} ~ {n['b']} (" + (f"shares {', '.join(n['shared'])}" if n["shared"] else f"ratio {n['ratio']}") + ")"
+            for n in cu["near_duplicates"]]
+    out += [f"- bound (how: bind): {w} under {', '.join(cs)}" for w, cs in cu["binds"].items()]
+    out += [""]
+    out += [f"## Cards without a method brick (older shape): {len(ix['cards_without_method'])}"] + (
+        [f"- {', '.join(ix['cards_without_method'][:15])}" + (f", ... {len(ix['cards_without_method']) - 15} more" if len(ix['cards_without_method']) > 15 else "")]
+        if ix["cards_without_method"] else ["- none"]) + [""]
+    out += ["## Recipe out of step with its cut (fix the table or the method brick's parts)"] + (
+        [f"- {d['card']}: method {d['method']}, cut {d['cut'] or '(no Cut: line)'}"
+         + (f"; only in recipe: {', '.join(d['only_in_recipe'])}" if d["only_in_recipe"] else "")
+         + (f"; only in parts: {', '.join(d['only_in_parts'])}" if d["only_in_parts"] else "")
+         for d in ix["recipe_drift"]] or ["- none"]) + [""]
     out += [f"## Unit links: {len(ix['unit_links'])}", ""]
     out += ["## Constraints of the time"] + ([f"- {c}: {', '.join(cs)}" for c, cs in ix["constraints"].items()] or ["- none"]) + [""]
     out += ["## Evidence limits"] + ([f"- {c}: {', '.join(cs)}" for c, cs in ix["evidence_limits"].items()] or ["- none"]) + [""]
@@ -435,8 +579,12 @@ def views(concepts: list[dict], prefix: str) -> dict[str, str]:
                 role_bricks[r].append(s)
 
     card_bricks: dict[str, set[str]] = defaultdict(set)   # union of both directions
+    method_of: dict[str, list[str]] = defaultdict(list)   # brick -> cards whose method it is
     for cs, c in by["Idea Card"].items():
         card_bricks[cs] |= set(as_list(c["fm"].get("bricks")))
+        if c["fm"].get("method"):
+            card_bricks[cs].add(c["fm"]["method"])
+            method_of[c["fm"]["method"]].append(cs)
     for s, fm in bricks.items():
         for cs in as_list(fm.get("cards")):
             card_bricks[cs].add(s)
@@ -462,7 +610,11 @@ def views(concepts: list[dict], prefix: str) -> dict[str, str]:
     for s, fm in sorted(bricks.items()):
         lines = out[f"bricks/{s}"]
         role_in = {m.get("source"): m.get("role") for m in as_list(fm.get("migrations")) if isinstance(m, dict)}
-        for cs in sorted(brick_cards[s]):
+        for cs in sorted(method_of.get(s, [])):
+            l = ln("Idea Card", cs)
+            if l:
+                lines.append(f"- Method of {l}.")
+        for cs in sorted(brick_cards[s] - set(method_of.get(s, []))):
             l = ln("Idea Card", cs)
             if l:
                 field = by["Idea Card"][cs]["fm"].get("field")
@@ -476,7 +628,10 @@ def views(concepts: list[dict], prefix: str) -> dict[str, str]:
             lines.append(f"- Move {ln('Move', ms)} ({mfm.get('move_type', 'move')}, {how}).")
     for cs, c in sorted(by["Idea Card"].items()):
         fm, lines = c["fm"], out[f"cards/{cs}"]
-        for a in sorted(card_bricks[cs]):
+        if fm.get("method"):
+            l = ln("Brick", fm["method"])
+            lines.append(f"- Method brick {l}." if l else f"- Method brick `{fm['method']}` (no file yet).")
+        for a in sorted(card_bricks[cs] - {fm.get("method")}):
             l = ln("Brick", a)
             lines.append(f"- Brick {l}." if l else f"- Brick `{a}` (no file yet).")
         for l in sorted(set(as_list(fm.get("lenses"))) | {x for x, cc in lens_cards.items() if cs in cc}):
@@ -520,12 +675,15 @@ def views(concepts: list[dict], prefix: str) -> dict[str, str]:
         return ln(kt[k], slug) or f"`{slug}`"
     for key, cuts in g["part_cuts"].items():
         how = g["cut_how"].get(key, {})
-        for cut, ps in cuts.items():  # one line per cut, the lens named (linked when it is a lens file)
-            lens = ln("Lens", cut) or f"`{cut}`"
-            out[at(key)].append(f"- Parts by cut {lens}: " + ", ".join(
-                lk(p) + (f" ({how[(cut, p)]})" if (cut, p) in how else "") for p in ps) + ".")
-    for key, wholes in g["part_of"].items():
-        out[at(key)] += [f"- Part of {lk(w)}." for w in wholes]
+        for cut, ps in cuts.items():  # one line per cut, the cut named
+            head = "- Parts (no cut recorded): " if cut == UNLABELLED else f"- Parts by cut `{cut}`: "
+            out[at(key)].append(head + ", ".join(
+                lk(p) + (f" ({how[cut][p]})" if p in how.get(cut, {}) else "") for p in ps) + ".")
+    for key, wholes in g["part_of_cuts"].items():
+        for w, cuts in wholes.items():
+            named = [c for c in cuts if c != UNLABELLED]
+            tail = f" (cut{'s' if len(named) > 1 else ''} {', '.join(f'`{c}`' for c in named)})" if named else ""
+            out[at(key)].append(f"- Part of {lk(w)}{tail}.")
     for l in g["unit_links"]:
         tail = (f" via {lk(l['via'])}" if l["via"] else "") + (f": {l['note']}" if l["note"] else "") + "."
         out[at(l["a"])].append(f"- Linked to {lk(l['b'])}{tail}")
@@ -631,6 +789,8 @@ def main(argv: list[str] | None = None) -> int:
     mode.add_argument("--write", action="store_true",
                       help="regenerate # Related sections and bricks/index.md; move frontmatter signatures to the body")
     mode.add_argument("--check", action="store_true", help="exit 1 when generated views are out of date")
+    mode.add_argument("--cuts", action="store_true",
+                      help="print the cut registry (id: how to cut) and the cut labels in use; run it before you write a cut")
     args = ap.parse_args(argv)
     if not args.root.is_dir():
         print(f"idea_index: {args.root} is not a directory", file=sys.stderr)
@@ -641,6 +801,14 @@ def main(argv: list[str] | None = None) -> int:
         print(f"idea_index: {len(changed)} file(s) {verb}" + "".join(f"\n  {p}" for p in changed))
         return 1 if (args.check and changed) else 0
     concepts = load(args.root)
+    if args.cuts:
+        reg = load_registry()
+        cu = build(concepts, reg)["cuts"]
+        sys.stdout.write("# Cut registry\n" + "".join(f"- {i}: {h}\n" for i, h in sorted(reg.items())))
+        sys.stdout.write("\n# Labels in use\n" + ("".join(
+            f"- {c}{'' if r['registry'] else ' (NOT in registry)'}: {r['wholes']} whole(s)\n"
+            for c, r in cu["labels"].items()) or "- none\n"))
+        return 0
     ix = build(concepts)
     if args.suggest_merges:
         ix["merge_suggestions"] = suggest_merges(concepts)
