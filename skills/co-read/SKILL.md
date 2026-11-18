@@ -1,6 +1,6 @@
 ---
 name: co-read
-description: "Read one paper, journal article, article or social post together with the owner, idea-first instead of verification-first: what the authors believed and intended, the bricks of their recipe by the job each does, the limits of their time, the gems, and what to reuse or change. Two modes: brief (the default: Claude explains, the owner asks) and deep (only after the owner turns on present mode with /idea-present: they do the generative steps, Claude guides, reviews and runs experiments). Use when the owner picks a source to read with them, says 'read this together', 'brief this', 'co-read', 'go deep on this paper', opens a scout card, or asks what the idea behind a source is and what we can build from it. Not for judging whether a study is trustworthy (paper-appraisal), breaking sources into bricks without the owner (idea-mine) or sweeping many sources (idea-scout)."
+description: "Read one paper, article or social post together with the owner, idea-first instead of verification-first: what the authors believed and intended, the bricks of their recipe by the job each does, the limits of their time, the gems, and what to reuse or change. Two modes: brief (the default: Claude explains, the owner asks) and deep (present mode only, after /idea-present: the owner does the generative steps, Claude guides, reviews and runs experiments). Use when the owner picks a source to read with them, says 'read this together', 'brief this', 'co-read', 'go deep on this paper', opens a scout card, or asks what the idea behind a source is and what we can build from it. Not for judging whether a study is trustworthy (paper-appraisal), breaking sources into bricks without the owner (idea-mine) or sweeping many sources (idea-scout)."
 ---
 
 # Co-read
@@ -134,7 +134,7 @@ Details in `references/session-close.md`.
 ## Anti-patterns
 
 - Summarising the source before the owner has guessed. It anchors them.
-- A brief that introduces five new bricks at once. The owner cannot absorb it; two at most.
+- A brief that introduces five new ideas at once. The owner cannot absorb it; two at most.
 - Margin notes that only praise or only restate. Each note names a gem type or
   is cut.
 - Treating weak evidence as a reason to drop an idea. Evidence is a tag; a wrong

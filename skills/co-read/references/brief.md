@@ -94,8 +94,9 @@ passages you hold, and check against them.
 ## Rules
 
 - **i+1.** Explain with bricks the owner owns (`me/known-bricks.md`). Introduce at most two
-  new bricks. When the source needs more, say "this source needs N new bricks; I
-  taught the two that carry the idea" and list the rest by name.
+  new ideas, at the grain you explain them (a brick has no fixed size; count ideas to
+  learn). When the source needs more, say "this source needs N new ideas; I taught the two
+  that carry the idea" and list the rest by name.
 - **Delegated clusters** get the interface form for their bricks: input, output,
   role, cost, when it fails. No internals.
 - **Quote or mark.** Every line about the authors' view and the bet carries a

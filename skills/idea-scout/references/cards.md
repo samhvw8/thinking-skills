@@ -2,11 +2,12 @@
 
 ## The i+1 rule
 
-Write in bricks the owner `owns` (`me/known-bricks.md`). A card may add at most two new bricks.
-Explain each new brick in two sentences plus one concrete picture with the same
-structure as the mechanism. If a source needs more than two new bricks, either explain
-only the two that carry the idea and say "needs N more bricks to read deeply", or
-leave it for a later batch. Mark bricks that are `seen` but not `owned` as review
+Write in bricks the owner `owns` (`me/known-bricks.md`). A card may add at most two new
+ideas the owner must learn, at the grain the card explains them: a brick has no fixed size,
+so count ideas to learn, not brick files. Explain each in two sentences plus one concrete
+picture with the same structure as the mechanism. If a source needs more, either explain
+only the two that carry the idea and say "needs N more ideas to read deeply", or leave it
+for a later batch. Mark bricks that are `seen` but not `owned` as review
 chances: "you met this in <card>".
 
 When `known-bricks.md` is empty (the first batches), list the ideas the cards lean
@@ -25,7 +26,7 @@ Core:
 - New brick <name>: <two sentences>. Picture: <one concrete image>.
 - Why it is a gem: <the gem, and for unpopular the diagnosed reason>   # hidden at stage >= 2 until the owner guesses
 - Why you might care: <tie to a scope or one of the owner's projects>
-- Deep read: ~<n> min · needs <k> new bricks · zoom: co-read brief
+- Deep read: ~<n> min · needs <k> new ideas · zoom: co-read brief
 ```
 
 Adjacent, and any cluster with no level yet (never the one-line form): idea, the brick's role ("what it does, when to use it"), one
@@ -65,10 +66,10 @@ cards that share a question), then the vote request:
   because the field sells retrieval practice as universal (unfashionable to qualify it).
 - Why you might care: our own reading protocol opens with a recall quiz; do it when
   your head is clear, and give feedback after.
-- Deep read: ~20 min · needs 1 new brick · zoom: co-read brief
+- Deep read: ~20 min · needs 1 new idea · zoom: co-read brief
 ```
 
-Why it works: it uses one new brick, names the operator, diagnoses the unpopularity,
+Why it works: it uses one new idea, names the operator, diagnoses the unpopularity,
 ties to something the owner does, and states the read basis.
 
 The same card in chat:

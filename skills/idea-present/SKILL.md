@@ -1,6 +1,6 @@
 ---
 name: idea-present
-description: "The owner's switch for the idea skills: /idea-present turns present mode on for this conversation (they do the generative steps first), /idea-present off turns it back to the default, absent mode."
+description: "Switch for the idea skills: /idea-present turns present mode on for this conversation (they do the generative steps first), /idea-present off turns it back to the default, absent mode."
 disable-model-invocation: true
 argument-hint: "[on | off]"
 ---

@@ -1,6 +1,6 @@
 ---
 name: idea-scout
-description: "Finds, filters and pre-digests ideas for the owner: sweeps their scopes across papers, journals, articles and social posts, keeps only sources that carry an idea gem (migration gap, lifted constraint, diagnosed-unpopular, author hunch, convergence, rejected alternative), and writes a short batch of triage cards pitched one step above what the owner already knows. Also records the owner's votes and runs the monthly retro. Use when the owner asks for a scout batch, 'what should I read', 'find something new worth reading on X', 'find ideas on X', 'new cards', gives votes on cards, changes a topic's depth ('go deep on X', 'skip X'), or asks for the retro. Not for reading one source with the owner (co-read), making new ideas (idea-forge) or checking whether a claim is true (paper-appraisal)."
+description: "Finds, filters and pre-digests ideas for the owner: sweeps their scopes across papers, articles and social posts, keeps only sources that carry an idea gem (migration gap, lifted constraint, diagnosed-unpopular, author hunch, convergence, rejected alternative), and writes a short batch of triage cards pitched one step above what the owner knows. Also records votes and runs the monthly retro. Use when the owner asks for a scout batch, 'what should I read', 'find something new worth reading on X', 'find ideas on X', 'new cards', gives votes on cards, changes a topic's depth ('go deep on X', 'skip X'), or asks for the retro. Not for reading one source together (co-read), making new ideas (idea-forge) or checking whether a claim is true (paper-appraisal)."
 ---
 
 # Idea scout
@@ -10,7 +10,7 @@ sweep and the filtering alone; they spend about 30 seconds per card and decides 
 deserves more. The funnel exists for two outcomes, kept in balance:
 
 - **(A) Actionable ideas** reach the owner without costing them reading time.
-- **(B) The owner's own idea ability grows.** Cards teach at most one or two new bricks each,
+- **(B) The owner's own idea ability grows.** Cards teach at most one or two new ideas each,
   and the owner's votes, guesses and reasons are their hands-on work at this level.
 
 A brick is one piece of an idea that does a job you can name; read "What a brick is"
@@ -64,9 +64,9 @@ them `(explore)`. Without them the filter locks the owner inside what they alrea
 ### L2: triage cards
 
 Write each card one step above what the owner knows (i+1): use bricks they `own` in
-`known-bricks.md`, and add at most two new bricks per card. Explain each new brick in two
-sentences plus one concrete picture. Input far above their level passes through without
-sticking; that is why the limit is there.
+`known-bricks.md`, and add at most two new ideas per card, at the grain the card explains
+them. Explain each in two sentences plus one concrete picture. Input far above their level
+passes through without sticking; that is why the limit is there.
 
 Card depth follows the cluster's level in `interest-state.md`:
 
@@ -131,6 +131,6 @@ bank paths and the bundle `log.md`, conventional message, no AI attribution.
 
 - A batch file exists in `batches/`, the OKF validator passes, and the bank commit is made.
 - The owner has the cards in chat, in their language, with the vote request.
-- Every new brick on a card is explained; no card adds more than two.
+- Every new idea on a card is explained; no card adds more than two.
 - Every `unpopular` card names its diagnosed reason; every intent claim is quoted or
   marked `(inferred)`; the `Basis` section says how each source was read.
