@@ -36,7 +36,7 @@ re-cut is recorded as a new cut, a bind as a bound brick (idea-bank schema,
 
 | Move | Question to ask | Productive when |
 |------|-----------------|-----------------|
-| `re-cut` | Cut this brick another way (`idea_index.py <bank> --cuts` lists the kinds: by cost, causal chain, evidence role, failure mode, ...). Then walk the operators over the new parts | The recipe's roles give only shallow swaps, or the interesting part sits inside one brick |
+| `re-cut` | Cut this brick another way (by cost, causal chain, evidence role, failure mode, ...), as `../idea-bank/references/recut.md` says: the cut must draw a new boundary. Then walk the operators over the new parts | The recipe's roles give only shallow swaps, or the interesting part sits inside one brick |
 | `bind` | Which bricks, from this card or others, make one job together? File the combination as a bigger brick and forge with it as one piece | A combination survived its kill test, or the same arrangement recurs across sources |
 
 ## Contradiction separation (TRIZ)

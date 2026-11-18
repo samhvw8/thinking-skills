@@ -31,6 +31,9 @@ That is useless for recombination, for three reasons this skill fixes:
 
 ## Workflow (one source)
 
+Asked to see a method already in the bank another way? That is a re-cut:
+follow `../idea-bank/references/recut.md`, not these steps.
+
 1. **Get the raw material.** Full text first: Parallax `fetch_page` on the DOI,
    arXiv, PMC or publisher URL (read the outline, then sections). If it returns
    "abstract only", get the PDF or TeX with `paper-download` (`paperhunt get`,
@@ -63,7 +66,7 @@ That is useless for recombination, for three reasons this skill fixes:
    `match_confidence` (`high`, `medium`, `low`). Create a new brick only when no
    signature matches.
    List the recipe's bricks in the method brick's `parts` (`how: split`, the
-   table's `cut`). A later split adds a cut beside it. Pick each cut from
+   table's `cut`). A later cut goes beside it (re-cut). Pick each cut from
    `idea_index.py --cuts` (schema, Parts and links).
 6. **Lenses and people.** When the view model already exists as a Lens, link it
    and add this card; when you see it a second time across sources, create the
