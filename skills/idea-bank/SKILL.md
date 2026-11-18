@@ -27,7 +27,8 @@ whole method seen as one block.
   registry id such as `cost` or `data-flow` when one fits. A cut kind is a way
   to cut, not a lens file; `lenses/` holds authors' view models.
 - **Keep every cut.** A new cut goes beside the old ones and never replaces
-  one. Never rename, move or relabel a brick for it.
+  one. Never rename, move or relabel a brick for it. It must draw a new
+  boundary: `references/recut.md`.
 - **The method is a brick.** A card records the source and points to its method
   brick (`method`). Every split of the method, the first included, is a cut on
   that brick; the card's Recipe table renders one named cut.
@@ -170,6 +171,8 @@ It is deterministic and offline. It reports:
 - bricks by number of fields;
 - **cuts**: labels against the registry, near-duplicates, binds, cards with
   no method brick, Recipes out of step (`--cuts` prints the registry);
+- **re-cuts** (`--recuts`): what each cut shares with the others, and a cut
+  that only re-tags another;
 - **convergence**: one role filled by bricks from two or more fields, and hot
   slots (a card role whose brick was substituted two or more times in `moves/`);
 - **migration-gap candidates**: a brick whose role tags match a card's
@@ -216,5 +219,6 @@ create a repo yourself.
 - `scripts/idea_deal.py`: deals a hand (bricks, lenses, moves) for idea-forge's
   deal mode; `scripts/test_idea_deal.py` tests it.
 - `references/cuts.json`: the cut registry, built from the repo's decks.
+- `references/recut.md`: how to cut a brick through a new angle.
 - `scripts/idea_index.py`: the index; `scripts/test_idea_index.py` and
   `scripts/fixtures/` test it.
