@@ -1,14 +1,14 @@
 # Brief mode
 
-Claude explains a source so Sam can decide whether to go deep. Sam reads and asks
-questions. Budget: Sam should finish it in 5–10 minutes.
+Claude explains a source so the owner can decide whether to go deep. The owner reads and asks
+questions. Budget: The owner should finish it in 5–10 minutes.
 
 ## Template
 
-Write the chat text by "Rendering for Sam" in the idea-bank schema: a headline
+Write the chat text by "Rendering for the owner" in the idea-bank schema: a headline
 frame first, plain words, verbatim-only quotes, three voices kept apart, and bank
 or memory content labelled. The headings below are for Claude; write them in
-plain words in Sam's language.
+plain words in the owner's language.
 
 ```markdown
 <one-sentence headline frame: the whole idea as a sharp picture>
@@ -77,7 +77,7 @@ an unchecked quote is not.
 
 1. List every string inside quotation marks in the brief.
 2. Confirm each one is an exact match in the source text: run
-   `~/.claude/skills/idea-mine/scripts/check_quotes.py <brief-file> <source-text>`,
+   `../idea-mine/scripts/check_quotes.py <brief-file> <source-text>`,
    or Grep the source for the exact string (allow only whitespace and line breaks
    to differ).
 3. For every string that is not an exact match, remove the quotation marks and
@@ -93,14 +93,14 @@ passages you hold, and check against them.
 
 ## Rules
 
-- **i+1.** Explain with bricks Sam owns (`me/known-bricks.md`). Introduce at most two
+- **i+1.** Explain with bricks the owner owns (`me/known-bricks.md`). Introduce at most two
   new bricks. When the source needs more, say "this source needs N new bricks; I
   taught the two that carry the idea" and list the rest by name.
 - **Delegated clusters** get the interface form for their bricks: input, output,
   role, cost, when it fails. No internals.
 - **Quote or mark.** Every line about the authors' view and the bet carries a
   verbatim quote with its section, a plain paraphrase with its section, or "(my
-  reading)". Check quotes before output (Rendering for Sam, rule 3). Weakness is
+  reading)". Check quotes before output (Rendering for the owner, rule 3). Weakness is
   shown in "Where it is weak"; it never removes an idea.
 - **What a reader would miss is specific.** Each line names the passage. For an
   unpopular idea, say in plain words why it is unpopular (the schema's reasons).
@@ -111,11 +111,11 @@ passages you hold, and check against them.
 - **Social sources:** name the poster for every idea from a comment, by username
   and without assumed gender, and keep the original post's claims apart from
   replies.
-- **Answer Sam's questions from the source first,** then from the bank, then from
+- **Answer the owner's questions from the source first,** then from the bank, then from
   general knowledge, and label each: "(from your bank: ...)", "(from memory,
   unchecked)".
 - **Write the card** after a brief (Claude may write it in brief mode), so the bank
-  grows even when Sam stops here. Mark it `read_basis` honestly.
+  grows even when the owner stops here. Mark it `read_basis` honestly.
 
 ## Worked example (illustration: invented source, made-up numbers)
 

@@ -5,8 +5,9 @@ shapes and nothing else. All files are OKF concepts: YAML frontmatter with a
 non-empty `type`, markdown body, English text.
 
 Common frontmatter on every type: `type`, `title`, `description`, `tags`,
-`generated: { by, at }` (actor convention: `claude-code/<model>`, `human:sam`).
-Add `verified: { by: "human:sam", at }` when Sam signed the content off.
+`generated: { by, at }` (actor convention: `claude-code/<model>`, `human:<handle>`,
+where `<handle>` is the `Handle` in `me/profile.md`, or `owner` when it is unset).
+Add `verified: { by: "human:<handle>", at }` when the owner signed the content off.
 
 Links between bank files use bundle-relative paths, for example
 `/ideas/bricks/sparse-overcomplete-code.md`. The index script reads the slugs in
@@ -24,24 +25,24 @@ edit inside them: change the frontmatter list and run `--write` again.
 Keep frontmatter short: slugs, enums and one-line values. Long prose goes in
 the body, where a stray colon or quote cannot break the parse.
 
-## Rendering for Sam
+## Rendering for the owner
 
-Bank files use this schema's terms. Chat output to Sam does not: he reads it to
+Bank files use this schema's terms. Chat output to the owner does not: they read it to
 learn, and private jargon makes it harder to learn from. Every caller skill
 follows these rules for anything shown in chat.
 
 1. **Open with a headline frame.** One plain sentence that holds the whole idea,
    ideally as a sharp picture ("theory as compiler, advice as cache").
 2. **Plain words.** A schema term (brick, gem type, layer, zoom, move type,
-   cluster, lens) appears only when Sam already owns it (`me/known-bricks.md`), or
+   cluster, lens) appears only when the owner already owns it (`me/known-bricks.md`), or
    with a one-phrase gloss the first time: "part (the job it does)", "a gap where
    a tool from one field fits another". Never print frontmatter, slugs, cluster
-   levels, read-basis tags, guesses about what Sam knows, or notes to yourself.
+   levels, read-basis tags, guesses about what the owner knows, or notes to yourself.
    Those go in bank files.
 3. **Quotation marks mean verbatim.** Use them only for text copied exactly from
    the source. Paraphrase without quote marks. Before output, check every quote
    against the source; when the text is on disk, run
-   `~/.claude/skills/idea-mine/scripts/check_quotes.py <file> <source-text>`, and
+   `../idea-mine/scripts/check_quotes.py <file> <source-text>`, and
    fix or unquote each flagged quote.
 4. **Say who says it.** Keep three voices apart: the author (quoted or
    paraphrased with the section), commenters (in a social thread, name the
@@ -77,7 +78,7 @@ or a quote mark, or is a flow-list item that contains a comma
 One card per source (paper, article, post, talk, repo, synthesis note).
 
 **Synthesis notes** (a research note that summarises many studies or views, such
-as `~/workspace/knowledge/topics/...`) are cards with `source_kind:
+as a topic note elsewhere in the same knowledge bundle) are cards with `source_kind:
 synthesis-note`: `read_basis: full-text` means the note was read in full, the
 body opens with a `Basis:` line (what the note itself rests on: number and kind
 of sources, its own grade), `evidence` follows the note's own grade, and the card
@@ -105,7 +106,7 @@ source_kind: primary | synthesis-note | social | talk | repo
 intent_sources: [openreview | talk | v1-diff | tweet | repo | rebuttal | interview | blog | paper | note, ...]
 constraints: [<constraint slug>, ...]  # limits that forced a METHOD choice, e.g. llm-judge-cost, trial-length
 evidence_limits: [<slug>, ...]     # limits on how far the EVIDENCE reaches, e.g. no-control-group
-status: draft | stable             # stable once Sam or a review signed it off
+status: draft | stable             # stable once the owner or a review signed it off
 generated: { by: ..., at: ... }
 ---
 ```
@@ -166,14 +167,16 @@ Operator: <sequence | loop | gate | nesting | adversarial | distill | ensemble |
 <the quotes the layers rest on, each with its section, plus the source pointer>
 
 # Mutations
-| Operator | Variant | Role fit | Novelty link | Kill test | Sam verdict | Origin |
+| Operator | Variant | Role fit | Novelty link | Kill test | Owner verdict | Origin |
 |----------|---------|----------|--------------|-----------|-------------|--------|
 ```
 
 Mutations columns: `Operator` is a `move_type`; `Role fit` says whether the new
 brick does the role and what breaks; `Novelty link` is the closest prior work
 found, or `none found (<query>)`; `Kill test` is the cheapest test or its result;
-`Sam verdict` is `keep`, `kill (<reason>)` or empty; `Origin` is `sam` or `claude`.
+`Owner verdict` is `keep`, `kill (<reason>)` or empty; `Origin` is `owner` or `claude`.
+Older banks may carry the owner's handle where this schema says `owner` (`Origin`,
+`how`, the owner's column headers); read it as `owner`.
 
 ## Brick (`bricks/<role-slug>.md`)
 
@@ -234,7 +237,7 @@ moved when that happens: only `parts` grows.
 ```yaml
 parts:                               # split / bind: this unit is made of these
   - <slug>                           # a part you are sure of
-  - { to: <slug>, how: split | judge | sam, cut: <lens>, note: <optional> }   # how it was found, through which lens
+  - { to: <slug>, how: split | judge | owner, cut: <lens>, note: <optional> }   # how it was found, through which lens
 links:                               # connect without merging
   - { to: <slug>, via: <slug>, note: <one line> }
 ```
@@ -261,10 +264,10 @@ links:                               # connect without merging
   once; `--write` shows it on both ends.
 - **Provenance lives in the file, never in a side file.** `how: split` came from
   splitting this unit, `how: judge` from an LLM judge saying this unit contains
-  the part, `how: sam` from Sam. The view prints it next to the link.
+  the part, `how: owner` from the owner. The view prints it next to the link.
 - **Best effort.** A split or link Claude is unsure of still goes in, with its
-  `how`. When Sam corrects one, change the entry (or delete it) and set
-  `how: sam`, so the next pass starts from his call.
+  `how`. When the owner corrects one, change the entry (or delete it) and set
+  `how: owner`, so the next pass starts from their call.
 
 ## Lens (`lenses/<slug>.md`)
 
@@ -350,19 +353,19 @@ tags: [ideas, reading]
 card: <card slug>                  # omitted in a deal session
 mode: brief | deep | skim | deal
 deal: { kind: role | lens | gap | pair | move, seed: <int>, x: <int>, items: [<slug>, ...] }  # deal only
-stage: 1 | 2 | 3 | 4               # Sam's handover stage during the session
+stage: 1 | 2 | 3 | 4               # the owner's handover stage during the session
 generated: { by: ..., at: ... }
 ---
 ```
 
-Body sections: `# Recall` (step-0 result: questions, Sam's answers, right or
-wrong; or `skipped: overloaded` / `skipped: <reason>`), `# Sam's guess` (written
-before reading), `# Notes` (table: `| Sam | Claude | gem | hint |`; `gem` is a gem
-type, `hint` is the level 1-3 a Claude note was opened at, or `-` for Sam's own
-notes; the index counts `hint` = 3), `# Disagreements` (table: point, Sam's view, Claude's view, how to
-settle, status), `# Mutations` (Sam's first, then Claude's, each with Sam's
+Body sections: `# Recall` (step-0 result: questions, the owner's answers, right or
+wrong; or `skipped: overloaded` / `skipped: <reason>`), `# Owner's guess` (written
+before reading), `# Notes` (table: `| Owner | Claude | gem | hint |`; `gem` is a gem
+type, `hint` is the level 1-3 a Claude note was opened at, or `-` for the owner's own
+notes; the index counts `hint` = 3), `# Disagreements` (table: point, Owner's view, Claude's view, how to
+settle, status), `# Mutations` (the owner's first, then Claude's, each with the owner's
 keep/kill and reason), `# Kill test` (prediction written before the run, result),
-`# Teach-back` (Sam's five sentences and the gaps probed), `# What we learned`
+`# Teach-back` (the owner's five sentences and the gaps probed), `# What we learned`
 (new bricks, lenses, moves, open questions).
 
 ## Scout Batch (`batches/YYMMDD-batch-<n>.md`)
@@ -373,7 +376,7 @@ type: Scout Batch
 title: Scout batch <n> (<yyyy-mm-dd>)
 description: <scopes covered and card count>
 tags: [ideas, scout]
-status: draft                      # stable once Sam has voted
+status: draft                      # stable once the owner has voted
 sources: [{ id, resource, title }, ...]
 generated: { by: ..., at: ... }
 ---
@@ -381,8 +384,8 @@ generated: { by: ..., at: ... }
 
 Body: `# Basis` (how each card was read), `# Votes` (table: `| # | Card |
 Cluster | Level | Guess | Vote | One word | Zoom |`; `Level` is the cluster level
-or `unset`; `Guess` is Sam's gem-type guess before seeing the card's reason, from
-stage 2 on, else empty; `Vote` is `up | down | later`; `Zoom` is `yes` when Sam
+or `unset`; `Guess` is the owner's gem-type guess before seeing the card's reason, from
+stage 2 on, else empty; `Vote` is `up | down | later`; `Zoom` is `yes` when the owner
 asked for the brief of that card, else empty), then one section per card
 when the cards are stored in the file.
 
@@ -392,19 +395,20 @@ Each is one file, edited at runtime. No skill hardcodes their values.
 
 | File | Body |
 |------|------|
+| `profile.md` | Facts about the owner, as a table `\| Key \| Value \|`. `Name`: what to call the owner. `Handle`: the actor id in `human:<handle>` (default `owner`). `Chat language`: the language for chat when the owner's own messages do not show one (default: the language the owner writes in). `Presence default`: `absent` or `present`, the mode a new conversation starts in (default `absent`). `Compute`: where heavy runs and kill-tests may go, and what to check before adding load (default: this machine only). `# Scopes`: starting scopes, copied into `scopes.md` only when that file is missing. Every key is optional |
 | `scopes.md` | Table: scope, since, note |
-| `interest-state.md` | `# Clusters` table: `| Cluster | Level | Zooms | Signals | Since |`; `Level` is `core`, `adjacent`, `delegated` or empty; `Zooms` counts briefs Sam asked for in that cluster. A cluster with no level gets the short role-level card; the one-line interface card is for `delegated` only. `# Settings`: cards per batch, explore slots per batch, weekly card budget. `# Change log` table: date, cluster, from → to, why. Sam's commands win, in any language |
-| `known-bricks.md` | Table: brick slug, level (`seen`, `owned`), since, evidence (how Sam showed it: explained it, spotted it in a new source). Only core and adjacent clusters |
-| `taste.md` | Table: date, source, gem Sam saw that Claude missed, gem type. Table: date, card, vote, one-word reason |
-| `progress.md` | Table, one row per session: `| Date | Reading | Mode | Unaided gems | Roles named right | Sam-unique mutations | Level-3 hints | Gems Claude missed | Skips |`. `Mode` is `brief`, `deep`, `skim` or `deal`. The three skill columns are finding gems (`Unaided gems`), naming roles (`Roles named right`, of total) and proposing mutations (`Sam-unique mutations`). `# Stage` with the criteria below |
+| `interest-state.md` | `# Clusters` table: `| Cluster | Level | Zooms | Signals | Since |`; `Level` is `core`, `adjacent`, `delegated` or empty; `Zooms` counts briefs the owner asked for in that cluster. A cluster with no level gets the short role-level card; the one-line interface card is for `delegated` only. `# Settings`: cards per batch, explore slots per batch, weekly card budget. `# Change log` table: date, cluster, from → to, why. The owner's commands win, in any language |
+| `known-bricks.md` | Table: brick slug, level (`seen`, `owned`), since, evidence (how the owner showed it: explained it, spotted it in a new source). Only core and adjacent clusters |
+| `taste.md` | Table: date, source, gem the owner saw that Claude missed, gem type. Table: date, card, vote, one-word reason |
+| `progress.md` | Table, one row per session: `| Date | Reading | Mode | Unaided gems | Roles named right | Owner-unique mutations | Level-3 hints | Gems Claude missed | Skips |`. `Mode` is `brief`, `deep`, `skim` or `deal`. The three skill columns are finding gems (`Unaided gems`), naming roles (`Roles named right`, of total) and proposing mutations (`Owner-unique mutations`). `# Stage` with the criteria below |
 
 Handover stages (defaults; change them in `progress.md` from real data):
 
-| Stage | Sam does | Move up when |
+| Stage | Owner does | Move up when |
 |-------|----------|--------------|
 | 1 | Votes with one-word reasons; asks in briefs | About 30 bricks `owned` |
 | 2 | Guesses the gem type before reading the card's reason | Over 60 % of guesses right |
-| 3 | Writes the recipe for chosen sources; Claude reviews | Sam's cards need few corrections |
+| 3 | Writes the recipe for chosen sources; Claude reviews | The owner's cards need few corrections |
 | 4 | Full co-reads on hard sources; brings new scopes and seeds | — |
 
 ## Bulk staging

@@ -1,22 +1,22 @@
 ---
 name: idea-forge
-description: "Makes new ideas by recombining bricks, then designs the cheapest test that could kill each one: combine bricks from several sources, swap one piece of a method for a piece from another field, change how the pieces fit together (sequence, loop, gate), remove, invert or move a piece. Starts from an idea card, Sam's seed (\"what if we swap C for D\"), bricks a session just found, or a hand dealt from the bank (deal mode, present mode only: both write rough ideas from dealt bricks, lenses or moves, then read a few together). By default Claude does all of it; after Sam types /idea-present, Sam writes first. Use when Sam asks what new ideas come from mixing sources or parts, how to combine, swap or rearrange pieces, what to build or try next from a source, whether a piece from one field works in another, or asks to deal some bricks. Not for breaking a source into bricks (idea-mine), reading a source with Sam (co-read) or finding sources (idea-scout)."
+description: "Makes new ideas by recombining bricks, then designs the cheapest test that could kill each one: combine bricks from several sources, swap one piece of a method for a piece from another field, change how the pieces fit together (sequence, loop, gate), remove, invert or move a piece. Starts from an idea card, the owner's seed (\"what if we swap C for D\"), bricks a session just found, or a hand dealt from the bank (deal mode, present mode only: both write rough ideas from dealt bricks, lenses or moves, then read a few together). By default Claude does all of it; after the owner types /idea-present, they write first. Use when the owner asks what new ideas come from mixing sources or parts, how to combine, swap or rearrange pieces, what to build or try next from a source, whether a piece from one field works in another, or asks to deal some bricks. Not for breaking a source into bricks (idea-mine), reading a source with the owner (co-read) or finding sources (idea-scout)."
 ---
 
 # Idea forge
 
-Make new ideas from old recipes. By default Sam is absent and Claude does every
-step, best effort; in present mode (idea-bank, "Presence mode") Sam does the
+Make new ideas from old recipes. By default the owner is absent and Claude does every
+step, best effort; in present mode (idea-bank, "Presence mode") the owner does the
 generative part first.
-Two goals hold at once: (A) Sam ends with ideas he can act on, and (B) Sam's own
-idea-making gets stronger. A list of variants Sam only nods at serves (A) and
+Two goals hold at once: (A) the owner ends with ideas they can act on, and (B) the owner's own
+idea-making gets stronger. A list of variants the owner only nods at serves (A) and
 erodes (B), so in present mode the order below is not optional.
 
 Formats, slugs, move types and gem types come from
-`~/.claude/skills/idea-bank/references/schema.md`; bank location, index and
+`../idea-bank/references/schema.md`; bank location, index and
 commits come from the `idea-bank` skill. Load it first, and read its "What a brick
 is" before you recombine bricks. Files are English; chat is
-in the language Sam writes in, by "Rendering for Sam" in the idea-bank schema.
+in the language the owner writes in, by "Rendering for the owner" in the idea-bank schema.
 Label bank content "(from your bank: ...)" and outside knowledge "(from memory,
 unchecked)"; never cite a card or batch as if the source said it. For a social
 source, root each variant in the named poster whose point it builds on, and keep
@@ -24,23 +24,23 @@ the original post apart from replies.
 
 ## Inputs
 
-- A card (`cards/<slug>.md`), a reading in progress, or a seed line from Sam.
+- A card (`cards/<slug>.md`), a reading in progress, or a seed line from the owner.
 - The bank: bricks, lenses, moves, and `me/known-bricks.md`, `me/interest-state.md`.
 - `idea_index.py` output for the bricks involved (convergence, hot slots,
   migration-gap candidates).
 
 If there is no card yet, draft the recipe (roles, bricks by role, operator, bet,
-constraints of the time) with Sam before forging: operators act on roles, and a
+constraints of the time) with the owner before forging: operators act on roles, and a
 recipe named by brick identity gives only shallow swaps.
 
 ## The session
 
-**1. Sam's variants first (present mode only).** In absent mode, go to step 2;
-that is not a skip. Ask Sam for his variants before showing any of
+**1. The owner's variants first (present mode only).** In absent mode, go to step 2;
+that is not a skip. Ask the owner for their variants before showing any of
 Claude's: "Your variants first, even one line, even wrong." Keep Claude's list
-hidden until he commits. If Sam says skip, give Claude's list and log a skip in
-`me/progress.md`. Why: the generation effect; an answer read first anchors Sam
-and takes away the thinking that builds (B). Sam's variants also show where
+hidden until they commit. If the owner says skip, give Claude's list and log a skip in
+`me/progress.md`. Why: the generation effect; an answer read first anchors the owner
+and takes away the thinking that builds (B). The owner's variants also show where
 Claude's distribution is stuck.
 
 **2. Claude exhausts the neighbourhood.** Walk every operator over every role of
@@ -57,7 +57,7 @@ sources of candidates beat free association:
   variant.
 
 Aim for breadth before ranking: 15-40 raw variants on a rich card is normal.
-Drop exact duplicates of Sam's variants but say which of his you also reached.
+Drop exact duplicates of the owner's variants but say which of theirs you also reached.
 
 **3. Check each surviving variant.** Short, one line per check:
 - **Role fit:** does D really do C's job here? Name what breaks (an input it
@@ -70,74 +70,75 @@ Drop exact duplicates of Sam's variants but say which of his you also reached.
   schema's table. A wrong bet is dropped; a lifted constraint, wrong field,
   fashion, poor execution or other language community makes it a gem.
 - **Cheapest kill-test:** the result that would kill it, what it costs, and
-  whether it runs on toy data, in a notebook, or on the home GPU.
+  whether it runs on toy data, in a notebook, or on the owner's GPU machine
+  (`me/profile.md`, `Compute`).
   `references/kill-tests.md` has the design rules.
 
 **4. Rank by generativity, not truth.** Order by: how many viable follow-ons the
 variant opens, how far it transfers, how cheap its kill-test is, and fit with
-Sam's scopes and core clusters. Evidence weight is a tag, never a filter. Show
+the owner's scopes and core clusters. Evidence weight is a tag, never a filter. Show
 the top 5-8 with one line each; keep the rest in the file.
 
-**5. Sam scores and kills.** Sam marks each shown variant keep / kill / later
+**5. The owner scores and kills.** The owner marks each shown variant keep / kill / later
 with a reason. Push back on weak reasons ("boring", "won't work") with the
-strongest case for the variant, once; Sam's call stands. Record disagreements
-that a test could settle. Record every variant Sam produced that Claude did not:
-it goes in `me/progress.md` (Sam-unique mutations) and tells Claude where it was
+strongest case for the variant, once; the owner's call stands. Record disagreements
+that a test could settle. Record every variant the owner produced that Claude did not:
+it goes in `me/progress.md` (Owner-unique mutations) and tells Claude where it was
 stuck in its default.
 
-**6. Kill-test.** For the variant Sam picks:
-1. Sam writes his prediction first (present mode); in absent mode Claude writes
+**6. Kill-test.** For the variant the owner picks:
+1. The owner writes their prediction first (present mode); in absent mode Claude writes
    it, still before the run.
 2. Fix the kill criterion and the metric before the run. Never change them after
    seeing results.
 3. Claude builds the harness (data loading, plots, boilerplate). In a deep
-   session Sam writes the 20-ish core lines that implement the brick; that
+   session the owner writes the 20-ish core lines that implement the brick; that
    hands-on step is where the next idea comes from.
-4. Run it. For paper code use `paper-replicate`; for GPU work check the home
-   server's load first (`ssh me.ubuntu.home nvidia-smi`, `tmux ls`).
+4. Run it. For paper code use `paper-replicate`; for GPU work check the load of
+   the machine in `me/profile.md` (`Compute`) first, as it says there.
 5. Report the real number against the criterion, including a miss.
 
 ## Deal mode
 
-**Gate, before anything else:** has Sam typed `/idea-present` in this conversation
+**Gate, before anything else:** has the owner typed `/idea-present` in this conversation
 (and not `/idea-present off` since)? If not, deal nothing. Reply with one line,
 "Deal mode needs you: type /idea-present and we start.", and stop. A request to
 deal is not the switch.
 
 A second way in, from the bank instead of a card. Ideas here need not be good:
 they are material to read and sharpen together. Goal (B) carries the weight, so
-no novelty search and no kill-test unless Sam asks for one on a kept idea.
+no novelty search and no kill-test unless the owner asks for one on a kept idea.
 
 1. **Menu.** Run `idea_deal.py <bank> menu` (in `idea-bank/scripts`) and show
    the kinds with their real pool sizes: `role` (same job, other fields), `lens`
    (one lens over bricks from fields it has not seen), `gap` (a brick and a field
    it has not reached), `pair` (two bricks with no shared field), `move` (replay
-   a past move on other cards). Sam picks the kind, `x` (items dealt) and `y`
+   a past move on other cards). The owner picks the kind, `x` (items dealt) and `y`
    (ideas each), or says "you pick".
 2. **Deal.** Run `idea_deal.py <bank> deal <kind> -x <x>`. Show the hand as is,
    with its seed.
 3. **Sealed ideas, both sides.** Claude writes its `y` ideas into the session
-   file first and does not show them. Sam writes his, as rough as he likes.
+   file first and does not show them. The owner writes theirs, as rough as they like.
    Then both lists are shown side by side. Neither goes first in the chat, so
-   neither anchors the other. If Sam asks to see Claude's first, show them and
+   neither anchors the other. If the owner asks to see Claude's first, show them and
    log `claude-first` in the Skips column.
    Each idea is one line of recipe (which item, which operator, which role) plus
    "why it might work" and "what would kill it", one line each. Mark Claude's
    reasons `(inferred)`.
-4. **Read together.** Sam picks how many to read, `y` or fewer, from either
-   list. For each one: both suggest one change to it (Sam first), then Sam
+4. **Read together.** The owner picks how many to read, `y` or fewer, from either
+   list. For each one: both suggest one change to it (the owner first), then the owner
    marks keep / kill / later with a reason. Claude argues for or against with
    reasons, once, as a peer.
 5. **Write back.** The session is a Reading with `mode: deal` and a `deal`
-   block (kind, seed, x, items). All ideas go in `# Mutations` with origin `sam`
-   or `claude` and Sam's verdict; ideas nobody read stay there unmarked. A kept
-   idea Sam wants to pursue goes through the normal session (steps 3 and 6)
+   block (kind, seed, x, items). All ideas go in `# Mutations` with origin `owner`
+   or `claude` and the owner's verdict; ideas nobody read stay there unmarked. A kept
+   idea the owner wants to pursue goes through the normal session (steps 3 and 6)
    later. Add a `deal` row to `me/progress.md`.
 
 ## Writing back
 
 - Write every variant as a row of the schema's Mutations table: operator,
-  variant, role fit, novelty link, kill test, Sam verdict, origin (`sam` or
+  variant, role fit, novelty link, kill test, Owner verdict, origin (`owner` or
   `claude`). In a reading session the table goes in the reading's `# Mutations`
   and the run in `# Kill test`; outside a session, in the card's `# Mutations`.
 - Every kill-test result goes in the brick's `kill_tests` (survived, killed,
@@ -146,13 +147,13 @@ no novelty search and no kill-test unless Sam asks for one on a kept idea.
   `parent`, `child`, `role`, `from_brick`, `to_brick`; for a brick migration
   `move_type: migrate-brick` with `brick`, `from_field`, `to_field`), and any new
   brick gets its own file with its signature and a migration row.
-- Update `me/progress.md`: Sam-unique mutations, skips.
+- Update `me/progress.md`: Owner-unique mutations, skips.
 - Commit through `idea-bank`.
 
 ## Rules
 
-- **In present mode, Sam generates first, every round.** Claude's list never appears before Sam's
-  attempt unless Sam skips, and skips are logged.
+- **In present mode, the owner generates first, every round.** Claude's list never appears before the owner's
+  attempt unless the owner skips, and skips are logged.
 - **No invented mechanism.** When a variant's reason is Claude's reading, mark it
   `(inferred)`. When nobody knows why it would work, say so; the kill-test
   exists for that.

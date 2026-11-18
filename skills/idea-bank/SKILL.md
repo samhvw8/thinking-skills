@@ -1,12 +1,12 @@
 ---
 name: idea-bank
-description: "Shared store and formats for Sam's idea work: where the bank lives ($IDEA_HOME), the schema for idea cards, bricks, lenses, moves, readings, scout batches and Sam's state files, how bricks are split, bound and linked (`parts`, `links`), the index script that finds links, convergence and migration gaps, the search script (embeddings + BM25) that finds existing bricks, and how to commit the bank. Use when another idea skill (idea-scout, co-read, idea-forge, idea-mine) writes or reads the bank, when Sam asks to search the bank or his ideas for something, find or dedupe bricks, see what a brick is part of or linked to, run the idea index, or see convergence and migration gaps. Not for deciding what to read or how to collaborate; the caller skills own that."
+description: "Shared store and formats for the owner's idea work: where the bank lives ($IDEA_HOME), the schema for idea cards, bricks, lenses, moves, readings, scout batches and the owner's state files, how bricks are split, bound and linked (`parts`, `links`), the index script that finds links, convergence and migration gaps, the search script (embeddings + BM25) that finds existing bricks, and how to commit the bank. Use when another idea skill (idea-scout, co-read, idea-forge, idea-mine) writes or reads the bank, when the owner asks to search the bank or their ideas for something, find or dedupe bricks, see what a brick is part of or linked to, run the idea index, or see convergence and migration gaps. Not for deciding what to read or how to collaborate; the caller skills own that."
 ---
 
 # Idea bank
 
 This skill owns the mechanism: location, formats, links, index, commits.
-The caller skills own policy: what to read, how Sam and Claude split the work,
+The caller skills own policy: what to read, how the owner and Claude split the work,
 what goes in a batch. Keep that split, so one schema change reaches every caller.
 
 ## What a brick is
@@ -38,16 +38,28 @@ Bricks live in `bricks/`, one per file (`type: Brick`). A card records one
 source and the bricks its recipe uses. A lens records a way of seeing. A move
 records how one source changed another source's bricks.
 
+## The owner
+
+The **owner** is the person whose bank this is: the one the idea skills read,
+scout and forge for. Every idea skill uses this word for that person. In a bulk
+brief the reader is a lead agent, not the owner.
+
+Facts about the owner (name, handle, chat language, presence default, compute,
+starting scopes) live in the bank's `me/profile.md` (`references/schema.md`,
+State files), never in a skill. Read it once per session, with the bank root.
+When it is missing, use the defaults: chat in the language the owner writes in,
+absent mode, heavy runs only on this machine. Tell the owner once that they can
+create the file.
+
 ## Find the bank
 
 Resolve the root once per session, in this order:
 
 1. `$IDEA_HOME`, when it is set.
-2. `~/workspace/knowledge/ideas`, when `~/workspace/knowledge` exists.
-3. `~/knowledge/ideas`.
+2. `~/ideas`.
 
 Create the root and the layout below on first use. When the root came from a
-default, tell Sam once which path you use. Never write bank files anywhere else,
+default, tell the owner once which path you use. Never write bank files anywhere else,
 because a second copy splits the links.
 
 ## Layout
@@ -61,7 +73,7 @@ because a second copy splits the links.
 | `people/` | Optional profiles | `Person` |
 | `readings/` | `YYMMDD-<slug>.md`, one per reading session | `Reading` |
 | `batches/` | `YYMMDD-batch-<n>.md`, one per scout batch | `Scout Batch` |
-| `me/` | Sam's state: `scopes`, `interest-state`, `known-bricks`, `taste`, `progress` | `State` |
+| `me/` | The owner's state: `profile`, `scopes`, `interest-state`, `known-bricks`, `taste`, `progress` | `State` |
 
 Bulk runs (`idea-mine`) stage outside the bank and merge in only after the
 index on the staged folder shows no broken links (`schema.md`, Bulk staging).
@@ -73,8 +85,8 @@ OKF bundle: load the `okf` skill before restructuring it.
 
 ## Rules
 
-- **Files in English, chat in Sam's language.** Bank files are read by every
-  model and tool; the chat follows the language Sam writes in.
+- **Files in English, chat in the owner's language.** Bank files are read by every
+  model and tool; the chat follows the language the owner writes in.
 - **Formats come from `references/schema.md` only.** Read it before writing any
   bank file. Do not invent fields in a caller skill; add them to the schema.
 - **Intent is quoted or marked.** Every field that states what an author meant,
@@ -84,29 +96,31 @@ OKF bundle: load the `okf` skill before restructuring it.
   pointer next to its bricks. Summaries drop nuance that later retrieval needs.
 - **Name bricks by role, not by identity.** "filters bad samples", not "reward
   model". Substitution and migration only work at the role level.
-- **Best effort, then Sam corrects.** Splitting, linking, merging and naming
+- **Best effort, then the owner corrects.** Splitting, linking, merging and naming
   units is Claude's work, done as far as Claude can judge, not held back for a
   perfect rule. Mark a doubtful call `(inferred)` and make it anyway. Record
-  each correction Sam makes (in the unit's file, and as a row in
+  each correction the owner makes (in the unit's file, and as a row in
   `me/progress.md`), so the next pass starts from it.
-- **Presence mode: Sam is absent unless he turns it on.** This is the only
+- **Presence mode: the owner is absent unless they turn it on.** This is the only
   definition; the other idea skills point here.
-  - **Absent (default).** Claude does every step itself, best effort: splits,
+  - **Absent (default, unless `me/profile.md` sets `Presence default:
+    present`).** Claude does every step itself, best effort: splits,
     recombines, writes variants, cards and kill-test predictions, files drafts.
-    It never stops to ask Sam to write first, and logs no skip: absence is not a
+    It never stops to ask the owner to write first, and logs no skip: absence is not a
     skip.
-  - **Present.** On after Sam types `/idea-present` (or `/idea-present on`) in
-    this conversation, until `/idea-present off`. The "Sam writes first" steps of
+  - **Present.** On after the owner types `/idea-present` (or `/idea-present on`) in
+    this conversation, until `/idea-present off`. The "owner writes first" steps of
     co-read, idea-forge and idea-scout then run as written, and skips are counted.
-  - Steps that only make sense with Sam (co-read deep mode, idea-forge deal mode,
-    Sam's own kill-test prediction, scout's gem-type guess) run only in present
+  - Steps that only make sense with the owner (co-read deep mode, idea-forge deal mode,
+    the owner's own kill-test prediction, scout's gem-type guess) run only in present
     mode. In absent mode, offer them in one line: "Type /idea-present to do this
     together." and stop there. Asking for one of these steps ("deal me some
     bricks", "go deep") does not turn present mode on; only the switch does.
   - The switch lives in the conversation. A new session, or a compaction summary
-    that does not show it, is absent.
+    that does not show it, starts in the profile's presence default (absent
+    when unset).
 - **State is data, not config.** Levels, budgets and ratios live in `me/`.
-  No skill hardcodes a topic level or a number Sam can change at runtime.
+  No skill hardcodes a topic level or a number the owner can change at runtime.
 
 ## Link and dedupe bricks
 
@@ -132,13 +146,14 @@ uv run <this skill's folder>/scripts/idea_search.py <bank-root> like <brick> --o
 gloss, names per field, migrations; card layers and rows) with BM25 and returns
 30 candidates. `like` ranks bricks by signature and shows topic similarity and
 shared fields beside it. It starts llama.cpp's `llama-server` for one command
-and stops it after (first index of the bank: about a minute on the Mac).
+and stops it after (first index of the author's bank: about a minute on a laptop).
 Vectors are cached in `<bank-root>/.index/`, which is git-ignored derived data.
 
 The list is a shortlist, not an answer. Judge each candidate by structure
-before you link or merge it: on the bench the correct brick was in the top 10
-for 72% of real links and in the top 30 for 81%. `--rerank` reorders the brick
-shortlist by structure with one Haiku call (about $0.002): on held-out rows the
+before you link or merge it: measured on the author's bank, the correct brick
+was in the top 10 for 72% of real links and in the top 30 for 81%. `--rerank`
+reorders the brick shortlist by structure with one `fast`-tier model call
+(Claude Code CLI with Haiku, about $0.002; it needs that CLI): on held-out rows the
 right brick came first 53% of the time instead of 39%. Use it when a reader will
 look at only the first few rows (bulk mode); a model that reads all 30 does the
 same job itself. `--graph` adds Personalized PageRank over the links; no graph
@@ -169,22 +184,23 @@ It is deterministic and offline. It reports:
 
 Gap candidates are a list for judgement, not findings. Open each candidate and
 judge by structure whether the brick could fill the role in that field before you
-show it to Sam.
+show it to the owner.
 
 ## Monthly view
 
-Once a month, or when Sam asks: run the index, then show Sam the convergence
+Once a month, or when the owner asks: run the index, then show the owner the convergence
 list, the top gap candidates you judged real, and bricks that moved from "seen" to
 "owned" in `me/known-bricks.md`. Callers (`idea-scout` retro) use this view.
 
 ## Commit after each session
 
-The bank sits inside a git repo (by default `~/workspace/knowledge`). After a
+The bank sits inside a git repo (often the repo of a knowledge bundle). After a
 session that changed bank files:
 
 1. Regenerate the link views: `idea_index.py <bank-root> --write`, then
    refresh the search cache: `idea_search.py <bank-root> index`.
-2. Validate: `uv run ~/.claude/skills/validate/scripts/okf_validate.py <bundle-root> --strict`.
+2. Validate with the OKF validator (the `validate` skill, when installed):
+   `uv run <validate skill folder>/scripts/okf_validate.py <bundle-root> --strict`.
 3. Stage only bank paths and the bundle `log.md`: `git -C <repo> add <bank-root> <bundle>/log.md`.
 4. Commit with a conventional message, for example `feat(ideas): add card for <slug>`.
    Add no AI attribution lines.
@@ -197,7 +213,7 @@ create a repo yourself.
 - `references/schema.md`: every type's frontmatter and body template, the gem
   taxonomy, the unpopularity diagnosis and the mutation operators.
 - `scripts/idea_search.py`: hybrid search; `scripts/test_idea_search.py`
-  tests it without a model. Bench: `~/workspace/tools/idea-evals/search-bench`.
+  tests it without a model. The numbers above were measured on the author's bank.
 - `scripts/idea_deal.py`: deals a hand (bricks, lenses, moves) for idea-forge's
   deal mode; `scripts/test_idea_deal.py` tests it.
 - `scripts/idea_index.py`: the index; `scripts/test_idea_index.py` and

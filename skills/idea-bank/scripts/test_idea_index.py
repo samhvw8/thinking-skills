@@ -173,10 +173,10 @@ def test_related_links_both_directions(bank_copy):
 def test_hand_text_outside_block_survives(bank_copy):
     p = bank_copy / "cards" / "jpeg.md"
     ix_mod.main([str(bank_copy), "--write"])
-    p.write_text(p.read_text() + "\nA note Sam added after the block.\n")
+    p.write_text(p.read_text() + "\nA note the owner added after the block.\n")
     ix_mod.main([str(bank_copy), "--write"])
     text = p.read_text()
-    assert "A note Sam added after the block." in text
+    assert "A note the owner added after the block." in text
     assert text.count(ix_mod.REL_BEGIN) == 1 and text.rstrip().endswith(ix_mod.REL_END)
 
 

@@ -18,10 +18,11 @@ graph step uses the links themselves.
 
 Vectors are cached in <bank-root>/.index/eg2.npz, keyed by the exact embedded text, so
 `index` embeds only what changed. The cache is derived data: keep it out of git.
-The ranking is a shortlist for an LLM structure check, not a verdict. Bench (2026-11-03, 175
-rows that were linked to an existing brick, query = the source quote only): hybrid recall@10
-0.72, @30 0.81; one vector per file 0.51 @10; the graph step added nothing at @10, so it is off
-by default. Read a shortlist of 30, not 10. --rerank (Haiku, held-out 72 rows): recall@1 0.39 -> 0.53.
+The ranking is a shortlist for an LLM structure check, not a verdict. Bench on the author's bank
+(2026-11-03, 175 rows that were linked to an existing brick, query = the source quote only): hybrid
+recall@10 0.72, @30 0.81; one vector per file 0.51 @10; the graph step added nothing at @10, so it is
+off by default. Read a shortlist of 30, not 10. --rerank (a `fast`-tier call through the Claude Code
+CLI, Haiku; held-out 72 rows): recall@1 0.39 -> 0.53. Without that CLI, skip --rerank.
 
 IDEA_LLAMA_SERVER  llama-server binary (default: newest llama.cpp mise has installed, then PATH)
 """
@@ -474,6 +475,7 @@ class Index:
         return out[:k]
 
 
+# --rerank runs through the Claude Code CLI (`claude -p`); its `fast` tier is Haiku.
 RERANK_MODEL = "claude-haiku-5-5"
 RERANK_PROMPT = """You match a passage from a new source to an existing idea brick in a bank.
 A brick is a structure named by the job it does: input, output, objective, constraint. Fields rename the same
@@ -511,12 +513,13 @@ def apply_rerank(reply: str, slugs: list[str]) -> list[str]:
 
 
 def llm_rerank(idx: "Index", query: str, slugs: list[str], model: str = RERANK_MODEL) -> list[str]:
-    """One headless `claude -p` call, no tools. Bench (held-out 72 rows): recall@1 0.389 -> 0.528,
-    about $0.002 per search with Haiku."""
+    """One headless Claude Code call (`claude -p`), no tools. Bench (held-out 72 rows): recall@1
+    0.389 -> 0.528, about $0.002 per search with Claude Code's Haiku."""
     env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
     r = subprocess.run(["claude", "-p", rerank_prompt(idx, query, slugs), "--model", model, "--output-format", "json",
-                        "--max-budget-usd", "0.2", "--disallowedTools", "Bash", "Read", "Write", "Edit", "Grep", "Glob",
-                        "WebFetch", "WebSearch", "Skill", "Agent", "Task", "--setting-sources", "project,local",
+                        "--max-budget-usd", "0.2",  # Claude Code tool names below
+                        "--disallowedTools", "Bash", "Read", "Write", "Edit", "Grep", "Glob", "WebFetch",
+                        "WebSearch", "Skill", "Agent", "Task", "--setting-sources", "project,local",  # Claude Code
                         "--no-session-persistence"], capture_output=True, text=True, timeout=300, env=env,
                        cwd=tempfile.gettempdir())
     data = json.loads(r.stdout or "{}")

@@ -19,15 +19,15 @@ properties by learning a sparse code for natural images".
 - Constraints of the time: compute limited patches to small sizes; no large
   image corpora.
 
-## Step 1: Sam first
+## Step 1: The owner first
 
-Sam writes: "Use the same learned sparse basis for audio instead of images."
+The owner writes: "Use the same learned sparse basis for audio instead of images."
 
 ## Step 2: Claude's neighbourhood (excerpt)
 
 | Operator | Variant |
 |----------|---------|
-| `transfer` | Same bet (efficient code explains a sensory area) applied to auditory nerve responses. Sam reached this one too |
+| `transfer` | Same bet (efficient code explains a sensory area) applied to auditory nerve responses. The owner reached this one too |
 | `substitute-operator` | Replace the infer/update loop with a feed-forward encoder trained end to end (amortised inference) |
 | `lift-constraint` | Patch size was set by compute; learn the basis on large patches or whole images |
 | `migrate-brick` | Keep `sparse-overcomplete-code`, move it to a model's internal activations: role `separate-mixed-features` in interpretability |
@@ -55,5 +55,5 @@ Sam writes: "Use the same learned sparse basis for audio instead of images."
 - Two operators combined (migration + amortised encoder) made it workable at
   scale. Combinations of two operators are worth trying when one alone breaks a
   constraint.
-- Sam's transfer variant was real and old; Claude's list added the migration.
+- The owner's transfer variant was real and old; Claude's list added the migration.
   That gap is what `me/progress.md` records.

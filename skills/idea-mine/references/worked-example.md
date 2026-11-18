@@ -24,7 +24,7 @@ read_basis: full-text
 intent_sources: [paper]
 constraints: [compute-per-patch-cost]
 status: draft
-generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T00:00:00Z }
+generated: { by: claude-code/<model>, at: 2026-11-02T00:00:00Z }
 ---
 
 # View model (layer 0)
@@ -64,7 +64,7 @@ Not checked: no talks or drafts read for this illustration.
 (illustration: a real card lists each verbatim quote with its section here)
 
 # Mutations
-| Operator | Variant | Role fit | Novelty link | Kill test | Sam verdict | Origin |
+| Operator | Variant | Role fit | Novelty link | Kill test | Owner verdict | Origin |
 |----------|---------|----------|--------------|-----------|-------------|--------|
 | lift-constraint | Learn on whole images or video; patch size and compute limits are gone | Same role, larger input | not searched | Train on full frames; does the basis stay localised? | | claude |
 | transfer | The same bet on sound | Same bet, new bricks per modality | later work did this (cochlear-like filters) | — | | claude |

@@ -10,10 +10,10 @@ embedding of it.
 1. Write the candidate's signature: input, output, objective, constraint, and a
    one-line math form when there is one.
 2. Search the bank with the candidate's signature plus the source's own words
-   for it: `uv run ~/.claude/skills/idea-bank/scripts/idea_search.py <bank>
+   for it: `uv run ../idea-bank/scripts/idea_search.py <bank>
    search "<signature>. <source quote>" --type brick` (top 30). Read the whole
-   shortlist: the right brick is often not first (bench: in the top 10 for 72% of
-   real links, the top 30 for 81%). Then also list bricks whose `roles` overlap
+   shortlist: the right brick is often not first (measured on the author's bank:
+   in the top 10 for 72% of real links, the top 30 for 81%). Then also list bricks whose `roles` overlap
    the candidate's role (`idea_index.py`), and read their `# Signature` sections. `bricks/index.md` lists the roles
    that two or more bricks share, and each brick's `# Related` section names the
    bricks that share its roles. Also scan bricks in fields related to the

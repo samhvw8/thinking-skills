@@ -68,8 +68,8 @@ A name match is not a migration. For each candidate:
 
 In order: the bank (cheapest, already structured; `idea_search.py <bank> search
 "<what the role must do>" --type brick`, and `like <brick> --other-fields` for the
-same signature in another field), Sam's known bricks (he can
+same signature in another field), the owner's known bricks (they can
 reason about them), the delegated clusters (a one-line interface is enough to
 use a brick without learning it), then a search by signature in the target
-field. A D from a delegated cluster that becomes load-bearing for Sam's work gets
+field. A D from a delegated cluster that becomes load-bearing for the owner's work gets
 checked with `paper-appraisal` before money or GPU time goes into it.

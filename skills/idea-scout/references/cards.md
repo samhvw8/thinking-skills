@@ -2,7 +2,7 @@
 
 ## The i+1 rule
 
-Write in bricks Sam `owns` (`me/known-bricks.md`). A card may add at most two new bricks.
+Write in bricks the owner `owns` (`me/known-bricks.md`). A card may add at most two new bricks.
 Explain each new brick in two sentences plus one concrete picture with the same
 structure as the mechanism. If a source needs more than two new bricks, either explain
 only the two that carry the idea and say "needs N more bricks to read deeply", or
@@ -10,8 +10,8 @@ leave it for a later batch. Mark bricks that are `seen` but not `owned` as revie
 chances: "you met this in <card>".
 
 When `known-bricks.md` is empty (the first batches), list the ideas the cards lean
-on, in plain words, at the end of the batch and ask Sam which he already knows.
-That calibrates the next batch. Never print a guess about what Sam knows.
+on, in plain words, at the end of the batch and ask the owner which they already know.
+That calibrates the next batch. Never print a guess about what the owner knows.
 
 ## Templates (bank file, English)
 
@@ -23,8 +23,8 @@ Core:
 - Idea: <one sentence>
 - Recipe: <owned brick> + <owned brick> + [NEW: <brick>] — operator: <how they combine>
 - New brick <name>: <two sentences>. Picture: <one concrete image>.
-- Why it is a gem: <the gem, and for unpopular the diagnosed reason>   # hidden at stage >= 2 until Sam guesses
-- Why you might care: <tie to a scope or one of Sam's projects>
+- Why it is a gem: <the gem, and for unpopular the diagnosed reason>   # hidden at stage >= 2 until the owner guesses
+- Why you might care: <tie to a scope or one of the owner's projects>
 - Deep read: ~<n> min · needs <k> new bricks · zoom: co-read brief
 ```
 
@@ -39,18 +39,18 @@ Delegated (one line):
 
 ## Chat rendering
 
-Show the cards in the language Sam writes in, by "Rendering for Sam" in the
+Show the cards in the language the owner writes in, by "Rendering for the owner" in the
 idea-bank schema. The bank template above is not the chat form: in chat, drop the
 Cluster/Level/Read line, the gem-type tag and the bracketed NEW markers. Each card
 opens with a plain headline sentence, names any part by the job it does (with a
 one-phrase gloss the first time), says in plain words why a reader would miss it,
-and why Sam might care. Quote only verbatim text. Keep the same order and
+and why the owner might care. Quote only verbatim text. Keep the same order and
 numbering as the file. After the cards, add one line on links between cards (two
 cards that share a question), then the vote request:
 
 `Vote each card: up | down | later + one word (e.g. "1 up design, 3 later busy").`
 
-## Worked example (from batch 261102-batch-1, card 1)
+## Worked example (a card about a published study)
 
 ```markdown
 ## 1. [unpopular] Retrieval practice costs working memory
@@ -69,7 +69,7 @@ cards that share a question), then the vote request:
 ```
 
 Why it works: it uses one new brick, names the operator, diagnoses the unpopularity,
-ties to something Sam does, and states the read basis.
+ties to something the owner does, and states the read basis.
 
 The same card in chat:
 

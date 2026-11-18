@@ -47,8 +47,8 @@ year in a query; prefer recent items by sorting what comes back.
 2. For `unpopular`, diagnose the reason with the schema table. "The bet is wrong": drop.
 3. Check scope fit. No fit: keep only as an explore candidate.
 4. Check the source is not already a card in `cards/` (same `resource`).
-5. Rank the keepers: gem strength first, then relevance to Sam's scopes and projects,
-   then how many bricks it adds beyond his known set (fewer is better at stage 1).
+5. Rank the keepers: gem strength first, then relevance to the owner's scopes and projects,
+   then how many bricks it adds beyond their known set (fewer is better at stage 1).
 6. Take the batch size and explore slots from `me/interest-state.md` settings.
 
 Record how each kept source was read (`abstract`, `passages`, `full-text`, `post`)

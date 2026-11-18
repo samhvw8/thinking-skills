@@ -1,6 +1,6 @@
 ---
 name: idea-mine
-description: "Break a source (paper, article, talk, repo, social thread) into its idea bricks and file them in Sam's idea bank, best effort and without asking Sam: what the author believed and bet on, the bricks named by the job each one does, how the bricks are put together, what changed from the source it built on, and the gems. Reads the full text, not the abstract. Use when someone asks how a source's idea is composed or built (\"how does their idea compose, like lego 1 + lego 2\"), to break a paper, post or method into parts or building blocks, to split or mine sources into the bank (one or in bulk), or to prepare a source before reading it with Sam. Not for reading a source together with Sam (co-read), combining bricks into new ideas (idea-forge), or judging whether a claim is true (paper-appraisal)."
+description: "Break a source (paper, article, talk, repo, social thread) into its idea bricks and file them in the owner's idea bank, best effort and without asking them: what the author believed and bet on, the bricks named by the job each one does, how the bricks are put together, what changed from the source it built on, and the gems. Reads the full text, not the abstract. Use when someone asks how a source's idea is composed or built (\"what lego pieces is this method made of, and how do they fit\"), to break a paper, post or method into parts or building blocks, to split or mine sources into the bank (one or in bulk), or to prepare a source before reading it with the owner. Not for reading a source together with the owner (co-read), combining bricks into new ideas (idea-forge), or judging whether a claim is true (paper-appraisal)."
 ---
 
 # Idea mine
@@ -11,7 +11,7 @@ move the authors made and why, not for whether their claims hold. A wrong paper
 with a good bet still gets a full card.
 
 The bank formats belong to `idea-bank`. Read its schema before you write a file,
-and write only those shapes: `~/.claude/skills/idea-bank/references/schema.md`.
+and write only those shapes: `../idea-bank/references/schema.md`.
 Resolve the bank root the way `idea-bank` says (`$IDEA_HOME` first).
 Before you split, name or match a brick, read "What a brick is" in the idea-bank skill.
 
@@ -110,15 +110,15 @@ For many sources (a cluster, a reading list, 50 papers):
 4. Verify a sample yourself: at least one card in five, plus every card with a
    `migration-gap`, `lifted-constraint` or `unpopular` tag. Run
    `scripts/check_quotes.py` on all of them; read the flagged quotes against the source.
-5. Run the index and report to the caller (anything shown to Sam follows
-   "Rendering for Sam" in the idea-bank schema): cards written, bricks created vs
+5. Run the index and report to the caller (anything shown to the owner follows
+   "Rendering for the owner" in the idea-bank schema): cards written, bricks created vs
    linked, broken links, convergence, and migration-gap candidates you judged
    real by structure (the index only lists candidates).
 
 ## Preparing a co-read session
 
-When `co-read` asks for prep, write the card as usual but keep it out of Sam's
-sight: `co-read` hides Claude's notes until Sam has written his own. Mark the
+When `co-read` asks for prep, write the card as usual but keep it out of the owner's
+sight: `co-read` hides Claude's notes until the owner has written their own. Mark the
 card `status: draft` and tell the caller its path.
 
 ## Output to the caller
@@ -129,7 +129,7 @@ linked, the parent and move, `read_basis`, and anything you could not get
 
 ## References
 
-- `~/.claude/skills/idea-bank/references/schema.md`: every format (owned by `idea-bank`).
+- `../idea-bank/references/schema.md`: every format (owned by `idea-bank`).
 - `references/intent-sources.md`: where intent leaks and how to query each place.
 - `references/brick-matching.md`: matching bricks by structure across fields; migration rows.
 - `references/bulk-mode.md`: the subagent brief and the merge procedure.

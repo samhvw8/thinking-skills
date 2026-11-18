@@ -21,7 +21,7 @@ Outcomes:
 
 ## Design the cheapest kill-test
 
-A kill-test answers one question: is there a result that would make Sam drop
+A kill-test answers one question: is there a result that would make the owner drop
 this variant? Design it before you design anything else.
 
 | Ask | Good answer |
@@ -30,7 +30,7 @@ this variant? Design it before you design anything else.
 | What is the cheapest data that can show it? | Toy or synthetic data first; a public dataset second; real data last |
 | What is the baseline? | The brick it replaces, run under the same budget and tuning |
 | How long does it take? | Minutes to hours. A kill-test that takes weeks is a project, not a test |
-| Where does it run? | Laptop notebook; home GPU (check `nvidia-smi` and `tmux ls` first); paper code via `paper-replicate` |
+| Where does it run? | Laptop notebook; the owner's GPU machine from `me/profile.md` (`Compute`; check its load first); paper code via `paper-replicate` |
 
 Watch for the usual ways a test lies: the new brick gets more tuning than the
 baseline, the metric is tuned on the test data, survivors-only averages, and a
@@ -38,10 +38,10 @@ criterion moved after the result.
 
 ## Protocol
 
-1. Sam writes his prediction (direction and rough size).
+1. The owner writes their prediction (direction and rough size).
 2. Fix the kill criterion, metric and baseline in the reading or card file
    before the run.
-3. Build and run. Sam writes the core lines in a deep session; Claude writes the
+3. Build and run. The owner writes the core lines in a deep session; Claude writes the
    harness.
 4. Report the real number against the criterion. A miss with the real output is
    a full result.
