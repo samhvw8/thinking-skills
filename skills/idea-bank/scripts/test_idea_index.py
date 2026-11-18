@@ -475,3 +475,115 @@ def test_same_part_twice_in_one_cut_counts_once(cuts_copy):
     assert ix["part_cuts"]["brick:twice"] == {"cost": ["brick:score-samples"]}
     assert ix["cut_how"]["brick:twice"]["cost"] == {"brick:score-samples": "split"}  # the first entry wins
     assert ix["cuts"]["labels"]["cost"]["parts"] == 3
+
+
+# --- re-cuts: a later cut must draw a new boundary; the card compares the cuts in one table ---
+
+def _add_parts(root, slug, lines, extra=""):
+    """Append entries to the end of a brick's block-style `parts` (its last frontmatter key), as a re-cut does."""
+    p = root / "bricks" / f"{slug}.md"
+    head, sep, body = p.read_text()[4:].partition("\n---\n")
+    assert head.splitlines()[-1].startswith("  - ")  # parts is the last key
+    p.write_text("---\n" + extra + head + "".join(f"\n  - {l}" for l in lines) + sep + body)
+
+
+def test_recut_report_shows_overlap_and_new_parts():
+    r = ix_mod.build(ix_mod.load(CUTS))["recuts"]
+    assert [w["whole"] for w in r] == [WHOLE]
+    cost, flow = r[0]["cuts"]
+    assert cost["cut"] == "cost" and cost["overlap"] == {"data-flow": {"shared": 2, "of": 2, "pct": 100}}
+    assert cost["retag_of"] == [] and not cost["no_new_boundary"]  # the first cut is the base
+    assert flow["new_parts"] == ["brick:score-samples"] and flow["overlap"]["cost"]["pct"] == 67
+    assert flow["retag_of"] == [] and not flow["no_new_boundary"]
+
+
+def test_recut_that_only_retags_is_flagged(cuts_copy, capsys):
+    _add_parts(cuts_copy, "self-improve-from-own-samples", [
+        "{ to: generate-candidates, how: split, cut: question, group: 'what can we try?' }",
+        "{ to: filter-bad-samples, how: split, cut: question, group: 'what do we keep?' }"])
+    q = ix_mod.build(ix_mod.load(cuts_copy))["recuts"][0]["cuts"][-1]
+    assert q["cut"] == "question" and q["retag_of"] == ["cost", "data-flow"] and q["no_new_boundary"]
+    assert q["overlap"]["data-flow"] == {"shared": 2, "of": 2, "pct": 100}
+    assert ix_mod.main([str(cuts_copy), "--recuts"]) == 0
+    out = capsys.readouterr().out
+    assert "`question` (2 parts): shares 2/2 (100%) with `cost`" in out
+    assert "RE-TAG of `cost`, `data-flow`: all its parts are parts of that cut" in out
+
+
+def test_recut_that_cuts_a_part_again_is_a_new_boundary(cuts_copy):
+    _add_parts(cuts_copy, "self-improve-from-own-samples", ["{ to: score-samples, how: split, cut: question }",
+                                                            "{ to: filter-bad-samples, how: split, cut: question }"])
+    _brick(cuts_copy, "pick-a-reference")
+    sc = cuts_copy / "bricks" / "score-samples.md"
+    sc.write_text(sc.read_text().replace("parts: [compare-to-reference]", "parts:\n  - compare-to-reference\n"
+                                         "  - { to: pick-a-reference, how: split, cut: question }"))
+    r = {w["whole"]: w["cuts"] for w in ix_mod.build(ix_mod.load(cuts_copy))["recuts"]}
+    q = r[WHOLE][-1]
+    assert q["parts_cut_again"] == ["brick:score-samples"] and q["retag_of"] == [] and not q["no_new_boundary"]
+
+
+def test_recut_mixing_parts_of_two_cuts_draws_no_boundary(cuts_copy):
+    for s in ("x", "y", "z"):
+        _brick(cuts_copy, s)
+    _brick(cuts_copy, "mixed", "parts:\n  - { to: x, cut: cost }\n  - { to: y, cut: cost }\n"
+                               "  - { to: y, cut: risk }\n  - { to: z, cut: risk }\n"
+                               "  - { to: x, cut: temporal }\n  - { to: z, cut: temporal }\n")
+    r = {w["whole"]: w for w in ix_mod.build(ix_mod.load(cuts_copy))["recuts"]}["brick:mixed"]["cuts"]
+    assert r[1]["new_parts"] == ["brick:z"] and not r[1]["no_new_boundary"]
+    assert r[2]["retag_of"] == [] and r[2]["no_new_boundary"]  # x and z both came earlier, from two cuts
+
+
+def _question_cut(root):
+    _brick(root, "samples-match-target")
+    _add_parts(root, "self-improve-from-own-samples", [
+        "{ to: compare-to-reference, how: split, cut: question, group: 'is it good?' }",
+        "{ to: generate-then-filter, how: bind, cut: question, group: 'what do we keep?' }",
+        "{ to: samples-match-target, how: split, cut: question, group: 'what must hold? | assumed' }"],
+        "cuts:\n  - { cut: question, angle: what question each part answers, shows: only the check needs a reference }\n")
+
+
+def test_card_gets_one_table_comparing_the_cuts(cuts_copy):
+    _question_cut(cuts_copy)
+    assert ix_mod.main([str(cuts_copy), "--write"]) == 0
+    assert ix_mod.main([str(cuts_copy), "--check"]) == 0
+    card = (cuts_copy / "cards" / "self-training-card.md").read_text()
+    rows = [l for l in card.splitlines() if l.startswith("| ") and "Signature" not in l and "(inferred)" not in l]
+    gtf = "Generate, then keep the good ones"
+    assert rows == [
+        "| Piece | `data-flow` (Recipe) | `cost` | `question` |",
+        f"| [generate-candidates](/bricks/generate-candidates.md) | make samples | part | inside {gtf} |",
+        "| [score-samples](/bricks/score-samples.md) | score them | - | spans compare-to-reference |",
+        f"| [filter-bad-samples](/bricks/filter-bad-samples.md) | keep the good ones | part | inside {gtf} |",
+        "| [compare-to-reference](/bricks/compare-to-reference.md) | inside score-samples | - | is it good? |",
+        f"| [{gtf}](/bricks/generate-then-filter.md) | spans generate-candidates, filter-bad-samples "
+        "| spans generate-candidates, filter-bad-samples | what do we keep? |",
+        "| [samples-match-target](/bricks/samples-match-target.md) | - | - | what must hold? \\| assumed |",
+    ]
+    assert "- `question` (asked: what question each part answers): only the check needs a reference" in card
+    assert "- `cost`: not written yet" in card
+    # the table sits right after the Recipe section, before the next section and the Related block
+    assert card.index("Operator: sequence") < card.index("# Cuts compared") < card.index("# Related")
+    assert card.count("self-improve-from-own-samples.md") == 1  # the table does not link the method again
+
+
+def test_cut_table_is_idempotent_and_leaves_hand_text(cuts_copy):
+    p = cuts_copy / "cards" / "self-training-card.md"
+    p.write_text(p.read_text() + "\n# Raw\nRe-read for cut question: Methods 2.1\n")
+    _question_cut(cuts_copy)
+    ix_mod.main([str(cuts_copy), "--write"])
+    once = p.read_text()
+    ix_mod.main([str(cuts_copy), "--write"])
+    assert p.read_text() == once
+    assert once.index("# Cuts compared") < once.index("# Raw") < once.index("# Related")
+    assert "Re-read for cut question: Methods 2.1" in once
+
+
+def test_cut_table_needs_two_cuts(cuts_copy):
+    ix_mod.main([str(cuts_copy), "--write"])
+    p = cuts_copy / "cards" / "self-training-card.md"
+    assert "# Cuts compared" in p.read_text()  # the fixture's method has a cost and a data-flow cut
+    b = cuts_copy / "bricks" / "self-improve-from-own-samples.md"
+    b.write_text("".join(l for l in b.read_text().splitlines(True) if "cut: cost" not in l))
+    ix_mod.main([str(cuts_copy), "--write"])
+    text = p.read_text()
+    assert "# Cuts compared" not in text and "cuts:begin" not in text and "Operator: sequence\n\n<!-- related" in text

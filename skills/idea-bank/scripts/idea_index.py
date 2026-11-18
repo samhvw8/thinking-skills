@@ -4,11 +4,14 @@
 # ///
 """Index an idea bank: links, convergence, migration-gap candidates, cuts, known-bricks coverage.
 
-Usage: uv run idea_index.py <bank-root> [--json out.json] [--suggest-merges] [--write | --check | --cuts]
+Usage: uv run idea_index.py <bank-root> [--json out.json] [--suggest-merges] [--write | --check | --cuts | --recuts]
 
 Deterministic and offline. Gap candidates are a list for judgement, not findings.
 The Cuts report checks every `cut` label against the cut registry (references/cuts.json, built from the
-repo's decks) and the labels already in the bank, and lists near-duplicate labels.
+repo's decks) and the labels already in the bank, and lists near-duplicate labels. The Re-cuts report shows,
+per unit with two or more cuts, the parts each cut shares with the others and flags a later cut that only
+re-tags an earlier one.
+--write also puts a `# Cuts compared` table on every card whose method brick has two or more cuts.
 --write regenerates the views made from frontmatter (including `parts` and `links`): a `# Related` section in every
 brick, card, lens and move, and `bricks/index.md`. It also moves a frontmatter
 `signature` into the body. --check exits 1 when any of these is out of date.
@@ -105,6 +108,7 @@ def unit_graph(concepts: list[dict]) -> dict:
     parts: dict[str, list[str]] = {}  # whole -> distinct parts over all cuts (depth uses this)
     part_cuts: dict[str, dict[str, list[str]]] = {}  # whole -> cut -> parts, in frontmatter order
     cut_how: dict[str, dict[str, dict[str, str]]] = {}  # whole -> cut -> part -> "how: note"
+    cut_group: dict[str, dict[str, dict[str, str]]] = {}  # whole -> cut -> part -> its place in that cut
     part_of: dict[str, set[str]] = defaultdict(set)
     part_of_cuts: dict[str, dict[str, list[str]]] = defaultdict(dict)  # part -> whole -> cuts it is in
     binds: dict[str, list[str]] = {}  # whole -> cuts that hold a `how: bind` entry
@@ -126,6 +130,8 @@ def unit_graph(concepts: list[dict]) -> dict:
                 cut_entries.append((key, cut))
                 part_of[r].add(key)
                 part_of_cuts[r].setdefault(key, []).append(cut)
+                if entry.get("group"):
+                    cut_group.setdefault(key, {}).setdefault(cut, {})[r] = str(entry["group"])
                 if entry.get("how"):
                     how = str(entry["how"]) + (f": {entry['note']}" if entry.get("note") else "")
                     cut_how.setdefault(key, {}).setdefault(cut, {})[r] = how
@@ -169,7 +175,7 @@ def unit_graph(concepts: list[dict]) -> dict:
 
     for k in sorted(set(parts) | set(part_of)):
         visit(k, [])
-    return {"parts": parts, "part_cuts": part_cuts, "cut_how": cut_how, "binds": binds,
+    return {"parts": parts, "part_cuts": part_cuts, "cut_how": cut_how, "cut_group": cut_group, "binds": binds,
             "part_of": {k: sorted(v) for k, v in sorted(part_of.items())},
             "part_of_cuts": {k: dict(sorted(v.items())) for k, v in sorted(part_of_cuts.items())},
             "cut_entries": cut_entries,
@@ -270,6 +276,12 @@ CUT_LINE_RE = re.compile(r"^Cut:\s*`?([^`\s]+)`?", re.M)
 
 def recipe(body: str) -> tuple[str | None, list[str]]:
     """The `Cut:` label and the brick slugs of a card's `# Recipe ...` section (cells that are not slugs are skipped)."""
+    cut, rows = recipe_roles(body)
+    return cut, list(rows)
+
+
+def recipe_roles(body: str) -> tuple[str | None, dict[str, str]]:
+    """The `Cut:` label and {brick slug: Role cell} of a card's `# Recipe ...` section, in table order."""
     text, inside = [], False
     for line in body.splitlines():
         if line.startswith("# "):
@@ -281,7 +293,7 @@ def recipe(body: str) -> tuple[str | None, list[str]]:
             text.append(line)
     section = "\n".join(text)
     m = CUT_LINE_RE.search(section)
-    slugs, header = [], None
+    slugs, header = {}, None
     for line in section.splitlines():
         if not line.strip().startswith("|"):
             continue
@@ -292,9 +304,10 @@ def recipe(body: str) -> tuple[str | None, list[str]]:
         if set("".join(cells)) <= set("-: "):
             continue
         col = next((i for i, h in enumerate(header) if h.startswith("brick")), None)
+        rcol = next((i for i, h in enumerate(header) if h.startswith("role")), None)
         cell = cells[col].strip("` ") if col is not None and col < len(cells) else ""
         if SLUG_RE.match(cell) and cell not in slugs:
-            slugs.append(cell)
+            slugs[cell] = cells[rcol] if rcol is not None and rcol < len(cells) else ""
     return (m.group(1) if m else None), slugs
 
 
@@ -329,6 +342,36 @@ def cut_report(g: dict, registry: dict[str, str]) -> dict:
             "unregistered": sorted(c for c in labels if c not in registry),
             "unlabelled_wholes": unlabelled, "near_duplicates": near,
             "binds": {w: cs for w, cs in sorted(g["binds"].items())}}
+
+
+def recut_report(g: dict) -> list[dict]:
+    """Per whole with two or more cuts: the parts each cut shares with every other cut, and re-tags.
+
+    Cuts are taken in the order they first appear in `parts`. A later cut draws a new boundary when it
+    has a part no earlier cut has (a split piece, a bound whole, an added piece) or cuts one of its parts
+    again under the same label. A later cut whose parts are all parts of one earlier cut, with neither of
+    those, only re-tags that cut: flag it (record the angle as a note on the brick, not as a cut).
+    """
+    out = []
+    for whole, cuts in g["part_cuts"].items():
+        if len(cuts) < 2:
+            continue
+        names, rows = list(cuts), []
+        for i, c in enumerate(names):
+            mine = cuts[c]
+            overlap = {}
+            for o in names:
+                if o != c:
+                    shared = [p for p in mine if p in cuts[o]]
+                    overlap[o] = {"shared": len(shared), "of": len(mine), "pct": round(100 * len(shared) / len(mine))}
+            earlier = {p for o in names[:i] for p in cuts[o]}
+            new = [p for p in mine if p not in earlier] if i else []
+            recut = [p for p in mine if c in g["part_cuts"].get(p, {})] if i else []
+            retag = [o for o in names[:i] if set(mine) <= set(cuts[o])] if not (new or recut) else []
+            rows.append({"cut": c, "parts": len(mine), "new_parts": new, "parts_cut_again": recut,
+                         "overlap": overlap, "retag_of": retag, "no_new_boundary": bool(i) and not (new or recut)})
+        out.append({"whole": whole, "cuts": rows})
+    return out
 
 
 def build(concepts: list[dict], registry: dict[str, str] | None = None) -> dict:
@@ -472,6 +515,7 @@ def build(concepts: list[dict], registry: dict[str, str] | None = None) -> dict:
         "part_of": g["part_of"],
         "part_of_cuts": g["part_of_cuts"],
         "cuts": cut_report(g, registry),
+        "recuts": recut_report(g),
         "cards_without_method": old_shape,
         "recipe_drift": recipe_drift,
         "depth": g["depth"],
@@ -523,6 +567,7 @@ def render(ix: dict) -> str:
             for n in cu["near_duplicates"]]
     out += [f"- bound (how: bind): {w} under {', '.join(cs)}" for w, cs in cu["binds"].items()]
     out += [""]
+    out += render_recuts(ix["recuts"])
     out += [f"## Cards without a method brick (older shape): {len(ix['cards_without_method'])}"] + (
         [f"- {', '.join(ix['cards_without_method'][:15])}" + (f", ... {len(ix['cards_without_method']) - 15} more" if len(ix['cards_without_method']) > 15 else "")]
         if ix["cards_without_method"] else ["- none"]) + [""]
@@ -540,6 +585,25 @@ def render(ix: dict) -> str:
     if k["unknown_slugs"]:
         out.append(f"- slugs not in bank: {', '.join(k['unknown_slugs'])}")
     return "\n".join(out) + "\n"
+
+
+def render_recuts(recuts: list[dict]) -> list[str]:
+    out = ["## Re-cuts (a later cut must draw a new boundary: split, bind or add a piece)"]
+    for w in recuts:
+        for r in w["cuts"]:
+            share = "; ".join(f"shares {o['shared']}/{o['of']} ({o['pct']}%) with `{c}`" for c, o in r["overlap"].items())
+            line = f"- {w['whole']}: `{r['cut']}` ({r['parts']} parts"
+            if r["new_parts"]:
+                line += f", new: {', '.join(p.split(':', 1)[1] for p in r['new_parts'])}"
+            if r["parts_cut_again"]:
+                line += f", cut again: {', '.join(p.split(':', 1)[1] for p in r['parts_cut_again'])}"
+            line += f"): {share}"
+            if r["retag_of"]:
+                line += f". RE-TAG of {', '.join(f'`{c}`' for c in r['retag_of'])}: all its parts are parts of that cut"
+            elif r["no_new_boundary"]:
+                line += ". NO NEW BOUNDARY: every part is in an earlier cut"
+            out.append(line)
+    return (out if len(out) > 1 else out + ["- none (no unit has two cuts)"]) + [""]
 
 
 REL_BEGIN = "<!-- related:begin (generated by idea_index.py --write; edit the frontmatter lists, not this section) -->"
@@ -691,6 +755,99 @@ def views(concepts: list[dict], prefix: str) -> dict[str, str]:
     return {k: "\n".join(v) for k, v in out.items()}
 
 
+CUTS_BEGIN = ("<!-- cuts:begin (generated by idea_index.py --write from the method brick's parts and cuts; "
+              "edit those, not this table) -->")
+CUTS_END = "<!-- cuts:end -->"
+CUTS_RE = re.compile(r"\n*<!-- cuts:begin.*?<!-- cuts:end -->\n*", re.S)
+
+
+def cut_tables(concepts: list[dict], prefix: str) -> dict[str, str]:
+    """`# Cuts compared` per card whose method brick holds two or more cuts: a row per piece, a column per cut.
+
+    A cell names the piece's place in that cut: its `group` (for the Recipe's cut, the Recipe's Role cell),
+    `inside X` (the cut keeps the piece within its part X), `spans X, Y` (the piece joins parts the cut
+    keeps apart), or a dash (the cut does not have it). The closing lines come from the brick's `cuts`.
+    """
+    g = unit_graph(concepts)
+    units = {f"{k}:{c['slug']}": c for c in concepts for k, t in UNIT_TYPES.items() if c["fm"]["type"] == t}
+    memo: dict[str, set[str]] = {}
+
+    def below(k: str) -> set[str]:
+        if k not in memo:
+            memo[k], todo = set(), list(g["parts"].get(k, []))
+            while todo:
+                q = todo.pop()
+                if q not in memo[k]:
+                    memo[k].add(q)
+                    todo += g["parts"].get(q, [])
+        return memo[k]
+
+    def title(k: str) -> str:
+        c = units.get(k)
+        return str(c["fm"].get("title") or c["slug"]) if c else k.split(":", 1)[1]
+
+    def esc(text: str) -> str:
+        return str(text).replace("|", "\\|").replace("\n", " ")
+
+    out = {}
+    for c in concepts:
+        method = c["fm"].get("method") if c["fm"]["type"] == "Idea Card" else None
+        whole = f"brick:{method}"
+        cuts = g["part_cuts"].get(whole, {})
+        if len(cuts) < 2:
+            continue
+        rcut, roles = recipe_roles(c["body"])
+        groups = g["cut_group"].get(whole, {})
+        meta = {str(m["cut"]): m for m in as_list(units[whole]["fm"].get("cuts")) if isinstance(m, dict) and m.get("cut")}
+        names = sorted(cuts, key=lambda n: n != rcut)  # the Recipe's cut first, the others in order
+
+        def cell(p: str, n: str) -> str:
+            if p in cuts[n]:
+                return groups.get(n, {}).get(p) or (roles.get(p.split(":", 1)[1]) if n == rcut else "") or "part"
+            inside = [q for q in cuts[n] if p in below(q)]
+            if inside:
+                return "inside " + ", ".join(title(q) for q in inside)
+            spans = [q for q in cuts[n] if q in below(p)]
+            return "spans " + ", ".join(title(q) for q in spans) if spans else "-"
+
+        def head(n: str) -> str:
+            return ("no cut recorded" if n == UNLABELLED else f"`{n}`") + (" (Recipe)" if n == rcut else "")
+
+        rows = ["| Piece | " + " | ".join(head(n) for n in names) + " |",
+                "|" + "---|" * (len(names) + 1)]
+        for p in dict.fromkeys(q for n in names for q in cuts[n]):
+            k, slug = p.split(":", 1)
+            piece = f"[{esc(title(p))}]({prefix}/{DIRS[UNIT_TYPES[k]]}/{slug}.md)"
+            rows.append(f"| {piece} | " + " | ".join(esc(cell(p, n)) for n in names) + " |")
+        shows = []
+        for i, n in enumerate(names):
+            m = meta.get(n, {})
+            asked = f" (asked: {m['angle']})" if m.get("angle") else ""
+            if m.get("shows"):
+                shows.append(f"- {head(n)}{asked}: {m['shows']}")
+            elif i:
+                shows.append(f"- {head(n)}{asked}: not written yet (add `shows` to this cut in the method brick's `cuts`)")
+        out[f"cards/{c['slug']}"] = "\n".join(
+            [CUTS_BEGIN, "# Cuts compared", "",
+             "Each row is a piece of the method; each column is one cut and names the piece's place in it. "
+             "`inside X`: the cut keeps the piece within X. `spans X`: the piece joins parts the cut keeps apart. "
+             "`-`: the cut does not have the piece.", ""] + rows
+            + ([""] + ["What each cut shows that the others do not:"] + shows if shows else []) + [CUTS_END])
+    return out
+
+
+def with_cuts(body: str, block: str) -> str:
+    """Put the generated `# Cuts compared` block right after the card's Recipe section (or drop it)."""
+    lines = CUTS_RE.sub("\n\n", body).split("\n")
+    if not block:
+        return "\n".join(lines)
+    start = next((i for i, l in enumerate(lines) if l.startswith("# ") and l[2:].strip().lower().startswith("recipe")), -1)
+    at = next((i for i in range(start + 1, len(lines))
+               if (start >= 0 and lines[i].startswith("# ")) or lines[i].startswith("<!-- related:begin")), len(lines))
+    before, after = "\n".join(lines[:at]).rstrip("\n"), "\n".join(lines[at:]).lstrip("\n")
+    return (before + "\n\n" if before.strip() else "") + block + ("\n\n" + after if after.strip() else "\n")
+
+
 def related_block(lines: str) -> str:
     return f"{REL_BEGIN}\n# Related\n\n{lines or '- none yet'}\n{REL_END}\n"
 
@@ -752,6 +909,7 @@ def sync_views(root: Path, write: bool) -> list[str]:
     """Bring generated views up to date. Returns bank-relative paths that changed (or would change)."""
     concepts = load(root)
     rel = views(concepts, link_prefix(root))
+    tables = cut_tables(concepts, link_prefix(root))
     changed = []
     for c in concepts:
         t = c["fm"]["type"]
@@ -763,6 +921,8 @@ def sync_views(root: Path, write: bool) -> list[str]:
         fm_text, body = m.group(1), m.group(2)
         if t == "Brick" and c["fm"].get("signature") is not None:
             fm_text, body = lift_signature(fm_text, body, c["fm"]["signature"])
+        if t == "Idea Card":
+            body = with_cuts(body, tables.get(f"cards/{c['slug']}", ""))
         new = f"---\n{fm_text}\n---\n\n" + with_related(body.lstrip("\n"), rel.get(f"{DIRS[t]}/{c['slug']}", ""))
         if new != text:
             changed.append(c["path"])
@@ -791,6 +951,8 @@ def main(argv: list[str] | None = None) -> int:
     mode.add_argument("--check", action="store_true", help="exit 1 when generated views are out of date")
     mode.add_argument("--cuts", action="store_true",
                       help="print the cut registry (id: how to cut) and the cut labels in use; run it before you write a cut")
+    mode.add_argument("--recuts", action="store_true",
+                      help="print only the Re-cuts report (overlap between cuts, re-tags); run it after you write a cut")
     args = ap.parse_args(argv)
     if not args.root.is_dir():
         print(f"idea_index: {args.root} is not a directory", file=sys.stderr)
@@ -808,6 +970,9 @@ def main(argv: list[str] | None = None) -> int:
         sys.stdout.write("\n# Labels in use\n" + ("".join(
             f"- {c}{'' if r['registry'] else ' (NOT in registry)'}: {r['wholes']} whole(s)\n"
             for c, r in cu["labels"].items()) or "- none\n"))
+        return 0
+    if args.recuts:
+        sys.stdout.write("\n".join(render_recuts(build(concepts)["recuts"])))
         return 0
     ix = build(concepts)
     if args.suggest_merges:

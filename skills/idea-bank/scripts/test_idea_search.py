@@ -56,6 +56,16 @@ def test_chunks_skip_related_and_split_views(bank):
     assert sig["text"].startswith("- Input: signal")
 
 
+def test_chunks_skip_the_generated_cut_table(tmp_path):
+    dst = tmp_path / "cuts"
+    shutil.copytree(HERE / "fixtures" / "cuts-bank", dst)
+    S.ix.main([str(dst), "--write"])  # the fixture's method brick has two cuts: the card gets the table
+    assert "# Cuts compared" in (dst / "cards" / "self-training-card.md").read_text()
+    ch = S.chunks(S.ix.load(dst))
+    assert not any("cuts:begin" in c["text"] or "Cuts compared" in c["text"] for c in ch)
+    assert [c["view"] for c in ch if c["slug"] == "self-training-card"].count("recipe") == 3
+
+
 def test_index_is_incremental(bank):
     FakeEmbedder.calls = 0
     S.Index(bank)

@@ -13,8 +13,8 @@ Usage:
 Chunks: a brick gives a signature view, a gloss view (title, description, the prose), one
 view per field in `names`, one per migration paragraph and one for `# Where it fails`. A
 card gives its head, one chunk per layer section, one per Recipe, Raw and Mutations row.
-Lenses and moves are one chunk each. Generated `# Related` sections are never embedded: the
-graph step uses the links themselves.
+Lenses and moves are one chunk each. Generated `# Related` and `# Cuts compared` sections are never
+embedded: the graph step uses the links themselves.
 
 Vectors are cached in <bank-root>/.index/eg2.npz, keyed by the exact embedded text, so
 `index` embeds only what changed. The cache is derived data: keep it out of git.
@@ -68,8 +68,8 @@ REL_RE = ix.REL_RE
 # ---------- chunks ----------
 
 def sections(body: str) -> list[tuple[str, str]]:
-    """Top-level `# Heading` sections of a body, generated Related block removed."""
-    body = REL_RE.sub("\n", body)
+    """Top-level `# Heading` sections of a body, generated Related and Cuts compared blocks removed."""
+    body = ix.CUTS_RE.sub("\n", REL_RE.sub("\n", body))
     out, head, buf = [], "", []
     for line in body.splitlines():
         if line.startswith("# "):
