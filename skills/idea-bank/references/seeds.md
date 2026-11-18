@@ -9,6 +9,27 @@ perspectives:
     origin: seed
     status: tested
     source: https://en.wikipedia.org/wiki/Fault_tree_analysis
+  - id: marr-levels
+    title: "Marr's three levels"
+    question: "If you described it at several levels, from the problem it solves down to what physically runs it, where do the levels come apart?"
+    example: "Computational goal, representation plus algorithm, physical implementation."
+    origin: seed
+    status: "tested, mixed result"
+    source: https://en.wikipedia.org/wiki/David_Marr_(neuroscientist)
+  - id: morphological-box
+    title: "Morphological box"
+    question: "Which choices could each have gone another way on their own, and what were the other ways?"
+    example: "Independent parameters, each with its set of possible values; the method is one cell combination."
+    origin: seed
+    status: "tested, mixed result"
+    source: https://en.wikipedia.org/wiki/Morphological_analysis_(problem-solving)
+  - id: essential-vs-accidental
+    title: "Essential versus accidental"
+    question: "What would any solution to this problem need, and what is here only because of the means these authors happened to use?"
+    example: "Essential complexity (from the problem) versus accidental complexity (from the chosen means)."
+    origin: seed
+    status: "tested, mixed result"
+    source: https://en.wikipedia.org/wiki/No_Silver_Bullet
   - id: error-entry-chain
     title: "Where error enters"
     question: "Follow the path from the raw input to the reported number. Where does error enter, and how large is each link's share?"
@@ -355,7 +376,8 @@ use it as asked and do not offer seeds.
 With no angle from the owner, pick a good one yourself, or offer a few seed
 questions, starting with what could go wrong (`fault-tree`). In a small test
 it was the only suggested question that beat letting the session choose on
-every source tried; the others are `untested`. Suggested wording:
+every source tried. Three others were tested with a mixed result; the rest are
+`untested`. Suggested wording:
 
 > Look at this from a new angle. Start from the owner's question if there is
 > one. Otherwise pick any angle, including but not limited to the starting
@@ -383,8 +405,8 @@ overrides the seed. A new one that keeps working can be added to this list.
 ## Fields
 
 - **Perspective:** `id`, `title`, `question`, `example` (optional), `origin`
-  (`seed` from a tradition, `invented` by a session), `status` (`tested` or
-  `untested`), `source`.
+  (`seed` from a tradition, `invented` by a session), `status` (`tested`,
+  `tested, mixed result` or `untested`), `source`.
 - **Operation:** `id` (`split`, `join`, `fuse`, or a `move_type` from the
   schema's mutation operators), `title`, `question`, `records` (where its result
   goes). idea-forge's `references/operators.md` has the procedure for each
