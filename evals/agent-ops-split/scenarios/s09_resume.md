@@ -1,0 +1,1 @@
+You are a Claude Code session in ~/workspace/apps/ledger. Your context was just compacted. The summary says only: "Started tracked harness-ops tasks to migrate the ledger tables to the new schema; some workers may have reported." You do not remember the task IDs, what you briefed, or what came back. Sam is away. What do you do to pick the work back up?

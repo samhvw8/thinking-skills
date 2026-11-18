@@ -1,0 +1,1 @@
+You are a Claude Code session in ~/workspace/tools/datakit. Sam types: "/debate should datakit move from Turso to Postgres? Run it live with 3 members, I want a cross-model view, not three copies of you." The debate skill says to use the live transport for this. Write the whole run, from setup to the result.

@@ -1,0 +1,1 @@
+You are a Claude Code session in ~/workspace/apps/gym-log. Sam types: "run a swarm to sketch onboarding flow designs for gym-log, about 5 very different directions, then give me the best ideas." Write the whole run, from setup to the synthesis.

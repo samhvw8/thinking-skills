@@ -1,0 +1,54 @@
+Retargeted cross-references (file: from -> to):
+- SKILL.md: "take it from `roster.md` by role (## Roles)" -> "take it from `roster.md` by role (## Roles, `roles.md`)"
+- SKILL.md: "Decide and answer it as in ## Task or subagent:" -> "Decide and answer it as in `dialogs.md`:"
+- SKILL.md: "Decide as in ## Task or subagent, then" -> "Decide as in `dialogs.md`, then"
+- pair.md: "run a live team of 2 (## Live team)" -> "run a live team of 2 (## Live team, `live-team.md`)"
+- pair.md: "Answer it as in   ## Task or subagent (`answer`" -> "Answer it as in   `dialogs.md` (`answer`"
+- live-team.md: "diversity setting (## Roles)" -> "diversity setting (## Roles, `roles.md`)"
+- live-team.md: "answer it as in ## Task or subagent, whatever round" -> "answer it as in `dialogs.md`, whatever round"
+- swarm.md: "| Role (## Roles) |" -> "| Role (## Roles, `roles.md`) |"
+- roster.md: "(SKILL.md, ## Roles)" -> "(`roles.md`, ## Roles)"
+
+Lines missing from the split (original text not present verbatim):
+1x (## Roles). **Never start agy without a `--model` from the roster:** its default, Gemini 4 Carbon, thinks for
+1x other sessions instead, run a live team of 2 (## Live team).
+1x   ## Task or subagent (`answer` or `deny` with the pane), even outside the `Your turn:` rule: the
+1x Pick each member's role and the diversity setting (## Roles), and its launch command from `roster.md`.
+1x    `pane ... DIALOG` notice: answer it as in ## Task or subagent, whatever round it is. A member you
+1x | Layer | Role (## Roles) | Job |
+1x | `[agent-ops from <task> ...] task <id> (...) DIALOG <fp>: ...` (you lead that task) | Decide and answer it as in ## Task or subagent: `answer` or `deny`. No `RE:`. |
+1x | `[agent-ops from <label> ...] pane <pane> (<label>) DIALOG <fp>: ...` (a pane you started: a pair partner, a live-team member) | Act on it now, also in a pair or live team and outside the "act only on `Your turn:`" rule: the member is stalled until you answer. Decide as in ## Task or subagent, then `answer <pane> <n> --expect <fp>` or `deny <pane> --expect <fp>`. No `RE:` and no turn message. A dialog on your own pane stays Sam's. |
+
+Lines added by the split:
+1x (## Roles, `roles.md`). **Never start agy without a `--model` from the roster:** its default, Gemini 4 Carbon, thinks for
+1x ## Reference files
+1x The rest is in files next to this one, each under its original heading. Read one only when the job needs it.
+1x | File (section) | Read it when |
+1x |---|---|
+1x | `layout.md` (## Where a new agent opens) | Before `spawn`, `task new` or `task review`, or to regroup panes |
+1x | `tasks.md` (## Task or subagent, ## Run a crew) | Handing a job to a tracked worker or a crew: brief, wait, accept, review, failures, closing |
+1x | `dialogs.md` (A worker at a permission dialog) | A `DIALOG` notice arrives, or a worker or pane you spawned waits at a dialog |
+1x | `worktree.md` (## Give an editing agent its own worktree) | Before you start an agent that will change files |
+1x | `pair.md` (## Pair with a peer) | Starting or joining a pair |
+1x | `live-team.md` (## Live team) | A debate, council, brainstorm or review with 2 to 6 sessions |
+1x | `swarm.md` (## Swarm) | A director, a manager and workers |
+1x | `roles.md` (## Roles) | Picking a member's role and diversity setting |
+1x | `[agent-ops from <task> ...] task <id> (...) DIALOG <fp>: ...` (you lead that task) | Decide and answer it as in `dialogs.md`: `answer` or `deny`. No `RE:`. |
+1x | `[agent-ops from <label> ...] pane <pane> (<label>) DIALOG <fp>: ...` (a pane you started: a pair partner, a live-team member) | Act on it now, also in a pair or live team and outside the "act only on `Your turn:`" rule: the member is stalled until you answer. Decide as in `dialogs.md`, then `answer <pane> <n> --expect <fp>` or `deny <pane> --expect <fp>`. No `RE:` and no turn message. A dialog on your own pane stays Sam's. |
+1x # agent-ops: where a new agent opens
+8x Part of the agent-ops skill (`SKILL.md` next to this file has the commands and the rules for
+8x sending and receiving).
+1x # agent-ops: tasks and crews
+1x - **A worker at a permission dialog.** Read `dialogs.md` (next to this file).
+1x # agent-ops: permission dialogs
+1x # agent-ops: worktrees
+1x # agent-ops: pairs
+1x other sessions instead, run a live team of 2 (## Live team, `live-team.md`).
+1x   `dialogs.md` (`answer` or `deny` with the pane), even outside the `Your turn:` rule: the
+1x # agent-ops: live team
+1x Pick each member's role and the diversity setting (## Roles, `roles.md`), and its launch command from `roster.md`.
+1x    `pane ... DIALOG` notice: answer it as in `dialogs.md`, whatever round it is. A member you
+1x # agent-ops: swarm
+1x | Layer | Role (## Roles, `roles.md`) | Job |
+1x # agent-ops: roles
+1x This bullet belongs to ## Task or subagent (`tasks.md`).

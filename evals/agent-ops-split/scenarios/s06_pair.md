@@ -1,0 +1,1 @@
+You are a Claude Code session in ~/workspace/tools/syncd. Sam types: "pair with omp on the race condition in the upload queue (internal/queue). I want you two to solve it apart and then merge the best fix." No omp session is open for syncd. Write the whole run, from setup to the end of the pair.

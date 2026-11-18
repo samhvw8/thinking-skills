@@ -1,0 +1,42 @@
+Retargeted cross-references (file: from -> to):
+- SKILL.md: "take it from `roster.md` by role (## Roles)" -> "take it from `roster.md` by role (## Roles, `roles.md`)"
+- pair.md: "run a live team of 2 (## Live team)" -> "run a live team of 2 (## Live team, `live-team.md`)"
+- pair.md: "Answer it as in   ## Task or subagent (`answer`" -> "Answer it as in   ## Task or subagent in `SKILL.md` (`answer`"
+- live-team.md: "diversity setting (## Roles)" -> "diversity setting (## Roles, `roles.md`)"
+- live-team.md: "answer it as in ## Task or subagent, whatever round" -> "answer it as in ## Task or subagent in `SKILL.md`, whatever round"
+- swarm.md: "| Role (## Roles) |" -> "| Role (## Roles, `roles.md`) |"
+- roster.md: "(SKILL.md, ## Roles)" -> "(`roles.md`, ## Roles)"
+
+Lines missing from split2 (original text not present verbatim):
+1x (## Roles). **Never start agy without a `--model` from the roster:** its default, Gemini 4 Carbon, thinks for
+1x other sessions instead, run a live team of 2 (## Live team).
+1x   ## Task or subagent (`answer` or `deny` with the pane), even outside the `Your turn:` rule: the
+1x Pick each member's role and the diversity setting (## Roles), and its launch command from `roster.md`.
+1x    `pane ... DIALOG` notice: answer it as in ## Task or subagent, whatever round it is. A member you
+1x | Layer | Role (## Roles) | Job |
+
+Lines added by split2:
+1x (## Roles, `roles.md`). **Never start agy without a `--model` from the roster:** its default, Gemini 4 Carbon, thinks for
+1x ## Reference files
+1x Procedures are in files next to this one, each under its original heading. Read one only when the job needs it.
+1x | File (section) | Read it when |
+1x |---|---|
+1x | `layout.md` (## Where a new agent opens) | Before `spawn`, `task new` or `task review`, or to regroup panes |
+1x | `worktree.md` (## Give an editing agent its own worktree) | Before you start an agent that will change files |
+1x | `pair.md` (## Pair with a peer) | Starting or joining a pair |
+1x | `live-team.md` (## Live team) | A debate, council, brainstorm or review with 2 to 6 sessions |
+1x | `swarm.md` (## Swarm) | A director, a manager and workers |
+1x | `roles.md` (## Roles) | Picking a member's role and diversity setting |
+1x # agent-ops: where a new agent opens
+6x Part of the agent-ops skill (`SKILL.md` next to this file has the commands and the rules for
+6x sending and receiving).
+1x # agent-ops: worktrees
+1x # agent-ops: pairs
+1x other sessions instead, run a live team of 2 (## Live team, `live-team.md`).
+1x   ## Task or subagent in `SKILL.md` (`answer` or `deny` with the pane), even outside the `Your turn:` rule: the
+1x # agent-ops: live team
+1x Pick each member's role and the diversity setting (## Roles, `roles.md`), and its launch command from `roster.md`.
+1x    `pane ... DIALOG` notice: answer it as in ## Task or subagent in `SKILL.md`, whatever round it is. A member you
+1x # agent-ops: swarm
+1x | Layer | Role (## Roles, `roles.md`) | Job |
+1x # agent-ops: roles
