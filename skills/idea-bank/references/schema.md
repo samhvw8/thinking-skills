@@ -93,7 +93,8 @@ description: <the one idea, one sentence>
 tags: [ideas, card, <cluster>]
 resource: <canonical URL or DOI>
 field: <field slug of the source>
-bricks: [<brick slug>, ...]        # bricks used in the recipe
+method: <brick slug>               # the source's method as one brick; its cuts hold the splits
+bricks: [<brick slug>, ...]        # bricks the card uses (the index adds `method`)
 lenses: [<lens slug>, ...]         # view models the author uses
 roles: [<role tag>, ...]           # roles the recipe needs filled
 tensions: [<role tag>, ...]        # roles the field still lacks a good brick for
@@ -147,6 +148,7 @@ If <X is the real bottleneck>, then <Y> should work. (inferred)
 2. <bet of another study or view the note reports> (<section>; whose bet)
 
 # Recipe (layer 4)
+Cut: <the cut of the method brick this table renders, e.g. functional>
 | Role | Brick (slug) | Signature (input -> output, objective) | Why this brick (author's reason or (inferred)) |
 |------|-------------|----------------------------------------|-----------------------------------------------|
 Operator: <sequence | loop | gate | nesting | adversarial | distill | ensemble | tree | other: ...>
@@ -170,6 +172,16 @@ Operator: <sequence | loop | gate | nesting | adversarial | distill | ensemble |
 | Operator | Variant | Role fit | Novelty link | Kill test | Owner verdict | Origin |
 |----------|---------|----------|--------------|-----------|-------------|--------|
 ```
+
+**The method brick holds the cuts.** File the source's method as a brick named
+by its job and set `method` to it. Every split of the method, the first one
+included, goes in that brick's `parts` with a `cut` (Parts and links). The
+Recipe table is a view of one of those cuts: its `Cut:` line names it, and its
+Brick column lists the same slugs, one plain slug per cell. The card adds what
+is particular to the source: the signature as used here and the author's
+reason. Other cuts of the method live only on the brick. The index reports a
+table out of step with its cut. Older cards with no `method` still parse; add a
+method brick when you next touch one.
 
 Mutations columns: `Operator` is a `move_type`; `Role fit` says whether the new
 brick does the role and what breaks; `Novelty link` is the closest prior work
@@ -229,49 +241,69 @@ it into this list.
 ## Parts and links (any brick, lens or card)
 
 A unit is whatever can be split, bound or linked: a brick, a lens, a card, or an
-arrangement pattern written as a brick. There are no fixed levels. Split as far as
-you can judge today and keep that layer; a later pass may split a part again, or
-find that a brick is really a whole made of others. Nothing is relabelled or
-moved when that happens: only `parts` grows.
+arrangement pattern written as a brick. Cuts of a source's method go on its
+method brick, not on the card. There are no fixed levels. Split as far as you
+can judge today; a later pass may split a part again, or find that a brick is
+really a whole made of others. Nothing is relabelled or moved when that
+happens: only `parts` grows.
 
 ```yaml
-parts:                               # split / bind: this unit is made of these
-  - <slug>                           # a part you are sure of
-  - { to: <slug>, how: split | judge | owner, cut: <lens>, note: <optional> }   # how it was found, through which lens
+parts:                               # this unit is made of these
+  - { to: <slug>, how: split | bind | judge | owner, cut: <cut kind>, note: <optional> }
+  - <slug>                           # older shape: a part with no cut recorded
 links:                               # connect without merging
   - { to: <slug>, via: <slug>, note: <one line> }
 ```
 
-- **Cuts.** `cut` names the lens a split was made through: a slug from
-  `lenses/` when one fits, else a short hyphenated phrase (`cost-flow`,
-  `data-path`, `energy-terms`). Entries with the same `cut` form one way of
-  splitting the unit. A unit may hold several cuts at once, and they may overlap
-  or disagree; that is the point. An entry with no `cut` belongs to the
-  `default` cut. When you split a unit that already has parts, ask first whether
-  your lens differs from the cuts it has: if it does, add a new cut beside them;
-  if it is the same lens, extend that cut.
+- **Scissors and tape write one record.** `how: split`: found by cutting this
+  unit. `how: bind`: this unit was made by binding existing bricks; write it on
+  the new, bigger brick. `how: judge`: an LLM judge said the unit contains the
+  part. `how: owner`: the owner said so. The view prints `how` next to the part.
+- **When to bind.** Bind when a combination of bricks survives its kill test
+  (idea-forge files it), or when the same arrangement of bricks recurs in two or
+  more sources. Name the new brick by the job the whole does, give it a
+  signature, and set `cut` to the kind under which the parts make that one job
+  (often `functional`).
+- **Cuts.** `cut` names a kind of cut. Use an id from the cut registry when one
+  fits: `references/cuts.json`, built from the repo's decks (the decompositions,
+  such as `functional`, `temporal`, `data-flow`, `risk`, `failure-mode`,
+  `constraint`, `value-chain`, plus `cost`, `causal-chain`, `evidence-role`).
+  Before you write any other label, run `idea_index.py <bank> --cuts` and reuse
+  a registry id or a label the bank already uses. Make a new label only when
+  none fits, and put its question in that entry's `note`. Unlike `to`, a `cut`
+  takes no prefix (`lens:`): a cut is not a lens file. The Cuts report lists labels
+  outside the registry and near-duplicate labels.
+- **One cut, one way of splitting.** Entries with the same `cut` form one cut.
+  A unit may hold several cuts at once; they may overlap or disagree, and that
+  is the point. An entry with no `cut` is unlabelled (older banks): label it
+  when you next touch the unit. When you split a unit that already has parts,
+  check whether your kind differs from the cuts it has: if it does, add a new
+  cut beside them; if it is the same kind, extend that cut.
+- **A new cut never rewrites an old one.** When it shows that an existing part
+  boundary was wrong, or that two bricks filed apart look like one, the old cut
+  stays. Merge bricks only on a signature match ("Link and dedupe bricks" in
+  the skill).
 
 - **Refs:** a bare slug resolves as brick, then lens, then card; write
   `card:<slug>` or `lens:<slug>` when it must be one of those.
 - **Depth is computed, never stored.** A unit with no `parts` has depth 0; a
   whole has 1 + its deepest part over all its cuts. The index reports depth,
   `part_of` (the reverse list) and cycles (an error: a unit cannot contain
-  itself). The `# Related` view shows one line per cut, with the lens named.
+  itself). The `# Related` view shows one line per cut, and "Part of" names the
+  cut.
 - **Arrangements are units too.** How parts combine (a gate before a loop, a
   cheap step before a strong check) may be its own brick, listed in `parts` like
   any other, or named as the `via` of a link.
 - **`links` are one-sided in the file, two-sided in the view.** Write a link
   once; `--write` shows it on both ends.
-- **Provenance lives in the file, never in a side file.** `how: split` came from
-  splitting this unit, `how: judge` from an LLM judge saying this unit contains
-  the part, `how: owner` from the owner. The view prints it next to the link.
 - **Best effort.** A split or link Claude is unsure of still goes in, with its
   `how`. When the owner corrects one, change the entry (or delete it) and set
   `how: owner`, so the next pass starts from their call.
 
 ## Lens (`lenses/<slug>.md`)
 
-A view model as a reusable node. It migrates like a brick.
+A view model as a reusable node: how an author pictures a problem. It migrates
+like a brick. A lens is not a way to cut; cut kinds live in the cut registry.
 
 ```yaml
 ---
@@ -398,7 +430,7 @@ Each is one file, edited at runtime. No skill hardcodes their values.
 | `profile.md` | Facts about the owner, as a table `\| Key \| Value \|`. `Name`: what to call the owner. `Handle`: the actor id in `human:<handle>` (default `owner`). `Chat language`: the language for chat when the owner's own messages do not show one (default: the language the owner writes in). `Presence default`: `absent` or `present`, the mode a new conversation starts in (default `absent`). `Compute`: where heavy runs and kill-tests may go, and what to check before adding load (default: this machine only). `# Scopes`: starting scopes, copied into `scopes.md` only when that file is missing. Every key is optional |
 | `scopes.md` | Table: scope, since, note |
 | `interest-state.md` | `# Clusters` table: `| Cluster | Level | Zooms | Signals | Since |`; `Level` is `core`, `adjacent`, `delegated` or empty; `Zooms` counts briefs the owner asked for in that cluster. A cluster with no level gets the short role-level card; the one-line interface card is for `delegated` only. `# Settings`: cards per batch, explore slots per batch, weekly card budget. `# Change log` table: date, cluster, from → to, why. The owner's commands win, in any language |
-| `known-bricks.md` | Table: brick slug, level (`seen`, `owned`), since, evidence (how the owner showed it: explained it, spotted it in a new source). Only core and adjacent clusters |
+| `known-bricks.md` | Table: brick slug, level (`seen`, `owned`), since, evidence (how the owner showed it: explained it, spotted it in a new source). Only core and adjacent clusters. Ownership is per file: owning a whole says nothing about its parts, and a new cut of an owned brick lists its new parts as `seen` |
 | `taste.md` | Table: date, source, gem the owner saw that Claude missed, gem type. Table: date, card, vote, one-word reason |
 | `progress.md` | Table, one row per session: `| Date | Reading | Mode | Unaided gems | Roles named right | Owner-unique mutations | Level-3 hints | Gems Claude missed | Skips |`. `Mode` is `brief`, `deep`, `skim` or `deal`. The three skill columns are finding gems (`Unaided gems`), naming roles (`Roles named right`, of total) and proposing mutations (`Owner-unique mutations`). `# Stage` with the criteria below |
 
@@ -406,7 +438,7 @@ Handover stages (defaults; change them in `progress.md` from real data):
 
 | Stage | Owner does | Move up when |
 |-------|----------|--------------|
-| 1 | Votes with one-word reasons; asks in briefs | About 30 bricks `owned` |
+| 1 | Votes with one-word reasons; asks in briefs | Most bricks on recent core-cluster cards are `owned` |
 | 2 | Guesses the gem type before reading the card's reason | Over 60 % of guesses right |
 | 3 | Writes the recipe for chosen sources; Claude reviews | The owner's cards need few corrections |
 | 4 | Full co-reads on hard sources; brings new scopes and seeds | — |

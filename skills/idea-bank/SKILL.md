@@ -1,6 +1,6 @@
 ---
 name: idea-bank
-description: "Shared store and formats for the owner's idea work: where the bank lives ($IDEA_HOME), the schema for idea cards, bricks, lenses, moves, readings, scout batches and the owner's state files, how bricks are split, bound and linked (`parts`, `links`), the index script that finds links, convergence and migration gaps, the search script (embeddings + BM25) that finds existing bricks, and how to commit the bank. Use when another idea skill (idea-scout, co-read, idea-forge, idea-mine) writes or reads the bank, when the owner asks to search the bank or their ideas for something, find or dedupe bricks, see what a brick is part of or linked to, run the idea index, or see convergence and migration gaps. Not for deciding what to read or how to collaborate; the caller skills own that."
+description: "Shared store and formats for the owner's idea work: where the bank lives ($IDEA_HOME), the schema for idea cards, bricks, lenses, moves, readings, scout batches and state files, how bricks are cut, bound and linked (`parts`, `links`), the index script that finds links, convergence and migration gaps, the search script (embeddings + BM25) that finds existing bricks, and how to commit the bank. Use when another idea skill (idea-scout, co-read, idea-forge, idea-mine) writes or reads the bank, when the owner asks to search the bank for something, find or dedupe bricks, see what a brick is part of or linked to, run the idea index, or see convergence and migration gaps. Not for deciding what to read or how to collaborate; the caller skills own that."
 ---
 
 # Idea bank
@@ -16,27 +16,24 @@ match one.
 
 A **brick** is any piece of an idea that does one job you can name: it takes
 something in, gives something out, and keeps to a constraint. "Filters bad
-samples" is a brick. "A cheap check before a strong one" is a brick. A whole
-method seen as one block is a brick too.
+samples" is a brick; so is "a cheap check before a strong one", and so is a
+whole method seen as one block.
 
-- **No fixed size.** A brick can be cut into smaller bricks, and bricks bind into
-  a bigger brick. No brick is the smallest piece: never call a brick atomic or
-  final. Today's split goes only as far as today's view can see.
-- **Scissors and tape are tools, not facts.** Cutting and binding are operations
-  you apply through a lens: a way of looking, such as "where does the cost go" or
-  "what does the data pass through". Different lenses cut the same brick in
-  different places. Keep every cut, each with its lens in `cut`
-  (`references/schema.md`, Parts and links). A new cut never replaces an old one.
-- **A later view may cut again.** When a new lens shows more structure inside a
-  brick, add a cut. Do not rename, move or relabel the brick.
-- **Name by job, not by identity.** "filters bad samples", not "reward model".
-  The same structure in two fields is one brick with two names.
-- **Same brick means same structure.** Match input, output, objective,
-  constraint and math form. Names and embeddings mislead.
+- **No fixed size.** Bricks cut into smaller bricks and bind into bigger ones.
+  No brick is the smallest piece: never call one atomic or final.
+- **Scissors and tape.** A split cuts a brick into parts; a bind tapes existing
+  bricks into a bigger one. Both write the brick's `parts`, from opposite
+  directions (`how: split`, `how: bind`), and name a kind of cut in `cut`: a
+  registry id such as `cost` or `data-flow` when one fits. A cut kind is a way
+  to cut, not a lens file; `lenses/` holds authors' view models.
+- **Keep every cut.** A new cut goes beside the old ones and never replaces
+  one. Never rename, move or relabel a brick for it.
+- **The method is a brick.** A card records the source and points to its method
+  brick (`method`). Every split of the method, the first included, is a cut on
+  that brick; the card's Recipe table renders one named cut.
+- **Name by job, match by structure** (Rules; "Link and dedupe bricks").
 
-Bricks live in `bricks/`, one per file (`type: Brick`). A card records one
-source and the bricks its recipe uses. A lens records a way of seeing. A move
-records how one source changed another source's bricks.
+Rules for cuts and binds: `references/schema.md`, Parts and links.
 
 ## The owner
 
@@ -171,6 +168,8 @@ It is deterministic and offline. It reports:
 
 - brick ↔ card links and broken links;
 - bricks by number of fields;
+- **cuts**: labels against the registry, near-duplicates, binds, cards with
+  no method brick, Recipes out of step (`--cuts` prints the registry);
 - **convergence**: one role filled by bricks from two or more fields, and hot
   slots (a card role whose brick was substituted two or more times in `moves/`);
 - **migration-gap candidates**: a brick whose role tags match a card's
@@ -216,5 +215,6 @@ create a repo yourself.
   tests it without a model. The numbers above were measured on the author's bank.
 - `scripts/idea_deal.py`: deals a hand (bricks, lenses, moves) for idea-forge's
   deal mode; `scripts/test_idea_deal.py` tests it.
+- `references/cuts.json`: the cut registry, built from the repo's decks.
 - `scripts/idea_index.py`: the index; `scripts/test_idea_index.py` and
   `scripts/fixtures/` test it.
