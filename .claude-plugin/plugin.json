@@ -1,6 +1,6 @@
 {
   "name": "thinking-skills",
-  "description": "Thinking skills for agents: creative (past the typical answer), heavy-think (parallel perspectives), council (ideas that build on each other), debate (live pressure-testing) and ambition (aim higher, with an outside judge).",
+  "description": "Thinking skills for agents: creative (past the typical answer), heavy-think (parallel perspectives), council (ideas that build on each other), debate (live pressure-testing), ambition (aim higher, with an outside judge), and the idea skills (idea-bank, idea-mine, idea-forge, idea-scout, co-read, idea-present: break sources into building blocks, recombine them into new ideas and kill-test them).",
   "author": {
     "name": "samhvw8",
     "url": "https://github.com/samhvw8"
@@ -16,6 +16,8 @@
     "multi-agent",
     "claude-code",
     "skills",
-    "ambition"
+    "ambition",
+    "ideas",
+    "recombination"
   ]
 }

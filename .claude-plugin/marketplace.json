@@ -4,12 +4,12 @@
     "name": "samhvw8",
     "url": "https://github.com/samhvw8"
   },
-  "description": "thinking-skills: creative, heavy-think, council, debate and ambition.",
+  "description": "thinking-skills: creative, heavy-think, council, debate, ambition and the idea skills (idea-bank, idea-mine, idea-forge, idea-scout, co-read, idea-present).",
   "plugins": [
     {
       "name": "thinking-skills",
       "source": "./",
-      "description": "Get past the first typical answer, run several perspectives in parallel, build ideas on each other, and pressure-test decisions."
+      "description": "Get past the first typical answer, run several perspectives in parallel, build ideas on each other, pressure-test decisions, and break sources into building blocks to recombine into new ideas."
     }
   ]
 }
